@@ -1,0 +1,19 @@
+{
+  "name": "learn-server",
+  "version": "1.0.0",
+  "description": "Local server for the learn skill — Gemini proxy and MongoDB bridge",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
