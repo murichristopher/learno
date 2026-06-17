@@ -1,4 +1,4 @@
-# LESSON-FORMAT — Formato de lição do skill `learn`
+# LESSON-FORMAT — Formato de lição do skill `learno`
 
 Toda lição do `learn` é um arquivo HTML auto-contido em `./lessons/`, nomeado `NNNN-dash-case-name.html`.
 Este documento define a estrutura obrigatória. Cada seção marcada com `[OBRIGATÓRIO]` deve estar presente em toda lição.

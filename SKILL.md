@@ -1,5 +1,5 @@
 ---
-name: learn
+name: learno
 description: Teach the user a skill or concept across multiple sessions, with AI validation, spaced repetition, visual diagrams, and a dynamic mastery dashboard.
 argument-hint: "What would you like to learn?"
 ---

@@ -242,7 +242,7 @@ skill/
 
 | Questão | Opções | Status |
 |---|---|---|
-| Onde instalar o servidor? | Global `~/.learn-server/` vs por workspace `skill/server/` | **Global** — um servidor, múltiplos workspaces passam o path do workspace no payload |
+| Onde instalar o servidor? | Global `~/.learno-server/` vs por workspace `skill/server/` | **Global** — um servidor, múltiplos workspaces passam o path do workspace no payload |
 | Idioma do feedback IA | Sempre PT-BR / detectar idioma do usuário | **Detectar** — instrução no prompt: "match the user's language" |
 | Revisões: HTML gerado ou conversa | HTML gerado vs thread no Claude | **HTML gerado** — para manter o padrão auto-contido |
 | Score mínimo para mastery | 70 / 75 / 80 | **75** — decidido |

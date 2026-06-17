@@ -1,4 +1,4 @@
-# `learn` — a stateful, multi-session tutoring skill
+# `learno` — a stateful, multi-session tutoring skill
 
 A Claude Code skill that teaches **any** subject across multiple sessions, with AI-validated
 answers, spaced repetition (SM-2), inline SVG diagrams, and a live mastery dashboard.
@@ -102,7 +102,7 @@ my-study/                     ← the study workspace (one git repo PER subject,
    missing or vague, the skill runs its "grill-me" interview to build it with you.*
 
 5. **Start learning.** In Claude Code, from the workspace root, invoke the skill
-   (`/learn` or "teach me X"). It reads `SKILL.md`, checks the server health, queries
+   (`/learno` or "teach me X"). It reads `SKILL.md`, checks the server health, queries
    Mongo for what's due, and picks the next lesson in your zone of proximal development.
 
 ---

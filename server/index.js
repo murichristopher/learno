@@ -16,7 +16,7 @@ app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
 const PORT = process.env.PORT || 9990;
 app.listen(PORT, () => {
-  console.log(`learn-server running on :${PORT}`);
+  console.log(`learno-server running on :${PORT}`);
   console.log(`  Gemini model : ${process.env.GEMINI_MODEL || 'gemini-2.5-flash'}`);
   console.log(`  MongoDB DB   : ${process.env.MONGODB_DB  || 'system_design_learn'}`);
 });
