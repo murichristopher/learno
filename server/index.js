@@ -11,6 +11,7 @@ app.use(express.json());
 app.get('/api/health', (_req, res) => res.json({ ok: true, ts: new Date().toISOString() }));
 app.use('/api/validate', require('./routes/validate'));
 app.use('/api/progress', require('./routes/progress'));
+app.use('/api/catalog', require('./routes/catalog'));   // lists all lesson/review files on disk
 app.use('/debug', require('./routes/debug'));   // /debug/mic — mic & Web Speech diagnostics
 
 // Serve the workspace statically so lessons open over http://localhost (a secure

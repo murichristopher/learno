@@ -229,6 +229,8 @@ The local server at `localhost:9990` proxies Gemini 2.5-flash and handles MongoD
 - `POST /api/validate` — validate a user's free-text answer
 - `POST /api/progress` — save lesson completion + trigger SM-2 scheduling
 - `GET  /api/progress` — read mastery state (used by dashboard)
+- `GET  /api/catalog` — lists every lesson/review HTML file on disk (powers the dashboard's "all lessons & reviews" section, independent of MongoDB progress)
+- `GET  /debug/mic` — standalone mic / Web Speech diagnostics page
 
 **Validate payload:**
 ```json

@@ -115,6 +115,17 @@
       padding: 1.25rem; background: var(--surface); border-radius: 8px;
       text-align: center; border: 1px dashed var(--rule); }
 
+    /* ── catálogo ── */
+    .cat-group { margin-bottom: 1.25rem; }
+    .cat-label { font-size: .72rem; font-family: monospace; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--muted); margin-bottom: .5rem; }
+    .cat-item { display: flex; align-items: center; gap: .6rem; padding: .6rem .9rem;
+      border: 1px solid var(--rule); border-radius: 8px; background: var(--surface);
+      margin-bottom: .4rem; text-decoration: none; color: var(--ink); font-size: .9rem;
+      transition: border-color .15s; }
+    .cat-item:hover { border-color: var(--accent); text-decoration: none; }
+    .cat-item .cat-file { margin-left: auto; font-family: monospace; font-size: .75rem; color: var(--muted); }
+
     /* ── skeleton loader ── */
     .skeleton { animation: pulse 1.5s ease-in-out infinite; background: #e5e7eb;
       border-radius: 6px; }
@@ -177,6 +188,12 @@
 <div class="section" id="section-lessons">
   <div class="section-title">Histórico de lições</div>
   <div id="lessons-content"><div class="pill skeleton" style="height:60px;width:100%"></div></div>
+</div>
+
+<!-- catálogo: todas as lições e revisões no disco -->
+<div class="section" id="section-catalog">
+  <div class="section-title">Todas as lições e revisões</div>
+  <div id="catalog-content"><div class="pill skeleton" style="height:60px;width:100%"></div></div>
 </div>
 
 <footer>
@@ -380,7 +397,29 @@
     }
   }
 
+  // ── catálogo: todas as lições e revisões no disco (independe do progresso) ──
+  async function loadCatalog() {
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const group = (items, label) => items.length ? `
+      <div class="cat-group">
+        <div class="cat-label">${label} (${items.length})</div>
+        ${items.map(it => `<a class="cat-item" href="${SERVER}${esc(it.path)}">
+          <span>${esc(it.title)}</span><span class="cat-file">${esc(it.file)}</span></a>`).join('')}
+      </div>` : '';
+    try {
+      const res = await fetch(`${SERVER}/api/catalog`, { signal: AbortSignal.timeout(3000) });
+      const data = await res.json();
+      const html = group(data.lessons || [], 'Lições') + group(data.reviews || [], 'Revisões');
+      document.getElementById('catalog-content').innerHTML =
+        html || '<div class="empty">Nenhum arquivo de lição/revisão encontrado.</div>';
+    } catch {
+      document.getElementById('catalog-content').innerHTML =
+        '<div class="empty">Catálogo indisponível — servidor offline.</div>';
+    }
+  }
+
   load();
+  loadCatalog();
 </script>
 </body>
 </html>
