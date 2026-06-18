@@ -210,8 +210,13 @@
   }
 
   function daysFromNow(dateStr) {
-    const diff = new Date(dateStr) - new Date();
-    return Math.round(diff / 86400000);
+    // Compara por DIA DE CALENDÁRIO LOCAL (não por instante) — "hoje é hoje"
+    // independente da hora/fuso, e bate com a query do learno-analyst.
+    const r = new Date(dateStr);
+    const review = new Date(r.getFullYear(), r.getMonth(), r.getDate());
+    const n = new Date();
+    const today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    return Math.round((review - today) / 86400000);
   }
 
   function formatDate(dateStr) {

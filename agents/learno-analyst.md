@@ -32,7 +32,7 @@ mongosh "$URI" --quiet --eval "db=db.getSiblingDB('$DB'); /* query */"
 - A concept is **mastered** when a teach-back (`is_teachback:true`) scored **≥75**, OR `concepts.mastered=true`, OR a `conversations` mastery event exists. A teach-back below 75 → **not** mastered.
 - **Recurring misconception** = same/similar text in `section_results.misconceptions` across 2+ sections → prioritize it.
 - **Stagnation** = a concept whose `history` has 3+ entries all < 75 → flag and suggest a different approach.
-- **Due for review** = `concepts.next_review <= now`.
+- **Due for review** = `next_review` falls on **today's local calendar day or earlier** — NOT a raw `<= now` UTC instant compare (that mis-flags a review due late tonight as "not due"). Use the end-of-today-local boundary below. This matches the dashboard's `daysFromNow` (also local-calendar based).
 - Reviews (`*-rN.html`) are remediation passes; compare a concept's score trend across `history` to show improvement.
 
 ## Request → recipe
@@ -51,10 +51,11 @@ mongosh "$URI" --quiet --eval "db=db.getSiblingDB('$DB');
 ```
 Summarize: mastered vs total concepts, score trend, last lessons.
 
-**"What's due for review":**
+**"What's due for review":** (due by end of TODAY local — matches the dashboard)
 ```bash
 mongosh "$URI" --quiet --eval "db=db.getSiblingDB('$DB');
-  printjson(db.concepts.find({next_review:{\$lte:new Date()}},{_id:0,concept_id:1,interval_days:1,next_review:1}).toArray())"
+  const n=new Date(); const endOfToday=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1);
+  printjson(db.concepts.find({next_review:{\$lt:endOfToday}},{_id:0,concept_id:1,mastered:1,interval_days:1,next_review:1}).sort({next_review:1}).toArray())"
 ```
 
 **"Where am I struggling":**
