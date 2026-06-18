@@ -26,8 +26,11 @@ my-study/                     ← the study workspace (one git repo PER subject,
 │   └── my-learning.html      ← mastery dashboard (generic, reusable as-is)
 └── skill/                    ← THIS REPO  ── the engine, identical for every subject
     ├── SKILL.md              ← the brain: session loop, philosophy, mastery rules
+    ├── CLAUDE.md             ← working agreement: always ground answers in real data
     ├── PLAN.md               ← curriculum scaffolding
     ├── LESSON-FORMAT.md      ← mandatory HTML template + design-system classes
+    ├── agents/
+    │   └── learno-analyst.md ← read-only progress analyst (install into .claude/agents/)
     ├── .env.example          ← copy to <workspace-root>/.env
     ├── original/             ← format templates for the workspace files
     │   ├── SKILL.md               (the canonical/original skill spec)
@@ -101,9 +104,32 @@ my-study/                     ← the study workspace (one git repo PER subject,
    `skill/original/`. *You don't have to write `MISSION.md` by hand — if it's
    missing or vague, the skill runs its "grill-me" interview to build it with you.*
 
-5. **Start learning.** In Claude Code, from the workspace root, invoke the skill
+5. **Install the progress analyst** (once — works for every study afterwards):
+   ```bash
+   ln -s "$(pwd)/skill/agents/learno-analyst.md" ~/.claude/agents/learno-analyst.md
+   # and inherit the working agreement at the workspace root:
+   echo '@skill/CLAUDE.md' >> CLAUDE.md
+   ```
+
+6. **Start learning.** In Claude Code, from the workspace root, invoke the skill
    (`/learno` or "teach me X"). It reads `SKILL.md`, checks the server health, queries
    Mongo for what's due, and picks the next lesson in your zone of proximal development.
+
+---
+
+## Progress analyst (`learno-analyst`)
+
+A read-only Claude Code subagent (`skill/agents/learno-analyst.md`) that grounds every
+answer about your learning in **real data** instead of assumptions. It knows the MongoDB
+schema (`lessons`, `concepts`, `section_results`, `conversations`) and the workspace layout,
+and is **subject-agnostic** — install it once and it works for every learno study.
+
+Ask things like *"valida minhas respostas da lição X"*, *"como estou no geral?"*, *"o que
+vence pra revisar?"*, *"onde estou patinando?"*. It returns a verdict + a table of real
+scores/dates + 1–3 insights (recurring misconceptions, stagnation, what's due).
+
+`skill/CLAUDE.md` instructs the main agent to consult it before any progress/validation/
+recommendation answer — so the tutor never invents how you're doing.
 
 ---
 
