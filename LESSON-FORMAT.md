@@ -162,6 +162,12 @@ Textarea com validação Gemini quando online; múltipla escolha de fallback qua
 campo — o texto continua editável, então o usuário revisa antes de enviar. Falar a explicação
 em voz alta treina o formato real de "explicar no whiteboard".
 
+> **Requisitos do 🎤 (Web Speech API):** (1) a lição precisa ser aberta por
+> `http://localhost:9990/...` — em `file://` o microfone não funciona; (2) precisa de
+> internet (o reconhecimento roda na nuvem); (3) o navegador precisa conceder o microfone —
+> **Safari e Chrome funcionam; o Arc não dispara o prompt e falha em silêncio** (o botão
+> mostra uma dica nesse caso). Para diagnosticar, abra `http://localhost:9990/debug/mic`.
+
 ```html
 <!-- MODO ONLINE: textarea com validação IA + ditado por voz -->
 <div class="ai-validate-block" id="validate-N" data-concept-id="[ID do glossário]"
@@ -374,21 +380,30 @@ detectServer();
 function setupDictation() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const btns = document.querySelectorAll('.mic-btn');
-  if (!SR) { btns.forEach(b => b.style.display = 'none'); return; }
+  if (!SR) { btns.forEach(b => { b.disabled = true; b.title = 'Navegador sem reconhecimento de voz'; }); return; }
 
   btns.forEach(btn => {
     const target = document.getElementById(btn.dataset.target);
+    const hint = document.createElement('span');       // mensagem visível quando o mic falha
+    hint.className = 'mic-hint';
+    btn.parentNode.appendChild(hint);
     let rec = null, active = false;
 
     btn.addEventListener('click', () => {
       if (active) { rec && rec.stop(); return; }       // segundo clique = parar
+      hint.textContent = '';
       rec = new SR();
       rec.lang = 'pt-BR';
       rec.interimResults = true;
       rec.continuous = true;
 
       let base = target.value ? target.value.trimEnd() + ' ' : '';
+      let gotAudio = false;
+      const t0 = Date.now();
+
+      rec.onaudiostart = () => { gotAudio = true; };
       rec.onresult = (e) => {
+        gotAudio = true;
         let finalTxt = '', interim = '';
         for (let i = e.resultIndex; i < e.results.length; i++) {
           const t = e.results[i][0].transcript;
@@ -397,14 +412,26 @@ function setupDictation() {
         if (finalTxt) base += finalTxt + ' ';
         target.value = base + interim;                 // mostra parcial enquanto fala
       };
-      const reset = () => { active = false; btn.classList.remove('recording'); btn.textContent = '🎤 Falar'; };
-      rec.onend = reset;
-      rec.onerror = reset;
+      rec.onerror = (e) => {
+        hint.textContent = e.error === 'not-allowed' || e.error === 'service-not-allowed'
+          ? 'Microfone bloqueado — libere a permissão (ou abra no Safari/Chrome).'
+          : e.error === 'no-speech' ? 'Não te ouvi — fale mais perto e tente de novo.'
+          : 'Falha no microfone (' + e.error + ').';
+      };
+      rec.onend = () => {
+        active = false; btn.classList.remove('recording'); btn.textContent = '🎤 Falar';
+        // Falha silenciosa (ex.: Arc não dispara o prompt de permissão): termina na hora, sem áudio
+        if (!gotAudio && Date.now() - t0 < 1200 && !hint.textContent) {
+          hint.textContent = 'Não consegui acessar o microfone neste navegador. Verifique a permissão de mic — ou abra no Safari/Chrome.';
+        }
+      };
 
-      rec.start();
-      active = true;
-      btn.classList.add('recording');
-      btn.textContent = '⏹ Parar';
+      try {
+        rec.start();
+        active = true; btn.classList.add('recording'); btn.textContent = '⏹ Parar';
+      } catch (err) {
+        hint.textContent = 'Não foi possível iniciar o microfone.';
+      }
     });
   });
 }
@@ -578,6 +605,7 @@ Todo lição inclui estas variáveis e classes base (além do CSS específico de
 .mic-btn.recording { background: #fef2f2; border-color: var(--wrong); color: var(--wrong);
   animation: micpulse 1.2s ease-in-out infinite; }
 @keyframes micpulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+.mic-hint { display: block; margin-top: .4rem; font-size: .8rem; color: var(--warn); max-width: 60ch; }
 
 .radio-group { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.75rem 0; }
 .radio-group label { padding: 0.5rem 0.75rem; border: 1px solid var(--rule); border-radius: 6px;
