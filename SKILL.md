@@ -168,7 +168,11 @@ A lesson is the primary teaching artifact. It is one self-contained HTML file in
 
 **Lesson scope:** one tightly-scoped concept per lesson. If the topic is too large, split it. Working memory is small — give the user one win per session.
 
-**Open the lesson file** after creating it: `open lessons/NNNN-name.html`
+**Open the lesson** after creating it **over the server, not `file://`**:
+`open http://localhost:9990/lessons/NNNN-name.html` (start the server first if needed).
+The server serves the workspace statically, so lessons load from a secure `localhost`
+context — required for the 🎤 voice dictation (Web Speech API) and for the mic permission
+to be remembered. Opening via `file://` makes the mic prompt repeat and fail to transcribe.
 
 ---
 
