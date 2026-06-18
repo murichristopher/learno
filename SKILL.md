@@ -160,8 +160,8 @@ A lesson is the primary teaching artifact. It is one self-contained HTML file in
 1. Header with offline banner (hidden by default)
 2. Segmented progress bar
 3. **Analogy** — real-world, personalised to user's context from NOTES.md, before any technical term
-4. Content sections (2–5) — each with: explanation, inline SVG diagram, AI validation textarea + offline multiple-choice fallback
-5. **Teach-back** — user explains the full lesson topic; this score drives SM-2
+4. Content sections (2–5) — each with: explanation, inline SVG diagram, and a practice interaction. **Vary the interaction type across sections** (see `LESSON-FORMAT.md` § 4c): Type A = written recall (AI-validated textarea, with a 🎤 voice-dictation button and offline multiple-choice fallback); Type B = first-class multiple-choice quiz (always on, no server). Rule: at least one Type A per lesson; quizzes add variety but never replace effortful recall.
+5. **Teach-back** — user explains the full lesson topic out loud or in writing (always Type A, with 🎤); this score drives SM-2
 6. **Immediate review** — inline flash cards (3–5 cards), shown after teach-back
 7. Footer with primary source citation
 8. Server detection script + `LESSON_ID` and `UNLOCK_SEQUENCE` constants

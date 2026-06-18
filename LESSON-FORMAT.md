@@ -12,7 +12,9 @@ Este documento define a estrutura obrigatória. Cada seção marcada com `[OBRIG
 [OBRIGATÓRIO] 2. Barra de progresso
 [OBRIGATÓRIO] 3. Analogia da vida real
 [OBRIGATÓRIO] 4. Seções de conteúdo (1–N)
-               └── por seção: conceito → diagrama SVG → prática com validação IA
+               └── por seção: conceito → diagrama SVG → prática (varia o tipo)
+                   ├── Tipo A: recall escrito + ditado por voz (validação IA)
+                   └── Tipo B: quiz de múltipla escolha (1ª classe, sem servidor)
 [OBRIGATÓRIO] 5. "Ensina de volta" (teach-back final)
 [OBRIGATÓRIO] 6. Revisão imediata (flash cards inline)
 [OBRIGATÓRIO] 7. Footer com fonte primária e links
@@ -141,19 +143,35 @@ Use SVG inline — sem CDN, sem dependências externas.
 </div>
 ```
 
-### 4c. Prática interativa
+### 4c. Prática interativa — escolha o tipo por seção
 
 Cada seção tem uma pergunta que o usuário responde antes de ver a explicação.
-**Modo online (servidor disponível):** textarea com validação Gemini.
-**Modo offline (fallback):** múltipla escolha estática embutida no mesmo HTML.
+Para a aula não virar monótona, **varie o tipo de interação entre as seções**. Há dois tipos.
+
+> **Regra pedagógica (obrigatória).** Escrever/falar é *recall* (esforço alto, retém muito);
+> múltipla escolha é *recognition* (esforço baixo, retém menos). Por isso:
+> - **No mínimo 1 seção de recall escrito (Tipo A) por lição.**
+> - **O teach-back final é SEMPRE Tipo A** (é ele que alimenta o SM-2).
+> - Use o Tipo B (quiz) para **aquecer, checar fato rápido ou variar o ritmo** — nunca para
+>   substituir todo o recall. Variedade a serviço do conteúdo, não novidade por novidade.
+
+#### Tipo A — Recall escrito (com ditado por voz) [≥1 por lição]
+
+Textarea com validação Gemini quando online; múltipla escolha de fallback quando offline.
+**Novidade:** todo textarea ganha um botão 🎤 que dita por voz (Web Speech API) e preenche o
+campo — o texto continua editável, então o usuário revisa antes de enviar. Falar a explicação
+em voz alta treina o formato real de "explicar no whiteboard".
 
 ```html
-<!-- MODO ONLINE: textarea com validação IA -->
+<!-- MODO ONLINE: textarea com validação IA + ditado por voz -->
 <div class="ai-validate-block" id="validate-N" data-concept-id="[ID do glossário]"
      data-section-summary="[resumo do conceito desta seção em 1–2 frases]">
   <div class="q-label">[Pergunta aberta]</div>
   <textarea class="answer-textarea" id="answer-N"
-    placeholder="Explique com suas palavras..."></textarea>
+    placeholder="Explique com suas palavras... (ou clique em 🎤 para falar)"></textarea>
+  <div class="answer-tools">
+    <button type="button" class="mic-btn" data-target="answer-N" title="Ditar por voz">🎤 Falar</button>
+  </div>
   <button class="btn" onclick="validateSection('N')">Validar com IA</button>
   <div class="ai-result" id="result-N" style="display:none">
     <div class="score-display" id="score-N"></div>
@@ -176,9 +194,31 @@ Cada seção tem uma pergunta que o usuário responde antes de ver a explicaçã
 </div>
 ```
 
+#### Tipo B — Quiz de múltipla escolha [1ª classe, para variar]
+
+Mesma mecânica da múltipla escolha, mas é a interação **principal** da seção — fica **sempre
+visível** (online e offline) porque não depende de servidor nem de IA. Reaproveita `checkOffline`.
+Como não passa pela IA, **não persiste score** no Mongo: é checagem leve, o SM-2 continua vindo do teach-back.
+
+```html
+<!-- TIPO B: quiz sempre visível — NÃO usar as classes ai-validate-block / offline-fallback -->
+<div class="quiz-block" id="quiz-N">
+  <div class="q-label">[Pergunta de múltipla escolha]</div>
+  <div class="radio-group">
+    <label><input type="radio" name="q-N" value="a"/> [Opção A]</label>
+    <label><input type="radio" name="q-N" value="b"/> [Opção B — correta]</label>
+    <label><input type="radio" name="q-N" value="c"/> [Opção C]</label>
+  </div>
+  <button class="btn" onclick="checkOffline('N', 'b', '[feedback correto]', '[feedback errado]')">
+    Verificar
+  </button>
+  <div class="inline-fb" id="fb-offline-N"></div>
+</div>
+```
+
 **Regra de desbloqueio:** a próxima seção só desbloqueia quando:
-- Online: score ≥ 50 (qualquer tentativa conta — o objetivo é engajamento, não bloqueio)
-- Offline: resposta correta na múltipla escolha
+- Tipo A online: score ≥ 50 (qualquer tentativa conta — o objetivo é engajamento, não bloqueio)
+- Tipo A offline / Tipo B: resposta correta na múltipla escolha
 
 ---
 
@@ -206,7 +246,10 @@ Este score é o **mastery score da lição** — é o que determina o schedule S
          data-section-summary="[Resumo completo da lição]"
          data-is-teachback="true">
       <textarea class="answer-textarea answer-textarea--large" id="answer-teachback"
-        placeholder="Escreva sua explicação aqui..."></textarea>
+        placeholder="Escreva sua explicação aqui... (ou clique em 🎤 para falar)"></textarea>
+      <div class="answer-tools">
+        <button type="button" class="mic-btn" data-target="answer-teachback" title="Ditar por voz">🎤 Falar</button>
+      </div>
       <button class="btn" onclick="validateTeachback()">Enviar para avaliação</button>
       <div class="ai-result" id="result-teachback" style="display:none">
         <div class="score-display" id="score-teachback"></div>
@@ -318,11 +361,54 @@ async function detectServer() {
   if (!serverOnline) {
     document.getElementById('offline-banner').style.display = 'block';
     // Trocar todos os blocos ai-validate por offline-fallback
+    // (quiz-block NÃO é tocado — é 1ª classe e funciona sem servidor)
     document.querySelectorAll('.ai-validate-block').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.offline-fallback').forEach(el => el.style.display = 'block');
   }
 }
 detectServer();
+
+// ── Ditado por voz (Web Speech API) ─────────────────────────
+// Cada .mic-btn dita para a textarea apontada por data-target. O texto fica
+// editável (fonte de verdade). Navegador sem suporte → o botão some.
+function setupDictation() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btns = document.querySelectorAll('.mic-btn');
+  if (!SR) { btns.forEach(b => b.style.display = 'none'); return; }
+
+  btns.forEach(btn => {
+    const target = document.getElementById(btn.dataset.target);
+    let rec = null, active = false;
+
+    btn.addEventListener('click', () => {
+      if (active) { rec && rec.stop(); return; }       // segundo clique = parar
+      rec = new SR();
+      rec.lang = 'pt-BR';
+      rec.interimResults = true;
+      rec.continuous = true;
+
+      let base = target.value ? target.value.trimEnd() + ' ' : '';
+      rec.onresult = (e) => {
+        let finalTxt = '', interim = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const t = e.results[i][0].transcript;
+          if (e.results[i].isFinal) finalTxt += t; else interim += t;
+        }
+        if (finalTxt) base += finalTxt + ' ';
+        target.value = base + interim;                 // mostra parcial enquanto fala
+      };
+      const reset = () => { active = false; btn.classList.remove('recording'); btn.textContent = '🎤 Falar'; };
+      rec.onend = reset;
+      rec.onerror = reset;
+
+      rec.start();
+      active = true;
+      btn.classList.add('recording');
+      btn.textContent = '⏹ Parar';
+    });
+  });
+}
+setupDictation();
 
 // ── Validação online (Gemini via servidor) ──────────────────
 async function validateSection(sectionId) {
@@ -485,6 +571,25 @@ Todo lição inclui estas variáveis e classes base (além do CSS específico de
 }
 .answer-textarea--large { min-height: 140px; }
 
+.answer-tools { margin-top: 0.4rem; }
+.mic-btn { font: inherit; font-size: 0.82rem; padding: 0.3rem 0.7rem; border: 1px solid var(--rule);
+  border-radius: 6px; background: #fff; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.mic-btn:hover { border-color: var(--accent); color: var(--accent); }
+.mic-btn.recording { background: #fef2f2; border-color: var(--wrong); color: var(--wrong);
+  animation: micpulse 1.2s ease-in-out infinite; }
+@keyframes micpulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+.radio-group { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.75rem 0; }
+.radio-group label { padding: 0.5rem 0.75rem; border: 1px solid var(--rule); border-radius: 6px;
+  cursor: pointer; transition: border-color 0.15s; }
+.radio-group label:hover { border-color: var(--accent); }
+.radio-group label.correct { border-color: var(--correct); background: #f0fdf4; }
+.radio-group label.wrong { border-color: var(--wrong); background: #fef2f2; }
+.inline-fb { margin-top: 0.5rem; font-size: 0.9rem; display: none; }
+.inline-fb.show { display: block; }
+.inline-fb.ok { color: var(--correct); }
+.inline-fb.bad { color: var(--wrong); }
+
 .score-display { font-family: monospace; font-size: 1.5rem; font-weight: bold;
   color: var(--accent); margin-bottom: 0.5rem; }
 .score-bar-wrap { background: var(--rule); border-radius: 4px; height: 6px; margin-bottom: 0.75rem; }
@@ -518,8 +623,10 @@ Todo lição inclui estas variáveis e classes base (além do CSS específico de
 - [ ] Todo diagrama é SVG inline (sem CDN)
 - [ ] Cada seção tem `data-concept-id` com ID existente no glossário
 - [ ] Fallback offline embutido em cada `ai-validate-block`
+- [ ] **Variedade de interação:** pelo menos 1 seção Tipo A (recall escrito) e, idealmente, ≥1 Tipo B (quiz)
+- [ ] **Ditado por voz:** botão 🎤 (`.mic-btn` com `data-target`) em todo textarea (seções + teach-back)
 - [ ] Constantes `LESSON_ID` e `UNLOCK_SEQUENCE` definidas no script
-- [ ] Teach-back cobre todos os conceitos da lição
+- [ ] Teach-back cobre todos os conceitos da lição (sempre Tipo A, com 🎤)
 - [ ] Flash cards presentes (3–5 cards)
 - [ ] Footer com fonte primária
 - [ ] Testado offline (servidor parado): lição funciona com múltipla escolha
