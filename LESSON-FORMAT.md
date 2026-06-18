@@ -167,6 +167,10 @@ em voz alta treina o formato real de "explicar no whiteboard".
 > internet (o reconhecimento roda na nuvem); (3) o navegador precisa conceder o microfone —
 > **Safari e Chrome funcionam; o Arc não dispara o prompt e falha em silêncio** (o botão
 > mostra uma dica nesse caso). Para diagnosticar, abra `http://localhost:9990/debug/mic`.
+>
+> **Idioma:** o reconhecedor é monolíngue — falar PT com termos em inglês embola os termos
+> ("Leaky Bucket" → "Lick Bock"). O seletor `PT/EN` ao lado do 🎤 deixa o usuário escolher;
+> a textarea é editável para corrigir, e a validação IA é robusta a transcrições imperfeitas.
 
 ```html
 <!-- MODO ONLINE: textarea com validação IA + ditado por voz -->
@@ -177,6 +181,7 @@ em voz alta treina o formato real de "explicar no whiteboard".
     placeholder="Explique com suas palavras... (ou clique em 🎤 para falar)"></textarea>
   <div class="answer-tools">
     <button type="button" class="mic-btn" data-target="answer-N" title="Ditar por voz">🎤 Falar</button>
+    <select class="mic-lang" title="Idioma do ditado"><option value="pt-BR">PT</option><option value="en-US">EN</option></select>
   </div>
   <button class="btn" onclick="validateSection('N')">Validar com IA</button>
   <div class="ai-result" id="result-N" style="display:none">
@@ -255,6 +260,7 @@ Este score é o **mastery score da lição** — é o que determina o schedule S
         placeholder="Escreva sua explicação aqui... (ou clique em 🎤 para falar)"></textarea>
       <div class="answer-tools">
         <button type="button" class="mic-btn" data-target="answer-teachback" title="Ditar por voz">🎤 Falar</button>
+        <select class="mic-lang" title="Idioma do ditado"><option value="pt-BR">PT</option><option value="en-US">EN</option></select>
       </div>
       <button class="btn" onclick="validateTeachback()">Enviar para avaliação</button>
       <div class="ai-result" id="result-teachback" style="display:none">
@@ -393,7 +399,7 @@ function setupDictation() {
       if (active) { rec && rec.stop(); return; }       // segundo clique = parar
       hint.textContent = '';
       rec = new SR();
-      rec.lang = 'pt-BR';
+      rec.lang = (btn.parentNode.querySelector('.mic-lang') || {}).value || 'pt-BR';  // PT/EN escolhido pelo usuário
       rec.interimResults = true;
       rec.continuous = true;
 
@@ -606,6 +612,8 @@ Todo lição inclui estas variáveis e classes base (além do CSS específico de
   animation: micpulse 1.2s ease-in-out infinite; }
 @keyframes micpulse { 0%,100%{opacity:1} 50%{opacity:.55} }
 .mic-hint { display: block; margin-top: .4rem; font-size: .8rem; color: var(--warn); max-width: 60ch; }
+.mic-lang { font: inherit; font-size: .8rem; padding: .25rem .4rem; margin-left: .35rem; border: 1px solid var(--rule);
+  border-radius: 6px; background: #fff; color: var(--muted); cursor: pointer; vertical-align: middle; }
 
 .radio-group { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.75rem 0; }
 .radio-group label { padding: 0.5rem 0.75rem; border: 1px solid var(--rule); border-radius: 6px;
