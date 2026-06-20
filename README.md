@@ -103,6 +103,10 @@ my-study/                     ← the study workspace (one git repo PER subject,
    Scaffold `MISSION.md` / `NOTES.md` / `RESOURCES.md` using the formats in
    `skill/original/`. *You don't have to write `MISSION.md` by hand — if it's
    missing or vague, the skill runs its "grill-me" interview to build it with you.*
+   *And you don't need to know the field's key books — once the mission is set, the
+   skill runs **Source Discovery**: it researches the canonical sources (textbooks,
+   papers, primary docs), asks if you already own any, and (after you approve) writes
+   them into a tiered `RESOURCES.md`. Lessons are then grounded in those Tier 1 sources.*
 
 5. **Install the progress analyst** (once — works for every study afterwards):
    ```bash

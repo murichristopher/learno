@@ -30,7 +30,7 @@ Supporting specs (read before generating any artifact):
 
 The user needs three things to learn deeply:
 
-- **Knowledge** — from high-trust sources in `RESOURCES.md`. Never teach from parametric memory alone.
+- **Knowledge** — from the **canonical (Tier 1) sources** in `RESOURCES.md` — the field's reference texts and papers, not parametric memory and not community threads. If those sources aren't there yet, run **Source Discovery** (below) to find them; the user rarely knows the canon, so finding it is your job.
 - **Skills** — built through effortful retrieval, not passive reading. Difficulty is the tool for retention.
 - **Wisdom** — comes from real-world application outside the learning environment. Point to communities when wisdom is needed.
 
@@ -55,6 +55,7 @@ NOTES.md         → preferences, stack, teaching style
 learning-records/ → what was demonstrated in past sessions
 ```
 If `MISSION.md` is missing or vague, run the grill-me protocol before anything else.
+Then, if `RESOURCES.md` is missing, thin, or has a `## Gaps` section, run **Source Discovery & Curation** (see that section) before teaching — a lesson is only as good as the sources behind it.
 
 **2. Query MongoDB directly via `mongosh`** to get the full picture of what the user knows, struggles with, and what is due for review. Load `MONGODB_URI` and `MONGODB_DB` from `.env`.
 
@@ -331,6 +332,24 @@ If `MISSION.md` is missing or vague: stop. Interview the user using the grill-me
 The mission must be **concrete**: what changes in the user's life or work when they have this skill? "Understand caching" is not a mission. "Be able to evaluate a caching strategy when a teammate proposes one in a PR review" is.
 
 Update `MISSION.md` when the user's goal shifts. Add a learning record when it does. Confirm the change with the user before writing.
+
+---
+
+## Source Discovery & Curation
+
+The user almost never knows the canonical texts of a new field — finding them is **your** job, not theirs. Run this at bootstrap (right after the mission is set) and whenever `RESOURCES.md` is thin or has a `## Gaps` section.
+
+**1. Discover the canonical sources.** Use web search with the explicit goal of finding *consolidated, authoritative* material for this subject — the standard textbooks, seminal papers, and primary/official docs that practitioners and academics cite repeatedly. Ask yourself: what is *the* reference text here? what is primary vs derivative? De-prioritise SEO listicles, content marketing, and forum threads at this stage — community is the Wisdom layer, not the Knowledge layer.
+
+**2. Ask what the user already has.** *"Do you already own any of these (PDF / book / course)? If you point me to a local copy, I can teach grounded directly from it."* Possession is optional but valuable:
+- **Owned** → record the `file://` path in `RESOURCES.md`; `Read` the relevant chapter before writing a lesson (deep grounding in the real text).
+- **Not owned** → still use the source as the structural authority for *what* and *how* to teach, and note a legitimate way to obtain it (publisher, library, official site). **Never link or suggest piracy.**
+
+**3. Propose, then confirm.** Present the ranked candidate list and let the user approve before it becomes canon in `RESOURCES.md`. The user owns what counts as a trusted source.
+
+**4. Write it into `RESOURCES.md`** using the tiered format (see `skill/original/RESOURCES-FORMAT.md`): Tier 1 Canonical (grounds lessons) → Tier 2 Orientation → Tier 3 Wisdom/Community.
+
+**Grounding rule:** every lesson must be anchored in a Tier 1 source, cited in the footer. Community (Tier 3) is for real-world feeling and trade-off sanity-checks — never the basis of an explanation.
 
 ---
 
