@@ -7,15 +7,30 @@ This repo is the **engine only** — the reusable part. It carries *how* to teac
 The subject-specific content (mission, notes, lessons, progress) is generated per study and
 lives **outside** this folder, in the study workspace that wraps it.
 
-## Screenshots:
+## Screenshots
 
-<img width="731" height="708" alt="image" src="https://github.com/user-attachments/assets/c02a869e-5213-4c3a-b845-2889444b6f0a" /> -> example of a lesson
-
-<img width="567" height="683" alt="image" src="https://github.com/user-attachments/assets/3cf3c1e5-8aad-46cc-ae37-8f26772abed2" /> -> example of a lesson
-
-<img width="630" height="712" alt="image" src="https://github.com/user-attachments/assets/0b4c70a1-9b68-4e15-aac6-ca2fc3bddd53" /> -> example of the dashboard
-
- <img width="1080" height="570" alt="image" src="https://github.com/user-attachments/assets/88ebd28a-7840-46b8-8937-dd7a4d341b5a" /> -> example of flashcards
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img width="100%" alt="Lesson example" src="https://github.com/user-attachments/assets/c02a869e-5213-4c3a-b845-2889444b6f0a" />
+      <br /><sub><b>Lesson</b> — analogy + AI-validated answer box</sub>
+    </td>
+    <td align="center" width="50%">
+      <img width="100%" alt="Lesson example" src="https://github.com/user-attachments/assets/3cf3c1e5-8aad-46cc-ae37-8f26772abed2" />
+      <br /><sub><b>Lesson</b> — inline SVG diagram</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img width="100%" alt="Mastery dashboard example" src="https://github.com/user-attachments/assets/0b4c70a1-9b68-4e15-aac6-ca2fc3bddd53" />
+      <br /><sub><b>Dashboard</b> — live mastery tracking</sub>
+    </td>
+    <td align="center" width="50%">
+      <img width="100%" alt="Flashcards example" src="https://github.com/user-attachments/assets/88ebd28a-7840-46b8-8937-dd7a4d341b5a" />
+      <br /><sub><b>Flash cards</b> — spaced-repetition review</sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
