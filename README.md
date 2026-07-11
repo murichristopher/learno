@@ -1,11 +1,21 @@
 # `learno` — a stateful, multi-session tutoring skill
 
 A Claude Code skill that teaches **any** subject across multiple sessions, with AI-validated
-answers, spaced repetition (SM-2), inline SVG diagrams, and a live mastery dashboard.
+answers, spaced repetition, inline SVG diagrams, and a live mastery dashboard.
 
 This repo is the **engine only** — the reusable part. It carries *how* to teach, not *what*.
 The subject-specific content (mission, notes, lessons, progress) is generated per study and
 lives **outside** this folder, in the study workspace that wraps it.
+
+## Screenshots:
+
+<img width="731" height="708" alt="image" src="https://github.com/user-attachments/assets/c02a869e-5213-4c3a-b845-2889444b6f0a" /> -> example of a lesson
+
+<img width="567" height="683" alt="image" src="https://github.com/user-attachments/assets/3cf3c1e5-8aad-46cc-ae37-8f26772abed2" /> -> example of a lesson
+
+<img width="630" height="712" alt="image" src="https://github.com/user-attachments/assets/0b4c70a1-9b68-4e15-aac6-ca2fc3bddd53" /> -> example of the dashboard
+
+ <img width="1080" height="570" alt="image" src="https://github.com/user-attachments/assets/88ebd28a-7840-46b8-8937-dd7a4d341b5a" /> -> example of flashcards
 
 ---
 
@@ -48,7 +58,6 @@ my-study/                     ← the study workspace (one git repo PER subject,
         └── package.json
 ```
 
-> ⚠️ **Path contract — do not flatten this repo to a workspace root.**
 > The engine assumes it sits one level under the workspace:
 > - `skill/server/index.js` loads env from `../../.env` (i.e. the **workspace root**, two levels up).
 > - `SKILL.md` reads `../MISSION.md`, `../NOTES.md`, `../lessons/`, `../reference/glossary.html`, etc.
