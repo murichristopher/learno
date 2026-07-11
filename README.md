@@ -171,10 +171,6 @@ Local Express app: Gemini proxy + MongoDB bridge. Routes used by the lessons/das
 | `POST /api/progress` | record lesson completion → triggers SM-2 scheduling |
 | `GET  /api/progress` | read mastery state — powers `reference/my-learning.html` |
 
-**Offline degradation:** if the server is down, lessons hide AI-validation blocks and show
-multiple-choice fallbacks (a yellow banner appears). The lesson still works; offline answers
-just don't persist.
-
 ### MongoDB collections
 
 - `concepts` — per-concept mastery, SM-2 `interval_days` / `ease_factor` / `next_review`, score history
@@ -199,38 +195,3 @@ just don't persist.
 
 Mastery is recorded from **two** sources: AI-validated teach-back (≥75), **or** unprompted
 correct use in conversation. Both show provenance in the dashboard.
-
----
-
-## What's reusable vs. what's per-study
-
-| Reusable as-is (the engine — this repo) | Regenerated per study (the workspace) |
-|---|---|
-| `SKILL.md`, `PLAN.md`, `LESSON-FORMAT.md` | `MISSION.md`, `NOTES.md`, `RESOURCES.md` |
-| `original/*-FORMAT.md` templates | `lessons/*.html` |
-| `server/` (Gemini proxy + Mongo bridge) | `learning-records/*.md` |
-| `templates/reference/my-learning.html` (generic dashboard) | `reference/my-learning.html` (subject name filled in) |
-| `templates/reference/glossary.html` (generic scaffold) | `reference/glossary.html` (subject vocabulary, grows) |
-| `.env.example` | `.env` (real secrets, gitignored) |
-
-To start a new subject: copy/submodule this `skill/`, write a new `MISSION.md`, point `MONGODB_DB`
-at a fresh database. The teaching method transfers 100%; only the content changes.
-
----
-
-## Gotchas (verified, not theoretical)
-
-1. **The server port is fixed at `9990`.** Every lesson and the dashboard hardcode
-   `http://localhost:9990`. `.env.example` ships with `PORT=9990` — don't change it, or the
-   server will run on a different port while the lessons keep calling 9990 → everything looks
-   "offline." (The original project's `.env.example` shipped `PORT=4242`, which was the bug.)
-
-2. **`SKILL.md` references `skill/design-system/SPEC.md`, which does not exist in this repo.** The
-   actual design-system classes (`analogy-box`, `diagram-wrap`, `compare-grid`, `phase-badge`, …)
-   live inline in **`LESSON-FORMAT.md`** and inside each self-contained lesson's `<style>`. Treat
-   `LESSON-FORMAT.md` as the source of truth for components until a dedicated `SPEC.md` is extracted.
-
-3. **`node_modules/` is gitignored** — run `npm install` in `skill/server` on every fresh clone.
-
-4. **Secrets never travel with the repo.** `.env` lives at the workspace root and is gitignored.
-   Recreate it from the table above on each machine / each new study.
