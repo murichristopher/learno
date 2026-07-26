@@ -10,19 +10,19 @@
      label and lay out the specimens. */
   .spec        { margin-top: 2.5rem; }
   .spec > h2   { display: flex; align-items: baseline; gap: .6rem; margin-bottom: .25rem; }
-  .spec > h2 code { font-size: .7rem; font-weight: 400; color: var(--axo-text-subtle); }
+  .spec > h2 code { font-size: .7rem; font-weight: 400; color: var(--lx-text-subtle); }
   .spec > p    { margin-bottom: .9rem; }
   .swatches    { display: grid; gap: .5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }
-  .sw          { border: 1px solid var(--axo-border); border-radius: .6rem; overflow: hidden; }
+  .sw          { border: 1px solid var(--lx-border); border-radius: .6rem; overflow: hidden; }
   .sw-chip     { height: 3rem; }
   .sw-name     { padding: .35rem .5rem; font-size: .68rem; font-family: ui-monospace, SFMono-Regular, monospace;
-                 color: var(--axo-text-muted); word-break: break-all; }
+                 color: var(--lx-text-muted); word-break: break-all; }
   .toolbar     { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: .5rem;
                  align-items: center; padding: .7rem 1rem; margin-bottom: 1rem; }
-  .toolbar strong { font-size: .8rem; color: var(--axo-text); margin-right: .25rem; }
-  .row-demo    { border: 1px dashed var(--axo-border); border-radius: var(--axo-radius-sm); }
+  .toolbar strong { font-size: .8rem; color: var(--lx-text); margin-right: .25rem; }
+  .row-demo    { border: 1px dashed var(--lx-border); border-radius: var(--lx-radius-sm); }
   .stack-demo  { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
-  .note        { font-size: .8rem; color: var(--axo-text-muted); font-style: italic; }
+  .note        { font-size: .8rem; color: var(--lx-text-muted); font-style: italic; }
 </style>
 </head>
 <body class="lx-shell">
@@ -55,29 +55,27 @@
 
   <h1 class="lx-title">Design system</h1>
   <p class="lx-subtitle">
-    Portado à mão de <code>orbita/src/lib/shell-identity.ts</code>. Cada bloco abaixo
-    nomeia a constante de origem. Nada aqui é conteúdo de lição — é a régua contra a
+    O <strong>learno style</strong>. Nada aqui é conteúdo de lição — é a régua contra a
     qual as lições vão ser renderizadas.
   </p>
 
   <!-- ── cores ────────────────────────────────────────────────────────── -->
   <section class="spec">
-    <h2 class="lx-h2">Superfícies <code>AXO_SHELL_BG · AXO_GLASS_CARD · AXO_PAGE_CONTAINER</code></h2>
+    <h2 class="lx-h2">Superfícies</h2>
     <p class="lx-muted">Todas resolvem por custom property, então trocam de tema sem nenhum <code>if</code>.</p>
     <div class="swatches">
-      <div class="sw"><div class="sw-chip" style="background:var(--axo-accent)"></div><div class="sw-name">--axo-accent</div></div>
-      <div class="sw"><div class="sw-chip" style="background:var(--axo-accent-strong)"></div><div class="sw-name">--axo-accent-strong</div></div>
-      <div class="sw"><div class="sw-chip" style="background:var(--axo-accent-soft)"></div><div class="sw-name">--axo-accent-soft</div></div>
-      <div class="sw"><div class="sw-chip" style="background:var(--axo-sidebar)"></div><div class="sw-name">--axo-sidebar</div></div>
-      <div class="sw"><div class="sw-chip" style="background:var(--axo-card)"></div><div class="sw-name">--axo-card</div></div>
-      <div class="sw"><div class="sw-chip" style="background:var(--axo-input)"></div><div class="sw-name">--axo-input</div></div>
+      <div class="sw"><div class="sw-chip" style="background:var(--lx-accent)"></div><div class="sw-name">--lx-accent</div></div>
+      <div class="sw"><div class="sw-chip" style="background:var(--lx-accent-strong)"></div><div class="sw-name">--lx-accent-strong</div></div>
+      <div class="sw"><div class="sw-chip" style="background:var(--lx-accent-soft)"></div><div class="sw-name">--lx-accent-soft</div></div>
+      <div class="sw"><div class="sw-chip" style="background:var(--lx-card)"></div><div class="sw-name">--lx-card</div></div>
+      <div class="sw"><div class="sw-chip" style="background:var(--lx-input)"></div><div class="sw-name">--lx-input</div></div>
     </div>
   </section>
 
   <!-- ── tipografia ───────────────────────────────────────────────────── -->
   <section class="spec">
-    <h2 class="lx-h2">Tipografia <code>AXO_TEXT_PRIMARY → SUBTLE</code></h2>
-    <div class="lx-card lx-card--glow">
+    <h2 class="lx-h2">Tipografia</h2>
+    <div class="lx-card">
       <p class="lx-title">Título — texto primário</p>
       <p class="lx-h2" style="margin-top:.5rem">Subtítulo de seção</p>
       <p class="lx-text" style="margin-top:.5rem">
@@ -91,7 +89,7 @@
 
   <!-- ── controles ────────────────────────────────────────────────────── -->
   <section class="spec">
-    <h2 class="lx-h2">Controles <code>AXO_BUTTON_* · AXO_INPUT · AXO_BADGE · AXO_ICON_BOX</code></h2>
+    <h2 class="lx-h2">Controles</h2>
     <div class="lx-card">
       <div class="stack-demo">
         <button class="lx-btn lx-btn--primary">Validar resposta</button>
@@ -156,7 +154,7 @@
 
   <!-- ── containers ───────────────────────────────────────────────────── -->
   <section class="spec">
-    <h2 class="lx-h2">Containers <code>AXO_PAGE_CONTAINER · AXO_MODAL</code></h2>
+    <h2 class="lx-h2">Containers</h2>
     <div class="lx-grid">
       <div class="lx-panel" style="padding:1.25rem">
         <p class="lx-h2">Panel</p>

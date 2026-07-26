@@ -1,75 +1,72 @@
 /* ============================================================================
-   learno — design system
-   Ported by hand from orbita/src/lib/shell-identity.ts.
-   Those are Tailwind class strings compiled by a React build; lessons are plain
-   HTML with no build step, so every constant is resolved to a real value here
-   once. The comment above each block names the constant it came from, so the
-   two can be diffed by eye when orbita changes.
+   learno style — the design system
+
+   Every token is named for its role, not its hue, so a rebrand touches only the
+   :root block below. Glass is the baseline: cards, bars and panels are all
+   translucent and blurred by default, and the inner glow is part of a card
+   rather than something a page opts into.
 
    Theme: follows the OS by default, and `data-theme="light|dark"` on <html>
    overrides it in both directions so a toggle always wins.
 
-   Transparency: the glass look is expensive to paint, especially stacked on a
-   mid-range phone. `prefers-reduced-transparency` drops every blur and turns
-   the surfaces opaque; `data-transparency="reduce"` forces the same path for
-   testing.
+   Transparency: `prefers-reduced-transparency` is honoured, because it is an
+   accessibility setting the reader asked their OS for. It drops the blur and
+   makes surfaces opaque without moving anything. `data-transparency="reduce"`
+   forces the same path for testing.
    ========================================================================= */
 
 :root {
   color-scheme: light dark;
 
-  /* Tailwind palette values, resolved. Named for their role, not their hue,
-     so a rebrand touches this block only. */
-  --axo-accent:        #9333ea;                    /* purple-600 */
-  --axo-accent-strong: #7e22ce;                    /* purple-700 */
-  --axo-accent-soft:   rgb(243 232 255 / .6);      /* purple-100/60 */
-  --axo-accent-ring:   rgb(168 85 247 / .3);       /* purple-500/30 */
-  --axo-sidebar:       color-mix(in srgb, oklch(0.45 0.25 290) 85%, black);
+  /* Accent */
+  --lx-accent:        #9333ea;
+  --lx-accent-strong: #7e22ce;
+  --lx-accent-soft:   rgb(243 232 255 / .6);
+  --lx-accent-ring:   rgb(168 85 247 / .3);
 
-  /* AXO_TEXT_PRIMARY / SECONDARY / MUTED / SUBTLE */
-  --axo-text:        #111827;   /* gray-900 */
-  --axo-text-2:      #374151;   /* gray-700 */
-  --axo-text-muted:  #6b7280;   /* gray-500 */
-  --axo-text-subtle: #9ca3af;   /* gray-400 */
+  /* Text — primary, secondary, muted, subtle */
+  --lx-text:        #111827;
+  --lx-text-2:      #374151;
+  --lx-text-muted:  #6b7280;
+  --lx-text-subtle: #9ca3af;
 
-  /* AXO_GLASS_CARD */
-  --axo-card:        rgb(255 255 255 / .6);
-  --axo-card-border: rgb(233 213 255 / .3);        /* purple-200/30 */
-  --axo-card-shadow: 0 4px 24px -4px rgb(147 51 234 / .08);
+  /* Glass card */
+  --lx-card:        rgb(255 255 255 / .6);
+  --lx-card-border: rgb(233 213 255 / .3);
+  --lx-card-shadow: 0 4px 24px -4px rgb(147 51 234 / .08);
 
-  /* AXO_PAGE_CONTAINER */
-  --axo-panel:        rgb(255 255 255 / .4);
-  --axo-panel-border: rgb(233 213 255 / .2);
+  /* Page container */
+  --lx-panel:        rgb(255 255 255 / .4);
+  --lx-panel-border: rgb(233 213 255 / .2);
 
-  /* AXO_HEADER_BAR */
-  --axo-bar:        rgb(255 255 255 / .6);
-  --axo-bar-border: rgb(233 213 255 / .4);
+  /* Top bar */
+  --lx-bar:        rgb(255 255 255 / .6);
+  --lx-bar-border: rgb(233 213 255 / .4);
 
-  /* AXO_BORDER */
-  --axo-border: rgb(233 213 255 / .3);
+  --lx-border: rgb(233 213 255 / .3);
 
-  /* AXO_INPUT */
-  --axo-input:        rgb(250 245 255 / .5);       /* purple-50/50 */
-  --axo-input-border: rgb(233 213 255 / .3);
-  --axo-placeholder:  #9ca3af;
+  /* Inputs */
+  --lx-input:        rgb(250 245 255 / .5);
+  --lx-input-border: rgb(233 213 255 / .3);
+  --lx-placeholder:  #9ca3af;
 
-  /* AXO_SHELL_BG — gradient stops */
-  --axo-shell-from: rgb(243 232 255 / .8);         /* purple-100/80 */
-  --axo-shell-via:  #ffffff;
-  --axo-shell-to:   rgb(224 231 255 / .8);         /* indigo-100/80 */
+  /* Shell gradient */
+  --lx-shell-from: rgb(243 232 255 / .8);
+  --lx-shell-via:  #ffffff;
+  --lx-shell-to:   rgb(224 231 255 / .8);
 
-  /* AXO_SHELL_OVERLAY / AXO_CARD_OVERLAY */
-  --axo-wash-from: rgb(216 180 254 / .10);         /* purple-300/10 */
-  --axo-wash-to:   rgb(147 197 253 / .10);         /* blue-300/10 */
+  /* Overlay wash, on the shell and inside cards */
+  --lx-wash-from: rgb(216 180 254 / .10);
+  --lx-wash-to:   rgb(147 197 253 / .10);
 
   /* Radii — rounded-3xl / rounded-xl */
-  --axo-radius:    1.5rem;
-  --axo-radius-sm: .75rem;
+  --lx-radius:    1.5rem;
+  --lx-radius-sm: .75rem;
 
   /* Blur strengths — backdrop-blur-sm / -xl / -2xl */
-  --axo-blur-sm: 4px;
-  --axo-blur:    24px;
-  --axo-blur-lg: 40px;
+  --lx-blur-sm: 4px;
+  --lx-blur:    24px;
+  --lx-blur-lg: 40px;
 }
 
 /* Dark values, applied by OS preference and by the explicit attribute. Kept in
@@ -77,64 +74,64 @@
    no way to share a declaration list between them without preprocessing. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --axo-text:        #ffffff;
-    --axo-text-2:      rgb(255 255 255 / .9);
-    --axo-text-muted:  rgb(255 255 255 / .6);
-    --axo-text-subtle: rgb(255 255 255 / .4);
+    --lx-text:        #ffffff;
+    --lx-text-2:      rgb(255 255 255 / .9);
+    --lx-text-muted:  rgb(255 255 255 / .6);
+    --lx-text-subtle: rgb(255 255 255 / .4);
 
-    --axo-card:        rgb(0 0 0 / .4);
-    --axo-card-border: rgb(255 255 255 / .2);
-    --axo-card-shadow: 0 4px 24px -4px rgb(0 0 0 / .4);
+    --lx-card:        rgb(0 0 0 / .4);
+    --lx-card-border: rgb(255 255 255 / .2);
+    --lx-card-shadow: 0 4px 24px -4px rgb(0 0 0 / .4);
 
-    --axo-panel:        rgb(0 0 0 / .2);
-    --axo-panel-border: rgb(255 255 255 / .1);
+    --lx-panel:        rgb(0 0 0 / .2);
+    --lx-panel-border: rgb(255 255 255 / .1);
 
-    --axo-bar:        rgb(0 0 0 / .3);
-    --axo-bar-border: rgb(255 255 255 / .1);
+    --lx-bar:        rgb(0 0 0 / .3);
+    --lx-bar-border: rgb(255 255 255 / .1);
 
-    --axo-border: rgb(255 255 255 / .1);
+    --lx-border: rgb(255 255 255 / .1);
 
-    --axo-input:        rgb(255 255 255 / .05);
-    --axo-input-border: rgb(255 255 255 / .1);
-    --axo-placeholder:  rgb(255 255 255 / .4);
+    --lx-input:        rgb(255 255 255 / .05);
+    --lx-input-border: rgb(255 255 255 / .1);
+    --lx-placeholder:  rgb(255 255 255 / .4);
 
-    --axo-accent-soft: rgb(168 85 247 / .1);
-    --axo-shell-from:  rgb(59 7 100 / .95);        /* purple-950/95 */
-    --axo-shell-via:   #111827;                     /* gray-900 */
-    --axo-shell-to:    rgb(30 27 75 / .95);        /* indigo-950/95 */
-    --axo-wash-from:   rgb(168 85 247 / .05);
-    --axo-wash-to:     rgb(59 130 246 / .05);
+    --lx-accent-soft: rgb(168 85 247 / .1);
+    --lx-shell-from:  rgb(59 7 100 / .95);        /* purple-950/95 */
+    --lx-shell-via:   #111827;                     /* gray-900 */
+    --lx-shell-to:    rgb(30 27 75 / .95);        /* indigo-950/95 */
+    --lx-wash-from:   rgb(168 85 247 / .05);
+    --lx-wash-to:     rgb(59 130 246 / .05);
   }
 }
 
 :root[data-theme="dark"] {
-  --axo-text:        #ffffff;
-  --axo-text-2:      rgb(255 255 255 / .9);
-  --axo-text-muted:  rgb(255 255 255 / .6);
-  --axo-text-subtle: rgb(255 255 255 / .4);
+  --lx-text:        #ffffff;
+  --lx-text-2:      rgb(255 255 255 / .9);
+  --lx-text-muted:  rgb(255 255 255 / .6);
+  --lx-text-subtle: rgb(255 255 255 / .4);
 
-  --axo-card:        rgb(0 0 0 / .4);
-  --axo-card-border: rgb(255 255 255 / .2);
-  --axo-card-shadow: 0 4px 24px -4px rgb(0 0 0 / .4);
+  --lx-card:        rgb(0 0 0 / .4);
+  --lx-card-border: rgb(255 255 255 / .2);
+  --lx-card-shadow: 0 4px 24px -4px rgb(0 0 0 / .4);
 
-  --axo-panel:        rgb(0 0 0 / .2);
-  --axo-panel-border: rgb(255 255 255 / .1);
+  --lx-panel:        rgb(0 0 0 / .2);
+  --lx-panel-border: rgb(255 255 255 / .1);
 
-  --axo-bar:        rgb(0 0 0 / .3);
-  --axo-bar-border: rgb(255 255 255 / .1);
+  --lx-bar:        rgb(0 0 0 / .3);
+  --lx-bar-border: rgb(255 255 255 / .1);
 
-  --axo-border: rgb(255 255 255 / .1);
+  --lx-border: rgb(255 255 255 / .1);
 
-  --axo-input:        rgb(255 255 255 / .05);
-  --axo-input-border: rgb(255 255 255 / .1);
-  --axo-placeholder:  rgb(255 255 255 / .4);
+  --lx-input:        rgb(255 255 255 / .05);
+  --lx-input-border: rgb(255 255 255 / .1);
+  --lx-placeholder:  rgb(255 255 255 / .4);
 
-  --axo-accent-soft: rgb(168 85 247 / .1);
-  --axo-shell-from:  rgb(59 7 100 / .95);
-  --axo-shell-via:   #111827;
-  --axo-shell-to:    rgb(30 27 75 / .95);
-  --axo-wash-from:   rgb(168 85 247 / .05);
-  --axo-wash-to:     rgb(59 130 246 / .05);
+  --lx-accent-soft: rgb(168 85 247 / .1);
+  --lx-shell-from:  rgb(59 7 100 / .95);
+  --lx-shell-via:   #111827;
+  --lx-shell-to:    rgb(30 27 75 / .95);
+  --lx-wash-from:   rgb(168 85 247 / .05);
+  --lx-wash-to:     rgb(59 130 246 / .05);
 }
 
 /* ── Reset ───────────────────────────────────────────────────────────────── */
@@ -145,136 +142,132 @@ ul[class], ol[class] { list-style: none; }
 img, svg { max-width: 100%; }
 button, input, select, textarea { font: inherit; color: inherit; }
 
-/* ── Layer 1: shell ──────────────────────────────────────────────── AXO_SHELL_BG */
+/* ── Layer 1: shell ──────────────────────────────────────────────── */
 
 .lx-shell {
   min-height: 100vh;
   background-image: linear-gradient(to bottom right,
-    var(--axo-shell-from), var(--axo-shell-via), var(--axo-shell-to));
+    var(--lx-shell-from), var(--lx-shell-via), var(--lx-shell-to));
   background-attachment: fixed;
-  color: var(--axo-text-2);
+  color: var(--lx-text-2);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Layer 2 ─────────────────────────────────────────────────── AXO_SHELL_OVERLAY */
+/* Layer 2 ─────────────────────────────────────────────────── */
 .lx-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   background-image: linear-gradient(to bottom right,
-    var(--axo-wash-from), transparent, var(--axo-wash-to));
+    var(--lx-wash-from), transparent, var(--lx-wash-to));
 }
 
 /* Everything above the wash. */
 .lx-content { position: relative; z-index: 1; }
 
-/* ── Layer 3: bar ────────────────────────────────────────────── AXO_HEADER_BAR */
+/* ── Layer 3: bar ────────────────────────────────────────────── */
 
 .lx-bar {
-  border-bottom: 1px solid var(--axo-bar-border);
-  background: var(--axo-bar);
-  backdrop-filter: blur(var(--axo-blur));
-  -webkit-backdrop-filter: blur(var(--axo-blur));
+  border-bottom: 1px solid var(--lx-bar-border);
+  background: var(--lx-bar);
+  backdrop-filter: blur(var(--lx-blur));
+  -webkit-backdrop-filter: blur(var(--lx-blur));
 }
 
-/* ── Layer 5: page container ─────────────────────────────── AXO_PAGE_CONTAINER */
+/* ── Layer 5: page container ─────────────────────────────── */
 
 .lx-panel {
   position: relative;
-  border-radius: var(--axo-radius);
-  border: 1px solid var(--axo-panel-border);
-  background: var(--axo-panel);
-  backdrop-filter: blur(var(--axo-blur-sm));
-  -webkit-backdrop-filter: blur(var(--axo-blur-sm));
+  border-radius: var(--lx-radius);
+  border: 1px solid var(--lx-panel-border);
+  background: var(--lx-panel);
+  backdrop-filter: blur(var(--lx-blur-sm));
+  -webkit-backdrop-filter: blur(var(--lx-blur-sm));
 }
 
-/* ── Layer 6: glass card ─────────────────────────────────────── AXO_GLASS_CARD */
+/* ── Layer 6: glass card ─────────────────────────────────────── */
 
 .lx-card {
   position: relative;
   overflow: hidden;
-  border-radius: var(--axo-radius);
-  border: 1px solid var(--axo-card-border);
-  background: var(--axo-card);
-  box-shadow: var(--axo-card-shadow);
-  backdrop-filter: blur(var(--axo-blur));
-  -webkit-backdrop-filter: blur(var(--axo-blur));
+  border-radius: var(--lx-radius);
+  border: 1px solid var(--lx-card-border);
+  background: var(--lx-card);
+  box-shadow: var(--lx-card-shadow);
+  backdrop-filter: blur(var(--lx-blur));
+  -webkit-backdrop-filter: blur(var(--lx-blur));
   padding: 1.25rem;
 }
-
-/* AXO_CARD_OVERLAY — the inner glow. Decorative, so it is a pseudo-element
-   rather than the extra <div> orbita needs in JSX. */
-.lx-card--glow::before {
+.lx-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: var(--axo-radius);
+  border-radius: var(--lx-radius);
   pointer-events: none;
   background-image: linear-gradient(to bottom right,
-    var(--axo-wash-from), transparent, var(--axo-wash-to));
+    var(--lx-wash-from), transparent, var(--lx-wash-to));
 }
 
-/* AXO_MODAL */
+/* Modal — heavier blur, floats above everything else */
 .lx-modal {
-  border-radius: var(--axo-radius);
-  border: 1px solid var(--axo-bar-border);
-  background: color-mix(in srgb, var(--axo-card) 100%, white 20%);
-  backdrop-filter: blur(var(--axo-blur-lg));
-  -webkit-backdrop-filter: blur(var(--axo-blur-lg));
+  border-radius: var(--lx-radius);
+  border: 1px solid var(--lx-bar-border);
+  background: color-mix(in srgb, var(--lx-card) 100%, white 20%);
+  backdrop-filter: blur(var(--lx-blur-lg));
+  -webkit-backdrop-filter: blur(var(--lx-blur-lg));
   box-shadow: 0 24px 80px -12px rgb(147 51 234 / .15);
 }
 
-/* ── Text ────────────────────────────────────────────────────── AXO_TEXT_* ── */
+/* ── Text ──────────────────────────────────────────────────────── */
 
-.lx-title    { color: var(--axo-text);        font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.25; }
-.lx-subtitle { color: var(--axo-text-muted);  font-size: .95rem; }
-.lx-text     { color: var(--axo-text-2); }
-.lx-muted    { color: var(--axo-text-muted);  font-size: .875rem; }
-.lx-subtle   { color: var(--axo-text-subtle); font-size: .8rem; }
-.lx-h2       { color: var(--axo-text);        font-size: 1.125rem; font-weight: 650; letter-spacing: -.01em; }
+.lx-title    { color: var(--lx-text);        font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.25; }
+.lx-subtitle { color: var(--lx-text-muted);  font-size: .95rem; }
+.lx-text     { color: var(--lx-text-2); }
+.lx-muted    { color: var(--lx-text-muted);  font-size: .875rem; }
+.lx-subtle   { color: var(--lx-text-subtle); font-size: .8rem; }
+.lx-h2       { color: var(--lx-text);        font-size: 1.125rem; font-weight: 650; letter-spacing: -.01em; }
 
-/* ── Controls ──────────────────────────────────────── AXO_BUTTON_* / AXO_INPUT */
+/* ── Controls ────────────────────────────────────────────────────────────── */
 
 .lx-btn {
   display: inline-flex;
   align-items: center;
   gap: .4rem;
   padding: .5rem .9rem;
-  border-radius: var(--axo-radius-sm);
+  border-radius: var(--lx-radius-sm);
   font-weight: 500;
   cursor: pointer;
   transition: background-color .15s, border-color .15s, color .15s;
 }
-.lx-btn--primary   { background: var(--axo-accent); color: #fff; border: 1px solid var(--axo-accent); }
-.lx-btn--primary:hover  { background: var(--axo-accent-strong); border-color: var(--axo-accent-strong); }
-.lx-btn--secondary { background: var(--axo-input); color: var(--axo-text-2); border: 1px solid var(--axo-border); }
-.lx-btn--secondary:hover { color: var(--axo-text); }
-.lx-btn--outline   { background: transparent; color: var(--axo-text-muted); border: 1px solid var(--axo-bar-border); }
-.lx-btn--outline:hover   { color: var(--axo-text); }
+.lx-btn--primary   { background: var(--lx-accent); color: #fff; border: 1px solid var(--lx-accent); }
+.lx-btn--primary:hover  { background: var(--lx-accent-strong); border-color: var(--lx-accent-strong); }
+.lx-btn--secondary { background: var(--lx-input); color: var(--lx-text-2); border: 1px solid var(--lx-border); }
+.lx-btn--secondary:hover { color: var(--lx-text); }
+.lx-btn--outline   { background: transparent; color: var(--lx-text-muted); border: 1px solid var(--lx-bar-border); }
+.lx-btn--outline:hover   { color: var(--lx-text); }
 .lx-btn:disabled   { opacity: .5; cursor: not-allowed; }
 
 .lx-input {
   width: 100%;
   padding: .55rem .75rem;
-  border-radius: var(--axo-radius-sm);
-  border: 1px solid var(--axo-input-border);
-  background: var(--axo-input);
-  color: var(--axo-text);
-  backdrop-filter: blur(var(--axo-blur-sm));
-  -webkit-backdrop-filter: blur(var(--axo-blur-sm));
+  border-radius: var(--lx-radius-sm);
+  border: 1px solid var(--lx-input-border);
+  background: var(--lx-input);
+  color: var(--lx-text);
+  backdrop-filter: blur(var(--lx-blur-sm));
+  -webkit-backdrop-filter: blur(var(--lx-blur-sm));
 }
-.lx-input::placeholder { color: var(--axo-placeholder); }
+.lx-input::placeholder { color: var(--lx-placeholder); }
 .lx-input:focus {
   outline: none;
-  border-color: var(--axo-accent);
-  box-shadow: 0 0 0 2px var(--axo-accent-ring);
+  border-color: var(--lx-accent);
+  box-shadow: 0 0 0 2px var(--lx-accent-ring);
 }
 .lx-input:disabled { opacity: .6; cursor: not-allowed; }
 
-/* AXO_BADGE */
 .lx-badge {
   display: inline-flex;
   align-items: center;
@@ -283,37 +276,35 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border-radius: 9999px;
   font-size: .75rem;
   font-weight: 500;
-  background: var(--axo-accent-soft);
-  color: var(--axo-accent-strong);
-  border: 1px solid var(--axo-bar-border);
+  background: var(--lx-accent-soft);
+  color: var(--lx-accent-strong);
+  border: 1px solid var(--lx-bar-border);
 }
 :root[data-theme="dark"] .lx-badge,
-:root:not([data-theme="light"]) .lx-badge { color: var(--axo-text-2); }
+:root:not([data-theme="light"]) .lx-badge { color: var(--lx-text-2); }
 
-/* AXO_ICON_BOX */
 .lx-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
-  border-radius: var(--axo-radius-sm);
-  background: var(--axo-accent-soft);
-  color: var(--axo-accent);
+  border-radius: var(--lx-radius-sm);
+  background: var(--lx-accent-soft);
+  color: var(--lx-accent);
 }
 
-/* AXO_FEATURE_ROW */
 .lx-row {
   display: flex;
   align-items: center;
   gap: .75rem;
   padding: .75rem;
-  border-radius: var(--axo-radius-sm);
+  border-radius: var(--lx-radius-sm);
   transition: background-color .15s;
 }
-.lx-row:hover { background: var(--axo-input); }
+.lx-row:hover { background: var(--lx-input); }
 
-.lx-divider { border: 0; border-top: 1px solid var(--axo-border); }
+.lx-divider { border: 0; border-top: 1px solid var(--lx-border); }
 
 /* ── Diagram vocabulary ──────────────────────────────────────────────────────
    Diagrams are hand-authored SVG, but they carry no colours of their own — the
@@ -326,24 +317,24 @@ button, input, select, textarea { font: inherit; color: inherit; }
    ========================================================================= */
 
 .lx-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
-.lx-svg  { display: block; width: 100%; height: auto; color: var(--axo-text-2); }
+.lx-svg  { display: block; width: 100%; height: auto; color: var(--lx-text-2); }
 
-.lx-node          { fill: var(--axo-card); stroke: var(--axo-card-border); stroke-width: 1.5; rx: 12; }
-.lx-node--accent  { fill: var(--axo-accent-soft); stroke: var(--axo-accent); }
-.lx-node--muted   { fill: transparent; stroke: var(--axo-text-subtle); stroke-dasharray: 4 3; }
+.lx-node          { fill: var(--lx-card); stroke: var(--lx-card-border); stroke-width: 1.5; rx: 12; }
+.lx-node--accent  { fill: var(--lx-accent-soft); stroke: var(--lx-accent); }
+.lx-node--muted   { fill: transparent; stroke: var(--lx-text-subtle); stroke-dasharray: 4 3; }
 
-.lx-edge          { stroke: var(--axo-text-muted); stroke-width: 1.5; fill: none; marker-end: url(#lx-arrow); }
-.lx-edge--accent  { stroke: var(--axo-accent); }
+.lx-edge          { stroke: var(--lx-text-muted); stroke-width: 1.5; fill: none; marker-end: url(#lx-arrow); }
+.lx-edge--accent  { stroke: var(--lx-accent); }
 .lx-edge--dashed  { stroke-dasharray: 5 4; }
 .lx-edge--plain   { marker-end: none; }
 
-.lx-label         { fill: var(--axo-text); font-size: 13px; font-weight: 500; }
-.lx-label--muted  { fill: var(--axo-text-muted); font-size: 11px; font-weight: 400; }
+.lx-label         { fill: var(--lx-text); font-size: 13px; font-weight: 500; }
+.lx-label--muted  { fill: var(--lx-text-muted); font-size: 11px; font-weight: 400; }
 
-.lx-arrowhead     { fill: var(--axo-text-muted); }
+.lx-arrowhead     { fill: var(--lx-text-muted); }
 
 .lx-figure  { margin: 1rem 0; }
-.lx-caption { color: var(--axo-text-muted); font-size: .8rem; text-align: center; margin-top: .5rem; }
+.lx-caption { color: var(--lx-text-muted); font-size: .8rem; text-align: center; margin-top: .5rem; }
 
 /* Wide diagrams and tables scroll inside their own box — never the page. */
 .lx-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -361,7 +352,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
     -webkit-backdrop-filter: none;
   }
   .lx-card, .lx-modal { background: Canvas; }
-  .lx-overlay, .lx-card--glow::before { display: none; }
+  .lx-overlay, .lx-card::before { display: none; }
   .lx-shell { background-image: none; background-color: Canvas; }
 }
 
@@ -376,7 +367,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 :root[data-transparency="reduce"] .lx-card,
 :root[data-transparency="reduce"] .lx-modal { background: Canvas; }
 :root[data-transparency="reduce"] .lx-overlay,
-:root[data-transparency="reduce"] .lx-card--glow::before { display: none; }
+:root[data-transparency="reduce"] .lx-card::before { display: none; }
 :root[data-transparency="reduce"] .lx-shell { background-image: none; background-color: Canvas; }
 
 /* ── Motion ──────────────────────────────────────────────────────────────── */
