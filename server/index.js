@@ -29,6 +29,13 @@ app.use('/debug', require('./routes/debug'));   // /debug/mic — mic & Web Spee
 // Declared before the static handler so it wins over any stray index.html.
 app.use('/', require('./routes/home'));
 
+// The shared design system and runtime. These belong to the engine, not to the
+// study content, so they are mounted from the engine root rather than the
+// workspace — which is what lets the sandbox (whose workspace is sandbox/)
+// reach them. Once the repo is flat, the two roots coincide and this mount
+// simply keeps working.
+app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
+
 // Serve the workspace statically so lessons open over http://localhost (a secure
 // context) instead of file:// — required for the mic / Web Speech API to work and
 // for the permission to be remembered. Dotfiles (.env) are ignored by default.

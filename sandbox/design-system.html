@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="auto">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>learno — design system</title>
+<link rel="stylesheet" href="/assets/learno.css" />
+<style>
+  /* Page-local only. Nothing here belongs to the design system — it exists to
+     label and lay out the specimens. */
+  .spec        { margin-top: 2.5rem; }
+  .spec > h2   { display: flex; align-items: baseline; gap: .6rem; margin-bottom: .25rem; }
+  .spec > h2 code { font-size: .7rem; font-weight: 400; color: var(--axo-text-subtle); }
+  .spec > p    { margin-bottom: .9rem; }
+  .swatches    { display: grid; gap: .5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }
+  .sw          { border: 1px solid var(--axo-border); border-radius: .6rem; overflow: hidden; }
+  .sw-chip     { height: 3rem; }
+  .sw-name     { padding: .35rem .5rem; font-size: .68rem; font-family: ui-monospace, SFMono-Regular, monospace;
+                 color: var(--axo-text-muted); word-break: break-all; }
+  .toolbar     { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: .5rem;
+                 align-items: center; padding: .7rem 1rem; margin-bottom: 1rem; }
+  .toolbar strong { font-size: .8rem; color: var(--axo-text); margin-right: .25rem; }
+  .row-demo    { border: 1px dashed var(--axo-border); border-radius: var(--axo-radius-sm); }
+  .stack-demo  { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+  .note        { font-size: .8rem; color: var(--axo-text-muted); font-style: italic; }
+</style>
+</head>
+<body class="lx-shell">
+
+<div class="lx-overlay"></div>
+
+<!-- One shared arrowhead for every diagram on the page. The lesson template
+     emits exactly this block, so authored SVG never repeats it. -->
+<svg class="lx-defs" aria-hidden="true">
+  <defs>
+    <marker id="lx-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="lx-arrowhead" d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+  </defs>
+</svg>
+
+<div class="lx-content lx-wrap">
+
+  <div class="lx-bar lx-panel toolbar">
+    <strong>Tema</strong>
+    <button class="lx-btn lx-btn--secondary" onclick="setTheme('auto')">auto</button>
+    <button class="lx-btn lx-btn--secondary" onclick="setTheme('light')">claro</button>
+    <button class="lx-btn lx-btn--secondary" onclick="setTheme('dark')">escuro</button>
+    <strong style="margin-left:.75rem">Transparência</strong>
+    <button class="lx-btn lx-btn--secondary" onclick="setTransparency('full')">vidro</button>
+    <button class="lx-btn lx-btn--secondary" onclick="setTransparency('reduce')">reduzida</button>
+    <span class="lx-badge" id="state">auto · vidro</span>
+  </div>
+
+  <h1 class="lx-title">Design system</h1>
+  <p class="lx-subtitle">
+    Portado à mão de <code>orbita/src/lib/shell-identity.ts</code>. Cada bloco abaixo
+    nomeia a constante de origem. Nada aqui é conteúdo de lição — é a régua contra a
+    qual as lições vão ser renderizadas.
+  </p>
+
+  <!-- ── cores ────────────────────────────────────────────────────────── -->
+  <section class="spec">
+    <h2 class="lx-h2">Superfícies <code>AXO_SHELL_BG · AXO_GLASS_CARD · AXO_PAGE_CONTAINER</code></h2>
+    <p class="lx-muted">Todas resolvem por custom property, então trocam de tema sem nenhum <code>if</code>.</p>
+    <div class="swatches">
+      <div class="sw"><div class="sw-chip" style="background:var(--axo-accent)"></div><div class="sw-name">--axo-accent</div></div>
+      <div class="sw"><div class="sw-chip" style="background:var(--axo-accent-strong)"></div><div class="sw-name">--axo-accent-strong</div></div>
+      <div class="sw"><div class="sw-chip" style="background:var(--axo-accent-soft)"></div><div class="sw-name">--axo-accent-soft</div></div>
+      <div class="sw"><div class="sw-chip" style="background:var(--axo-sidebar)"></div><div class="sw-name">--axo-sidebar</div></div>
+      <div class="sw"><div class="sw-chip" style="background:var(--axo-card)"></div><div class="sw-name">--axo-card</div></div>
+      <div class="sw"><div class="sw-chip" style="background:var(--axo-input)"></div><div class="sw-name">--axo-input</div></div>
+    </div>
+  </section>
+
+  <!-- ── tipografia ───────────────────────────────────────────────────── -->
+  <section class="spec">
+    <h2 class="lx-h2">Tipografia <code>AXO_TEXT_PRIMARY → SUBTLE</code></h2>
+    <div class="lx-card lx-card--glow">
+      <p class="lx-title">Título — texto primário</p>
+      <p class="lx-h2" style="margin-top:.5rem">Subtítulo de seção</p>
+      <p class="lx-text" style="margin-top:.5rem">
+        Corpo de texto secundário. É onde a prosa da lição vive, e onde a maior
+        parte da leitura acontece — precisa ganhar da decoração ao redor.
+      </p>
+      <p class="lx-muted" style="margin-top:.5rem">Texto muted — legendas e apoio.</p>
+      <p class="lx-subtle" style="margin-top:.5rem">Texto subtle — timestamps e dicas.</p>
+    </div>
+  </section>
+
+  <!-- ── controles ────────────────────────────────────────────────────── -->
+  <section class="spec">
+    <h2 class="lx-h2">Controles <code>AXO_BUTTON_* · AXO_INPUT · AXO_BADGE · AXO_ICON_BOX</code></h2>
+    <div class="lx-card">
+      <div class="stack-demo">
+        <button class="lx-btn lx-btn--primary">Validar resposta</button>
+        <button class="lx-btn lx-btn--secondary">Secundário</button>
+        <button class="lx-btn lx-btn--outline">Outline</button>
+        <button class="lx-btn lx-btn--primary" disabled>Desabilitado</button>
+        <span class="lx-badge">badge</span>
+        <span class="lx-icon">◆</span>
+      </div>
+      <div style="margin-top:1rem" class="lx-stack">
+        <input class="lx-input" placeholder="Campo de texto — clique para ver o foco" />
+        <input class="lx-input" value="Desabilitado" disabled />
+      </div>
+      <hr class="lx-divider" style="margin:1rem 0" />
+      <div class="row-demo">
+        <div class="lx-row"><span class="lx-icon">1</span><span class="lx-text">Feature row — passe o mouse</span></div>
+        <div class="lx-row"><span class="lx-icon">2</span><span class="lx-text">Segunda linha</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── diagrama ─────────────────────────────────────────────────────── -->
+  <section class="spec">
+    <h2 class="lx-h2">Diagramas <code>.lx-node · .lx-edge · .lx-label</code></h2>
+    <p class="lx-muted">
+      O SVG abaixo <strong>não tem uma cor sequer</strong> — nenhum hex, nenhum
+      <code>fill=</code> inline. Só classes. Por isso ele acompanha o tema junto com o
+      resto da página. É exatamente o que o build vai exigir das lições.
+    </p>
+    <figure class="lx-figure">
+      <div class="lx-card lx-scroll">
+        <svg class="lx-svg" viewBox="0 0 620 210" role="img"
+             aria-label="Cliente para load balancer, distribuindo para duas aplicações e um cache">
+          <rect class="lx-node lx-node--accent" x="10"  y="80"  width="120" height="52" />
+          <text class="lx-label" x="70"  y="111" text-anchor="middle">Cliente</text>
+
+          <path class="lx-edge" d="M132 106 H 208" />
+          <text class="lx-label--muted" x="170" y="97" text-anchor="middle">HTTP</text>
+
+          <rect class="lx-node" x="210" y="80" width="130" height="52" />
+          <text class="lx-label" x="275" y="111" text-anchor="middle">Load balancer</text>
+
+          <path class="lx-edge" d="M342 96 C 390 96, 390 34, 438 34" />
+          <path class="lx-edge" d="M342 116 C 390 116, 390 176, 438 176" />
+
+          <rect class="lx-node" x="440" y="8" width="120" height="52" />
+          <text class="lx-label" x="500" y="39" text-anchor="middle">App 1</text>
+
+          <rect class="lx-node" x="440" y="150" width="120" height="52" />
+          <text class="lx-label" x="500" y="181" text-anchor="middle">App 2</text>
+
+          <path class="lx-edge lx-edge--dashed lx-edge--accent" d="M500 60 V 148" />
+          <text class="lx-label--muted" x="512" y="108">sessão</text>
+
+          <rect class="lx-node lx-node--muted" x="210" y="8" width="120" height="44" />
+          <text class="lx-label--muted" x="270" y="35" text-anchor="middle">réplica (futura)</text>
+        </svg>
+      </div>
+      <figcaption class="lx-caption">Fluxo de requisição — variantes de nó, aresta e rótulo numa figura só</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── containers ───────────────────────────────────────────────────── -->
+  <section class="spec">
+    <h2 class="lx-h2">Containers <code>AXO_PAGE_CONTAINER · AXO_MODAL</code></h2>
+    <div class="lx-grid">
+      <div class="lx-panel" style="padding:1.25rem">
+        <p class="lx-h2">Panel</p>
+        <p class="lx-muted" style="margin-top:.35rem">Blur leve, borda discreta. Agrupa sem competir.</p>
+      </div>
+      <div class="lx-modal" style="padding:1.25rem">
+        <p class="lx-h2">Modal</p>
+        <p class="lx-muted" style="margin-top:.35rem">Blur mais forte e sombra maior — flutua acima do resto.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── responsivo ───────────────────────────────────────────────────── -->
+  <section class="spec">
+    <h2 class="lx-h2">Responsivo</h2>
+    <p class="lx-muted">
+      Estreite a janela até ~375&nbsp;px. O padding e o raio dos cards encolhem, a grade
+      vira uma coluna, e o diagrama acima rola <strong>dentro do próprio card</strong> —
+      a página nunca ganha barra horizontal.
+    </p>
+    <p class="note" style="margin-top:.6rem" id="vw">largura da viewport: —</p>
+  </section>
+
+</div>
+
+<script>
+  var root = document.documentElement;
+  function label() {
+    var t = root.getAttribute('data-theme');
+    var x = root.getAttribute('data-transparency') === 'reduce' ? 'reduzida' : 'vidro';
+    document.getElementById('state').textContent =
+      (t === 'auto' ? 'auto' : t === 'dark' ? 'escuro' : 'claro') + ' · ' + x;
+  }
+  function setTheme(t) {
+    if (t === 'auto') root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', t);
+    root.setAttribute('data-theme-choice', t);
+    label();
+  }
+  function setTransparency(v) {
+    if (v === 'reduce') root.setAttribute('data-transparency', 'reduce');
+    else root.removeAttribute('data-transparency');
+    label();
+  }
+  // data-theme="auto" in the markup would win over the media query, so clear it.
+  setTheme('auto');
+  function vw() { document.getElementById('vw').textContent = 'largura da viewport: ' + window.innerWidth + 'px'; }
+  addEventListener('resize', vw); vw();
+</script>
+
+</body>
+</html>
