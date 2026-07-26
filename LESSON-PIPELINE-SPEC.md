@@ -60,7 +60,8 @@ sibling project.
 lessons/
   0011-consistent-hashing.json    1.8K   structure     ← AI writes
   0011-consistent-hashing.yml     6.4K   content       ← AI writes
-  0011-consistent-hashing.html   ~16K    built         ← engine writes, committed
+  0011-consistent-hashing.html    ~5K    built         ← engine writes, committed
+                                                        (links ../assets/, not inlined)
 ```
 
 All three are committed. `/api/catalog` and the dashboard list only `*.html`.
@@ -196,19 +197,12 @@ an upstream file. One component per file means git never has to merge the same
 file from two sides.
 
 **The registry and the kitchen-sink fixture are generated from the component
-files**, not hand-maintained. This is not incidental: both would otherwise be
-upstream-owned files that every local component must edit, which is precisely
-the merge conflict `core/` vs `local/` exists to prevent.
+files**, not hand-maintained — so neither can fall out of date with the
+vocabulary, which is the failure a hand-written fixture always eventually hits.
 
-> **Risk, flagged for the record.** The position taken in review was that forking
-> makes this a non-issue. It does not — a fork still runs `git pull upstream main`,
-> and git still conflicts when both sides touched a file. Generating these two
-> artifacts costs nothing and removes the question, so the spec generates them.
-> If you'd rather hand-maintain them, say so and I'll change it, but the conflicts
-> will be real.
-
-A generated fixture also cannot fall out of date with the vocabulary, which is
-the failure a hand-written one always eventually hits.
+Merge conflicts on `git pull` are accepted: pulls are rare, and resolving one is
+cheaper than the machinery to avoid it. One component per file already keeps the
+common case clean.
 
 ## Build
 
@@ -228,6 +222,7 @@ Every one of these **fails the build and writes no HTML**, naming the file and
 the block index:
 
 - unknown component
+- SVG carrying its own colours (hex, `rgb(`/`hsl(`, or inline `fill=`/`stroke=`)
 - `@` reference that resolves to nothing
 - props missing or of the wrong type per `meta.props`
 - a `recall`/`teachback` naming a concept absent from the envelope's `concepts`
@@ -271,18 +266,64 @@ rather than janks for anyone who has asked their OS to reduce it. If lessons fee
 sluggish on your phone, the honest fix is fewer blurred surfaces, not a smaller
 blur radius.
 
-## Open question — inline or link the shared assets
+### Diagrams inherit the design system
 
-The design system and runtime JS together are ~13K. Two options:
+SVG stays hand-authored in the YAML, but it is **not allowed to carry its own
+colours**. The stylesheet owns the diagram vocabulary, and the SVG only applies
+classes:
 
-- **Inline into every built lesson.** Each `.html` is one portable file that works
-  from anywhere, including `file://` and being emailed. Repo grows ~13K per lesson.
-- **Link `assets/learno.css` and `assets/learno.js` relatively.** Works over both
-  `http://` and `file://`, cuts each built lesson to ~5K, and a design fix
-  re-renders nothing. A lesson file alone is no longer portable.
+```css
+.lx-svg           { color: var(--axo-text-2); }          /* currentColor base */
+.lx-node          { fill: var(--axo-card);   stroke: var(--axo-border); rx: 12; }
+.lx-node--accent  { fill: color-mix(in srgb, var(--axo-accent) 12%, transparent);
+                    stroke: var(--axo-accent); }
+.lx-node--muted   { fill: transparent;       stroke: var(--axo-text-subtle); }
+.lx-edge          { stroke: var(--axo-text-muted); fill: none; marker-end: url(#lx-arrow); }
+.lx-edge--dashed  { stroke-dasharray: 5 4; }
+.lx-label         { fill: var(--axo-text);   font-size: 13px; }
+.lx-label--muted  { fill: var(--axo-text-muted); font-size: 11px; }
+```
 
-Either way the AI still authors only ~8K — this affects the built artifact, not
-the token cost. **Not decided; needs your call.**
+So a diagram is written like this — no hex, no inline `fill`, arrowhead marker
+supplied by the stylesheet:
+
+```yaml
+diagrams:
+  ring: |
+    <svg viewBox="0 0 600 260" class="lx-svg" role="img"
+         aria-label="Anel de hash com três nós">
+      <rect class="lx-node lx-node--accent" x="20"  y="90" width="120" height="56"/>
+      <text  class="lx-label"               x="80"  y="124" text-anchor="middle">Cliente</text>
+      <path  class="lx-edge"                d="M140 118 H 240"/>
+      <rect class="lx-node"                 x="240" y="90" width="120" height="56"/>
+    </svg>
+```
+
+Because every colour resolves through the same custom properties as the rest of
+the page, diagrams **follow light/dark automatically** and can never drift from
+the design system — which is what raw SVG would otherwise guarantee.
+
+**Enforced, not merely requested.** The build rejects any SVG in the YAML that
+contains a hex colour, an `rgb(`/`hsl(` literal, or an inline `fill=` / `stroke=`
+attribute, naming the diagram key. Asking the AI nicely in a prompt is how the
+old format drifted in the first place — see the `classList.add` bug, where the
+documented snippet and the shipped lessons had disagreed for months. The prompt
+in `SKILL.md` states the rule; the build is what makes it true.
+
+## Shared assets are linked, not inlined
+
+```html
+<link rel="stylesheet" href="../assets/learno.css">
+<script src="../assets/learno.js" defer></script>
+```
+
+A lesson is only expected to work inside the project, so the ~13K of design
+system and runtime lives in `assets/` and every lesson links it relatively —
+which resolves over `http://` and `file://` alike.
+
+Consequences: each built lesson drops to **~5K** instead of ~16K, and a design
+system fix applies to every lesson at once without re-rendering anything. A
+lesson file moved out of the repo renders unstyled — accepted.
 
 ## Scope and migration
 
@@ -296,13 +337,15 @@ the token cost. **Not decided; needs your call.**
 
 ## What this does not solve
 
-- **Diagrams stay 6.6K per lesson**, as raw SVG moved into the YAML. That was the
-  explicit choice. It means diagrams remain the largest authored artefact and keep
-  drifting visually between lessons, since nothing constrains them. Revisitable
-  later behind a `diagram` component that takes structured input instead.
+- **Diagrams stay ~6.6K per lesson.** Raw SVG in the YAML is compact in tokens
+  but verbose in bytes, so they remain the largest thing the AI authors. What
+  they no longer do is drift: colours come from the design system and the build
+  rejects any that don't. Revisitable later behind a structured `diagram`
+  component if the size becomes the binding constraint.
 - **Prose is irreducible** — 6.2K per lesson is the floor, whatever the format.
 
 Expected authored size per lesson: **~8.2K, down from 38.2K.**
+Expected built lesson: **~5K**, with the shared assets linked once.
 
 ## Sequence, if approved
 
