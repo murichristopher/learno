@@ -15,6 +15,30 @@ Bring **data + insight** (real scores, dates, recurring misconceptions, what's d
 
 Routine non-learning requests (fix a typo, tweak CSS, run the server) don't need the analyst — use judgment. But the moment the answer would make a claim about how the user is doing, the data comes first.
 
+## Every feature ships with a validation script
+
+A feature is not delivered until the user can **check it themselves**. "I ran a
+curl and it returned 200" is your evidence, not theirs — they need steps they
+can perform in the browser.
+
+So end every feature with a numbered script of scenarios, **written out as text
+in the delivery message**. Do not put it in the page, in a file, or anywhere the
+user has to go looking — it goes in the reply, where they are already reading.
+
+Each scenario is:
+
+1. **the action** — what to click, type, or open, concretely (not "test the quiz")
+2. **the expected result** — precise enough that a wrong outcome is unambiguous
+3. **the failure it catches** — one line on what breaks if it doesn't hold
+
+Cover the **unhappy paths too**: empty state, offline, a wrong answer, a missing
+file, the smallest viewport. A script that only walks the happy path proves
+nothing worth proving.
+
+State plainly which scenarios you verified yourself and which only the user can
+close — never present a curl as though it were a browser, and never imply they
+confirmed something they have not yet looked at.
+
 ## Setup (per workspace)
 - Install the agent so it's discoverable: symlink or copy `skill/agents/learno-analyst.md` into `.claude/agents/` (project) or `~/.claude/agents/` (all studies).
 - To inherit this agreement at the workspace root, add `@skill/CLAUDE.md` to the workspace's own `CLAUDE.md`.
