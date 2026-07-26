@@ -1,17 +1,7 @@
-const { MongoClient } = require('mongodb');
 const router = require('express').Router();
 
-// ── MongoDB connection (lazy, reused) ────────────────────────
-let _db;
-async function getDb() {
-  if (!_db) {
-    const client = new MongoClient(process.env.MONGODB_URI);
-    await client.connect();
-    _db = client.db(process.env.MONGODB_DB || 'system_design_learn');
-    console.log('MongoDB connected');
-  }
-  return _db;
-}
+// Real Mongo, or the in-memory sandbox store — see server/db.js.
+const { getDb } = require('../db');
 
 // ── SM-2 algorithm ───────────────────────────────────────────
 function sm2(score, current) {

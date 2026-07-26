@@ -1,0 +1,151 @@
+{
+  "_comment": [
+    "Seed data for LEARNO_MODE=sandbox. Loaded into the in-memory store at boot;",
+    "every change made while clicking around is discarded on restart, so the",
+    "sandbox always starts from this exact state.",
+    "",
+    "Dates are written as { \"$daysFromNow\": N } and resolved at load time, so a",
+    "concept seeded as due-today stays due today forever instead of rotting.",
+    "",
+    "The set is deliberately shaped to exercise every dashboard branch at once:",
+    "mastered / not mastered, overdue / due today / scheduled ahead, a concept",
+    "mastered by conversation rather than by a lesson, and a lesson with mixed",
+    "per-section scores including a recorded misconception."
+  ],
+
+  "concepts": [
+    {
+      "concept_id": "sandbox_widget_sharding",
+      "lesson_id": "sandbox-kitchen-sink",
+      "first_seen": { "$daysFromNow": -30 },
+      "last_reviewed": { "$daysFromNow": -8 },
+      "next_review": { "$daysFromNow": -2 },
+      "interval_days": 6,
+      "ease_factor": 2.6,
+      "mastered": true,
+      "mastery_source": "ai_validation",
+      "history": [
+        { "date": { "$daysFromNow": -30 }, "score": 58, "source": "ai_validation" },
+        { "date": { "$daysFromNow": -8 },  "score": 91, "source": "ai_validation" }
+      ]
+    },
+    {
+      "concept_id": "sandbox_widget_replication",
+      "lesson_id": "sandbox-kitchen-sink",
+      "first_seen": { "$daysFromNow": -21 },
+      "last_reviewed": { "$daysFromNow": -1 },
+      "next_review": { "$daysFromNow": 0 },
+      "interval_days": 1,
+      "ease_factor": 2.35,
+      "mastered": true,
+      "mastery_source": "ai_validation",
+      "history": [
+        { "date": { "$daysFromNow": -21 }, "score": 77, "source": "ai_validation" },
+        { "date": { "$daysFromNow": -1 },  "score": 84, "source": "ai_validation" }
+      ]
+    },
+    {
+      "concept_id": "sandbox_widget_backpressure",
+      "lesson_id": "sandbox-kitchen-sink",
+      "first_seen": { "$daysFromNow": -14 },
+      "last_reviewed": { "$daysFromNow": -3 },
+      "next_review": { "$daysFromNow": 9 },
+      "interval_days": 12,
+      "ease_factor": 2.8,
+      "mastered": true,
+      "mastery_source": "ai_validation",
+      "history": [
+        { "date": { "$daysFromNow": -3 }, "score": 96, "source": "ai_validation" }
+      ]
+    },
+    {
+      "concept_id": "sandbox_idempotency",
+      "lesson_id": "sandbox-kitchen-sink",
+      "first_seen": { "$daysFromNow": -5 },
+      "last_reviewed": { "$daysFromNow": -5 },
+      "next_review": { "$daysFromNow": 0 },
+      "interval_days": 0,
+      "ease_factor": 1.9,
+      "mastered": false,
+      "mastery_source": "ai_validation",
+      "history": [
+        { "date": { "$daysFromNow": -5 }, "score": 38, "source": "ai_validation" }
+      ]
+    },
+    {
+      "concept_id": "sandbox_eventual_consistency",
+      "lesson_id": null,
+      "first_seen": { "$daysFromNow": -2 },
+      "last_reviewed": { "$daysFromNow": -2 },
+      "next_review": { "$daysFromNow": 4 },
+      "interval_days": 6,
+      "ease_factor": 2.5,
+      "mastered": true,
+      "mastery_source": "conversation",
+      "history": [
+        { "date": { "$daysFromNow": -2 }, "score": 88, "source": "conversation" }
+      ]
+    }
+  ],
+
+  "lessons": [
+    {
+      "lesson_id": "sandbox-kitchen-sink",
+      "completed_at": { "$daysFromNow": -8 },
+      "final_score": 84,
+      "sections": []
+    },
+    {
+      "lesson_id": "sandbox-second-lesson",
+      "completed_at": { "$daysFromNow": -21 },
+      "final_score": 62,
+      "sections": []
+    }
+  ],
+
+  "section_results": [
+    {
+      "lesson_id": "sandbox-kitchen-sink",
+      "concept_id": "sandbox_widget_sharding",
+      "is_teachback": false,
+      "score": 91,
+      "feedback": "Sandbox: explicação clara, com trade-offs e um exemplo concreto.",
+      "concepts_demonstrated": ["sandbox_widget_sharding"],
+      "misconceptions": [],
+      "recorded_at": { "$daysFromNow": -8 }
+    },
+    {
+      "lesson_id": "sandbox-kitchen-sink",
+      "concept_id": "sandbox_idempotency",
+      "is_teachback": false,
+      "score": 38,
+      "feedback": "Sandbox: o conceito central não aparece na explicação.",
+      "concepts_demonstrated": [],
+      "misconceptions": [
+        "Sandbox: trata idempotência como sinônimo de retry.",
+        "Sandbox: assume que a chave de deduplicação é sempre o ID do request."
+      ],
+      "recorded_at": { "$daysFromNow": -8 }
+    },
+    {
+      "lesson_id": "sandbox-kitchen-sink",
+      "concept_id": "sandbox_widget_replication",
+      "is_teachback": true,
+      "score": 84,
+      "feedback": "Sandbox: resposta sólida no teach-back, com imprecisões menores.",
+      "concepts_demonstrated": ["sandbox_widget_replication"],
+      "misconceptions": [],
+      "recorded_at": { "$daysFromNow": -8 }
+    }
+  ],
+
+  "conversations": [
+    {
+      "concept_id": "sandbox_eventual_consistency",
+      "source": "conversation",
+      "score": 88,
+      "note": "Sandbox: usou o termo corretamente e sem ser perguntado ao discutir o design de um feed.",
+      "recorded_at": { "$daysFromNow": -2 }
+    }
+  ]
+}

@@ -1,18 +1,11 @@
-const { MongoClient } = require('mongodb');
 const router = require('express').Router();
+
+// Real Mongo, or the in-memory sandbox store — see server/db.js.
+const { getDb, SANDBOX } = require('../db');
+const { stubVerdict }    = require('../sandbox-validator');
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 const GEMINI_URL   = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-
-let _db;
-async function getDb() {
-  if (!_db) {
-    const client = new MongoClient(process.env.MONGODB_URI);
-    await client.connect();
-    _db = client.db(process.env.MONGODB_DB || 'system_design_learn');
-  }
-  return _db;
-}
 
 router.post('/', async (req, res) => {
   const {
@@ -59,29 +52,38 @@ Return JSON only (no markdown wrapper, no explanation outside the JSON):
 }`;
 
   try {
-    const geminiRes = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: 'application/json' }
-      })
-    });
+    let parsed;
 
-    if (!geminiRes.ok) {
-      const detail = await geminiRes.text();
-      console.error('Gemini error:', geminiRes.status, detail);
-      return res.status(502).json({ error: 'Gemini API error', status: geminiRes.status });
+    if (SANDBOX) {
+      // No model call: the sandbox needs verdicts that are free, instant and
+      // repeatable, so a layout regression is never confused for the model
+      // having a different opinion this run.
+      parsed = stubVerdict({ user_answer, concept_id, valid_concept_ids, is_teachback });
+    } else {
+      const geminiRes = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: 'application/json' }
+        })
+      });
+
+      if (!geminiRes.ok) {
+        const detail = await geminiRes.text();
+        console.error('Gemini error:', geminiRes.status, detail);
+        return res.status(502).json({ error: 'Gemini API error', status: geminiRes.status });
+      }
+
+      const data  = await geminiRes.json();
+      const raw   = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (!raw) {
+        return res.status(502).json({ error: 'Empty response from Gemini' });
+      }
+
+      parsed = JSON.parse(raw);
     }
-
-    const data  = await geminiRes.json();
-    const raw   = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if (!raw) {
-      return res.status(502).json({ error: 'Empty response from Gemini' });
-    }
-
-    const parsed = JSON.parse(raw);
 
     // Enforce canonical vocabulary — drop any ID Gemini invented
     if (valid_concept_ids.length && Array.isArray(parsed.concepts_demonstrated)) {

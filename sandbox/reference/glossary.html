@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<!--
+  TEMPLATE — Living glossary. Generic across subjects.
+  On bootstrap, copy this to <workspace>/reference/glossary.html, then:
+    1. Replace the [SUBJECT] placeholders (title + header).
+    2. Define your own tag taxonomy: each subject decides its categories. The
+       filter buttons below use generic data-tags ("group-a", "group-b", …) —
+       rename them to whatever organises this subject (e.g. modules, phases,
+       difficulty). Keep the kebab-case concept IDs in sync with the glossary
+       IDs the AI sends to the server (data-concept-id / concepts_demonstrated).
+    3. Delete the example term and add real ones AS THE USER DEMONSTRATES
+       understanding — never on mere exposure (see skill/SKILL.md › Glossary).
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>[SUBJECT] Glossary</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #555;
+      --rule: #ddd;
+      --accent: #2563eb;
+      --tag-bg: #eff6ff;
+      --tag-color: #1d4ed8;
+      font-size: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Georgia", serif;
+      color: var(--ink);
+      background: #fff;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+      line-height: 1.65;
+    }
+
+    header {
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .ref-tag {
+      font-family: monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: normal;
+      margin-top: 0.3rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.92rem;
+      margin-top: 0.3rem;
+    }
+
+    /* filter bar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      align-items: center;
+    }
+
+    .filter-bar input {
+      flex: 1;
+      min-width: 180px;
+      padding: 0.45rem 0.8rem;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+
+    .filter-btn {
+      padding: 0.4rem 0.85rem;
+      border: 1px solid var(--rule);
+      border-radius: 20px;
+      background: #fff;
+      font-size: 0.8rem;
+      font-family: monospace;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--tag-bg);
+      border-color: var(--accent);
+      color: var(--tag-color);
+    }
+
+    /* section */
+    .section { margin-top: 2rem; }
+
+    .section-title {
+      font-family: monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 0.3rem;
+      margin-bottom: 1rem;
+    }
+
+    /* term */
+    .term {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0 1.5rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f0f0f0;
+      align-items: start;
+    }
+
+    .term:last-child { border-bottom: none; }
+
+    .term-name {
+      font-weight: bold;
+      font-size: 0.95rem;
+      padding-top: 0.05rem;
+    }
+
+    .term-def {
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    .term-tag {
+      display: inline-block;
+      margin-top: 0.3rem;
+      padding: 0.15rem 0.5rem;
+      background: var(--tag-bg);
+      color: var(--tag-color);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.7rem;
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--rule);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    a { color: var(--accent); }
+
+    @media (max-width: 560px) {
+      .term { grid-template-columns: 1fr; gap: 0.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="ref-tag">Reference · Living Document</div>
+  <h1>[SUBJECT] Glossary</h1>
+  <p class="subtitle">Updated as lessons progress. Each term is tagged to the category where it's most useful.</p>
+</header>
+
+<div class="filter-bar">
+  <input type="text" id="search" placeholder="Search terms…" oninput="filterTerms()" />
+  <button class="filter-btn active" onclick="filterByTag('all', this)">All</button>
+  <!-- Rename these to this subject's own categories; data-tags on each .term must match. -->
+  <button class="filter-btn" onclick="filterByTag('group-a', this)">Group A</button>
+  <button class="filter-btn" onclick="filterByTag('group-b', this)">Group B</button>
+  <button class="filter-btn" onclick="filterByTag('group-c', this)">Group C</button>
+</div>
+
+<!-- Group terms into sections that make sense for this subject. -->
+<div class="section" data-section="example">
+  <div class="section-title">Getting Started</div>
+
+  <!-- EXAMPLE TERM — delete once you add real ones. Shows the required shape. -->
+  <div class="term" data-tags="group-a">
+    <div class="term-name">Example term</div>
+    <div class="term-def">
+      One or two sentences defining the concept in the user's own framing. The
+      <code>data-tags</code> value above and the kebab-case ID this maps to must match the
+      concept IDs the lessons send to the server.
+      <div><span class="term-tag">group-a</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  This glossary grows with each lesson. Terms are tagged to the category where they're most relevant.
+</footer>
+
+<script>
+  function filterTerms() {
+    const q = document.getElementById('search').value.toLowerCase();
+    document.querySelectorAll('.term').forEach(term => {
+      const text = term.textContent.toLowerCase();
+      term.style.display = text.includes(q) ? '' : 'none';
+    });
+  }
+
+  function filterByTag(tag, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.term').forEach(term => {
+      if (tag === 'all') {
+        term.style.display = '';
+      } else {
+        const tags = (term.dataset.tags || '').split(' ');
+        term.style.display = tags.includes(tag) ? '' : 'none';
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

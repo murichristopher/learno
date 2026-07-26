@@ -360,7 +360,10 @@ Todo HTML de lição deve incluir este bloco de script no final do `<body>`.
 
 ```javascript
 // ── Detecção de servidor ────────────────────────────────────
-const SERVER = 'http://localhost:9990';
+// Usa a própria origem quando a página é servida por HTTP — funciona tanto em
+// localhost quanto atrás de um túnel (para abrir a lição no celular). Só cai no
+// localhost fixo quando o arquivo é aberto via file://.
+const SERVER = location.protocol.startsWith('http') ? location.origin : 'http://localhost:9990';
 let serverOnline = false;
 
 async function detectServer() {
@@ -528,7 +531,10 @@ function checkOffline(sectionId, correctValue, feedbackOk, feedbackBad) {
   el.className = `inline-fb show ${isCorrect ? 'ok' : 'bad'}`;
   el.textContent = isCorrect ? feedbackOk : feedbackBad;
   document.querySelectorAll(`input[name="q-${sectionId}"]`).forEach(i => {
-    i.parentElement.classList.add(i.value === correctValue ? 'correct' : (i.checked ? 'wrong' : ''));
+    // Duas formas de `toggle`, não `add`: `classList.add('')` lança
+    // InvalidCharacterError e derruba o resto do handler.
+    i.parentElement.classList.toggle('correct', i.value === correctValue);
+    i.parentElement.classList.toggle('wrong',   i.checked && i.value !== correctValue);
     i.disabled = true;
   });
   if (isCorrect) unlockNext(sectionId);

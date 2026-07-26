@@ -76,7 +76,8 @@ my-study/                     ← the study workspace (one git repo PER subject,
 > The engine assumes it sits one level under the workspace:
 > - `skill/server/index.js` loads env from `../../.env` (i.e. the **workspace root**, two levels up).
 > - `SKILL.md` reads `../MISSION.md`, `../NOTES.md`, `../lessons/`, `../reference/glossary.html`, etc.
-> - Lessons call the server at a **hardcoded** `http://localhost:9990`.
+> - Lessons derive the API base from the page's own origin, so they work on any
+>   port and through a tunnel; `http://localhost:9990` is only the `file://` fallback.
 >
 > So consume this repo as a subfolder named `skill/` (copy it in, or add it as a **git submodule**).
 > If you clone it as a standalone repo root, those relative paths break.
@@ -108,7 +109,7 @@ my-study/                     ← the study workspace (one git repo PER subject,
    ```bash
    cp skill/.env.example .env
    # then edit: GEMINI_API_KEY, MONGODB_URI, and set MONGODB_DB per study.
-   # Keep PORT=9990 — lessons hardcode http://localhost:9990 (see Gotchas).
+   # PORT is free to change — lessons read the API base from their own origin.
    ```
 
 3. **Install and start the server** (from the workspace root):
@@ -193,6 +194,44 @@ Local Express app: Gemini proxy + MongoDB bridge. Routes used by the lessons/das
 - `conversations` — mastery demonstrated in chat (recorded immediately, no lesson needed)
 
 `SKILL.md` queries these directly via `mongosh` at the start of every session.
+
+### Serving the workspace
+
+The server statically serves the study workspace, so lessons open over
+`http://localhost` (a secure context — the mic needs one) instead of `file://`.
+It infers the workspace root from its own location, assuming `<workspace>/skill/server`.
+Set **`LEARNO_WORKSPACE`** to override that for any other layout; the sandbox
+below relies on it.
+
+---
+
+## Developing the engine (`sandbox/`)
+
+Changing the lesson format, the styles, or the dashboard means testing against
+content — but you should never have to touch a real study workspace, spend a
+Gemini call, or provision a database to see whether a layout still renders.
+
+```sh
+make sandbox     # serves the sandbox + a public Cloudflare URL (no MongoDB, no API key)
+make local       # same, localhost only — no tunnel
+make check       # syntax-check the server, validate the seed fixture
+```
+
+`LEARNO_MODE=sandbox` swaps two things and nothing else:
+
+- **the store** — an in-memory stand-in seeded from `sandbox/fixtures/seed.json`.
+  The routes are untouched, so the real SM-2 scheduling code runs against it.
+- **the validator** — a deterministic verdict instead of the Gemini call, so
+  scoring is free, instant and repeatable. Prefix an answer with `!0`, `!p`,
+  `!ok` or `!m` to force each score band.
+
+State resets on every restart, so the sandbox always starts from the same place
+and a visual difference means a real regression. `sandbox/lessons/0001-kitchen-sink.html`
+holds one instance of every block `LESSON-FORMAT.md` defines — see
+[`sandbox/README.md`](sandbox/README.md).
+
+> When you add a block to the lesson format, add it to the kitchen-sink lesson in
+> the same commit. The fixture is only useful while it stays exhaustive.
 
 ---
 
