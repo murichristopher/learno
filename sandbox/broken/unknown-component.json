@@ -1,0 +1,2 @@
+{ "id": "unknown-component", "title": "@t.title",
+  "blocks": [ { "component": "timeline", "props": { "events": "@t.events" } } ] }

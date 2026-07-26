@@ -1,0 +1,2 @@
+{ "id": "coloured-svg", "title": "@t.title",
+  "blocks": [ { "component": "diagram", "props": { "svg": "@d.bad" } } ] }

@@ -1,0 +1,7 @@
+t:
+  title: "SVG com cor própria"
+d:
+  bad: |
+    <svg class="lx-svg" viewBox="0 0 100 40">
+      <rect x="4" y="4" width="90" height="30" fill="#9333ea"/>
+    </svg>
