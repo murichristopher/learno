@@ -202,7 +202,7 @@
 </footer>
 
 <script>
-  const SERVER = 'http://localhost:9990';
+  const SERVER = location.protocol.startsWith('http') ? location.origin : 'http://localhost:9990';
 
   // ── helpers ────────────────────────────────────────────────────────
   function pretty(conceptId) {
