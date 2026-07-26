@@ -5,7 +5,11 @@ const path = require('path');
 // Lists the lesson/review HTML files actually present on disk (independent of
 // MongoDB progress), so the dashboard can show EVERYTHING — completed or not.
 // __dirname is skill/server/routes → three levels up is the workspace root.
-const WORKSPACE = path.join(__dirname, '..', '..', '..');
+// Must stay in step with the static root in server/index.js; see the note there
+// on why LEARNO_WORKSPACE exists.
+const WORKSPACE = process.env.LEARNO_WORKSPACE
+  ? path.resolve(process.env.LEARNO_WORKSPACE)
+  : path.join(__dirname, '..', '..', '..');
 
 function listDir(rel) {
   const dir = path.join(WORKSPACE, rel);

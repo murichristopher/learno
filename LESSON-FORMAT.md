@@ -531,7 +531,10 @@ function checkOffline(sectionId, correctValue, feedbackOk, feedbackBad) {
   el.className = `inline-fb show ${isCorrect ? 'ok' : 'bad'}`;
   el.textContent = isCorrect ? feedbackOk : feedbackBad;
   document.querySelectorAll(`input[name="q-${sectionId}"]`).forEach(i => {
-    i.parentElement.classList.add(i.value === correctValue ? 'correct' : (i.checked ? 'wrong' : ''));
+    // Duas formas de `toggle`, não `add`: `classList.add('')` lança
+    // InvalidCharacterError e derruba o resto do handler.
+    i.parentElement.classList.toggle('correct', i.value === correctValue);
+    i.parentElement.classList.toggle('wrong',   i.checked && i.value !== correctValue);
     i.disabled = true;
   });
   if (isCorrect) unlockNext(sectionId);

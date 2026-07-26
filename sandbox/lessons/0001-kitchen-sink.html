@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sandbox — Kitchen Sink (fixture de layout)</title>
+  <style>
+    /* ══════════════════════════════════════════════════════════════════
+       CSS BASE OBRIGATÓRIO — LESSON-FORMAT.md § "CSS base obrigatório"
+       ══════════════════════════════════════════════════════════════════ */
+    :root {
+      --ink: #1a1a1a;
+      --muted: #666;
+      --rule: #e2e2e2;
+      --accent: #2563eb;
+      --correct: #16a34a;
+      --wrong: #dc2626;
+      --warn: #d97706;
+      --surface: #f8f8f8;
+      --highlight: #eff6ff;
+      font-size: 17px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; color: var(--ink); background: #fff;
+           max-width: 700px; margin: 0 auto; padding: 3.5rem 2rem 6rem; line-height: 1.7; }
+
+    /* ── 1. Header ────────────────────────────────────────────── */
+    header { border-bottom: 1px solid var(--rule); padding-bottom: 1.25rem; margin-bottom: 1.5rem; }
+    .lesson-tag { font-family: monospace; font-size: .72rem; letter-spacing: .1em;
+                  text-transform: uppercase; color: var(--muted); }
+    h1 { font-size: 1.9rem; font-weight: normal; margin-top: .4rem; line-height: 1.2; }
+    .subtitle { color: var(--muted); font-style: italic; margin-top: .35rem; font-size: .95rem; }
+    .offline-banner {
+      background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px;
+      padding: 0.6rem 1rem; margin-top: 0.75rem; font-size: 0.85rem; color: #92400e;
+    }
+    .offline-banner code { background: #fde68a; padding: .1em .3em; border-radius: 3px; }
+
+    /* ── 2. Barra de progresso ────────────────────────────────── */
+    .progress-bar { display: flex; gap: 4px; margin-bottom: 2rem; }
+    .progress-seg { height: 4px; flex: 1; border-radius: 2px; background: var(--rule);
+                    transition: background .3s; }
+    .progress-seg.done { background: var(--accent); }
+
+    /* ── 3. Analogia ──────────────────────────────────────────── */
+    .analogy-box {
+      background: #f0fdf4; border-left: 3px solid #16a34a;
+      padding: 1rem 1.25rem; margin-bottom: 2rem; border-radius: 0 6px 6px 0;
+    }
+    .analogy-label { font-family: monospace; font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #15803d; margin-bottom: 0.4rem; }
+    .analogy-bridge { margin-top: 0.75rem; font-style: italic; color: var(--muted); }
+
+    /* ── 4a. Seções ───────────────────────────────────────────── */
+    .phase { margin-top: 2.25rem; }
+    .phase-header { display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem; }
+    .phase-badge { font-family: monospace; font-size: .72rem; text-transform: uppercase;
+      letter-spacing: .07em; padding: .2rem .6rem; border-radius: 4px; white-space: nowrap; }
+    .badge-1 { background: #f3e8ff; color: #6d28d9; }
+    .badge-2 { background: #dbeafe; color: #1d4ed8; }
+    .badge-3 { background: #ccfbf1; color: #0f766e; }
+    .badge-final { background: #1a1a1a; color: #fff; }
+    .phase-title { font-size: 1.05rem; font-weight: bold; }
+    .phase-body.locked { opacity: 0.35; pointer-events: none; user-select: none; }
+
+    p { margin-top: .9rem; }
+    p:first-of-type { margin-top: 0; }
+    .q-label { font-size: .95rem; font-weight: bold; margin: 1.25rem 0 .5rem; }
+    .q-sub { font-size: .85rem; color: var(--muted); font-style: italic; margin-bottom: .75rem; }
+    hr { border: none; border-top: 1px solid var(--rule); margin: 2.25rem 0; }
+    code { font-family: monospace; font-size: .88rem; background: #f0f0f0;
+           padding: .1em .35em; border-radius: 3px; }
+    ul, ol { padding-left: 1.25rem; margin-top: .5rem; }
+    li { margin-top: .4rem; }
+    strong { font-weight: bold; }
+    a { color: var(--accent); }
+
+    /* ── 4b. Diagramas ────────────────────────────────────────── */
+    .diagram-wrap { margin: 1.25rem 0; overflow-x: auto; }
+    .diagram-svg  { max-width: 100%; height: auto; }
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+    .compare-col  { border: 1px solid var(--rule); border-radius: 8px; padding: .75rem .9rem; }
+    .compare-col p { font-size: .85rem; color: var(--muted); margin-top: .5rem; }
+    .compare-label { font-family: monospace; font-size: .7rem; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--muted); margin-bottom: .4rem; }
+    @media (max-width: 560px) { .compare-grid { grid-template-columns: 1fr; } }
+
+    /* ── 4c. Prática — Tipo A (recall) e Tipo B (quiz) ────────── */
+    .ai-validate-block { margin-top: 1rem; }
+    .quiz-block { margin-top: 1rem; }
+    .offline-fallback { margin-top: 1rem; }
+
+    .answer-textarea {
+      width: 100%; min-height: 90px; padding: 0.75rem; border: 1px solid var(--rule);
+      border-radius: 6px; font-family: inherit; font-size: 0.92rem; resize: vertical;
+      margin-top: 0.5rem;
+    }
+    .answer-textarea--large { min-height: 140px; }
+
+    .answer-tools { margin-top: 0.4rem; }
+    .mic-btn { font: inherit; font-size: 0.82rem; padding: 0.3rem 0.7rem; border: 1px solid var(--rule);
+      border-radius: 6px; background: #fff; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .mic-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .mic-btn.recording { background: #fef2f2; border-color: var(--wrong); color: var(--wrong);
+      animation: micpulse 1.2s ease-in-out infinite; }
+    @keyframes micpulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+    .mic-hint { display: block; margin-top: .4rem; font-size: .8rem; color: var(--warn); max-width: 60ch; }
+    .mic-lang { font: inherit; font-size: .8rem; padding: .25rem .4rem; margin-left: .35rem; border: 1px solid var(--rule);
+      border-radius: 6px; background: #fff; color: var(--muted); cursor: pointer; vertical-align: middle; }
+
+    .radio-group { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.75rem 0; }
+    .radio-group label { display: flex; align-items: flex-start; gap: .6rem;
+      padding: 0.5rem 0.75rem; border: 1px solid var(--rule); border-radius: 6px;
+      cursor: pointer; font-size: .9rem; transition: border-color 0.15s; }
+    .radio-group label:hover { border-color: var(--accent); }
+    .radio-group input[type=radio] { margin-top: 4px; flex-shrink: 0; accent-color: var(--accent); }
+    .radio-group label.correct { border-color: var(--correct); background: #f0fdf4; }
+    .radio-group label.wrong { border-color: var(--wrong); background: #fef2f2; }
+    .inline-fb { margin-top: 0.5rem; font-size: 0.9rem; display: none;
+      padding: .65rem .9rem; border-radius: 6px; line-height: 1.5; }
+    .inline-fb.show { display: block; }
+    .inline-fb.ok { color: var(--correct); background: #f0fdf4; border-left: 3px solid var(--correct); }
+    .inline-fb.bad { color: var(--wrong); background: #fef2f2; border-left: 3px solid var(--wrong); }
+
+    .btn { margin-top: 1rem; padding: .55rem 1.3rem; background: var(--accent); color: #fff;
+      border: none; border-radius: 6px; font-size: .9rem; cursor: pointer; font-family: inherit; }
+    .btn:hover { opacity: .88; }
+    .btn-loading { opacity: .6; cursor: wait; }
+
+    .ai-result { margin-top: .75rem; }
+    .score-display { font-family: monospace; font-size: 1.5rem; font-weight: bold;
+      color: var(--accent); margin-bottom: 0.5rem; }
+    .score-bar-wrap { background: var(--rule); border-radius: 4px; height: 6px; margin-bottom: 0.75rem; }
+    .score-bar { height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.6s; width: 0%; }
+    .ai-feedback { font-size: .9rem; padding: .75rem 1rem; border-radius: 6px;
+      background: var(--surface); line-height: 1.55; }
+    /* `.concepts-demonstrated` é o nome do spec; `.concepts-tag` é o alias usado
+       pelas lições reais — os dois estilizados juntos para o fixture cobrir ambos. */
+    .concepts-demonstrated, .concepts-tag {
+      margin-top: .5rem; font-size: .82rem; font-family: monospace; color: var(--correct); }
+
+    /* ── 6. Flash cards ───────────────────────────────────────── */
+    #flashcard-section { margin-top: 2.5rem; }
+    .flashcard-header { font-weight: bold; font-size: 1.05rem; margin-bottom: .25rem; }
+    .flashcard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem; margin-top: 1rem; }
+    .flashcard { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px;
+      min-height: 120px; cursor: pointer; position: relative; perspective: 600px; }
+    .flashcard-front, .flashcard-back {
+      position: absolute; inset: 0; padding: 1rem; display: flex; align-items: center;
+      justify-content: center; text-align: center; font-size: 0.9rem; border-radius: 8px;
+      backface-visibility: hidden; transition: transform 0.4s;
+    }
+    .flashcard-back { background: var(--highlight); color: var(--accent);
+      transform: rotateY(180deg); }
+    .flashcard.flipped .flashcard-front { transform: rotateY(180deg); }
+    .flashcard.flipped .flashcard-back  { transform: rotateY(0deg); }
+    .next-review-box { margin-top: 1.5rem; padding: 0.75rem 1rem; background: var(--surface);
+      border-radius: 6px; font-size: 0.9rem; border-left: 3px solid var(--accent); }
+
+    /* ── 7. Footer ────────────────────────────────────────────── */
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--rule);
+      font-size: .85rem; color: var(--muted); }
+    .source-box { margin-top: .4rem; padding: .6rem .9rem; background: var(--surface);
+      border-radius: 6px; font-size: .85rem; }
+
+    /* ══════════════════════════════════════════════════════════════════
+       COMPONENTES DE CONTEÚDO usados pelas lições reais (fora do CSS base
+       do spec, mas presentes em 0004..0010): callout, bloco de código,
+       tabela comparativa.
+       ══════════════════════════════════════════════════════════════════ */
+    .callout { border-left: 3px solid var(--accent); background: var(--highlight);
+      padding: .8rem 1.1rem; margin: 1.25rem 0; border-radius: 0 6px 6px 0; font-size: .93rem; }
+    .callout--warn { border-left-color: var(--warn); background: #fffbeb; color: #92400e; }
+    .callout--danger { border-left-color: var(--wrong); background: #fef2f2; color: #7f1d1d; }
+    .callout-label { font-family: monospace; font-size: .68rem; text-transform: uppercase;
+      letter-spacing: .08em; display: block; margin-bottom: .3rem; opacity: .8; }
+    pre { background: #0f172a; color: #e2e8f0; padding: .9rem 1.1rem; border-radius: 8px;
+      overflow-x: auto; margin: 1.25rem 0; font-size: .82rem; line-height: 1.6; }
+    pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    .data-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: .86rem; }
+    .data-table th, .data-table td { border: 1px solid var(--rule); padding: .5rem .7rem; text-align: left; }
+    .data-table th { background: var(--surface); font-weight: bold; }
+    .data-table caption { caption-side: bottom; font-size: .78rem; color: var(--muted);
+      font-style: italic; padding-top: .4rem; text-align: left; }
+
+    /* ══════════════════════════════════════════════════════════════════
+       SANDBOX-ONLY — nada aqui existe numa lição real. Serve para etiquetar
+       cada componente e forçar estados de UI sem servidor/microfone.
+       ══════════════════════════════════════════════════════════════════ */
+    .cheat { border: 2px dashed var(--accent); background: #f8fafc; border-radius: 8px;
+      padding: 1rem 1.15rem; margin-bottom: 2rem; font-size: .85rem; }
+    .cheat h2 { font-size: .95rem; font-weight: bold; margin-bottom: .5rem; }
+    .cheat table { width: 100%; border-collapse: collapse; margin: .6rem 0; font-size: .82rem; }
+    .cheat th, .cheat td { border: 1px solid var(--rule); padding: .35rem .55rem; text-align: left; }
+    .cheat th { background: #fff; }
+    .cheat ul { margin-top: .4rem; }
+    .sbx-controls { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
+    .sbx-btn { font: inherit; font-size: .78rem; padding: .3rem .6rem; border: 1px solid var(--accent);
+      border-radius: 5px; background: #fff; color: var(--accent); cursor: pointer; }
+    .sbx-btn:hover { background: var(--highlight); }
+    .sbx-out { margin-top: .6rem; font-family: monospace; font-size: .75rem; color: var(--muted);
+      background: #fff; border: 1px solid var(--rule); border-radius: 5px; padding: .5rem .6rem;
+      max-height: 180px; overflow: auto; white-space: pre-wrap; }
+    .cmp-tag { display: inline-block; font-family: monospace; font-size: .62rem; letter-spacing: .06em;
+      text-transform: uppercase; color: #94a3b8; background: #f1f5f9; border: 1px solid #e2e8f0;
+      border-radius: 3px; padding: .05rem .35rem; margin: .8rem 0 .1rem; }
+    .sbx-note { font-size: .78rem; color: var(--muted); font-style: italic; margin-top: .3rem; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: sandbox-cheat-sheet  [SANDBOX-ONLY — não existe no spec]
+     ══════════════════════════════════════════════════════════════════ -->
+<div class="cheat" id="sandbox-cheat">
+  <h2>🧪 Sandbox cheat sheet — fixture de layout</h2>
+  <p style="margin-top:.3rem">
+    Esta página não é uma lição de verdade. Ela existe para exercitar
+    <strong>todos</strong> os componentes do <code>LESSON-FORMAT.md</code> numa tela só.
+    O <code>/api/validate</code> deste servidor é um <strong>stub determinístico</strong>:
+    o score sai do prefixo do texto que você digitar.
+  </p>
+  <table>
+    <thead>
+      <tr><th>Digite começando com…</th><th>Score</th><th>Estado de UI que você vê</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>!0</code></td><td>~20</td><td>Incorreto — <em>não</em> destrava a próxima seção (regra: score ≥ 50)</td></tr>
+      <tr><td><code>!p</code></td><td>~60</td><td>Parcial — destrava a próxima seção</td></tr>
+      <tr><td><code>!ok</code></td><td>~82</td><td>Bom — barra alta, SM-2 mantém o intervalo</td></tr>
+      <tr><td><code>!m</code></td><td>~95</td><td>Maestria — barra cheia, SM-2 aumenta o ease factor</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:.4rem">
+    Exemplo: escreva <code>!m widgets são repartidos por hash da chave</code> no teach-back
+    para ver a tela de conclusão no estado de maestria.
+  </p>
+  <ul>
+    <li><code>LESSON_ID</code> = <code>sandbox-kitchen-sink</code></li>
+    <li>Endpoints usados: <code>GET /api/health</code>, <code>POST /api/validate</code>,
+        <code>POST /api/progress</code>, <code>GET /api/catalog</code></li>
+    <li>Diagnóstico de microfone do servidor real: <code>http://localhost:9990/debug/mic</code></li>
+  </ul>
+  <div class="sbx-controls">
+    <button type="button" class="sbx-btn" onclick="sbxForceOffline()">Forçar modo OFFLINE</button>
+    <button type="button" class="sbx-btn" onclick="sbxForceOnline()">Voltar para ONLINE</button>
+    <button type="button" class="sbx-btn" onclick="sbxToggleLocks()">Destravar / retravar seções</button>
+    <button type="button" class="sbx-btn" onclick="sbxToggleMic()">Simular mic gravando + hint</button>
+    <button type="button" class="sbx-btn" onclick="sbxShowCompletion()">Abrir tela de conclusão</button>
+    <button type="button" class="sbx-btn" onclick="sbxLoadCatalog()">GET /api/catalog</button>
+  </div>
+  <div class="sbx-out" id="sbx-out">pronto. use os botões acima para forçar estados de UI.</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: header  (LESSON-FORMAT § 1) [OBRIGATÓRIO]
+     ══════════════════════════════════════════════════════════════════ -->
+<span class="cmp-tag">component: header · .lesson-tag / h1 / .subtitle / .offline-banner</span>
+<header>
+  <div class="lesson-tag">Sandbox 01 &nbsp;·&nbsp; Fixture</div>
+  <h1>Sandbox: Widgets Distribuídos</h1>
+  <p class="subtitle">Conteúdo fictício. O que importa aqui é o layout, não o assunto.</p>
+  <div class="offline-banner" id="offline-banner" style="display:none">
+    ⚠️ Servidor offline — usando modo básico.
+    Para validação por IA, rode: <code>npm start</code> em <code>skill/server/</code>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: progress-bar  (LESSON-FORMAT § 2) [OBRIGATÓRIO]
+     3 seções de conteúdo + 1 segmento para o teach-back
+     ══════════════════════════════════════════════════════════════════ -->
+<span class="cmp-tag">component: progress-bar · .progress-seg (+ .done)</span>
+<div class="progress-bar">
+  <div class="progress-seg" id="seg1"></div>
+  <div class="progress-seg" id="seg2"></div>
+  <div class="progress-seg" id="seg3"></div>
+  <div class="progress-seg" id="seg-teachback"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: analogy-box  (LESSON-FORMAT § 3) [OBRIGATÓRIO]
+     Vem antes de qualquer nome técnico.
+     ══════════════════════════════════════════════════════════════════ -->
+<span class="cmp-tag">component: analogy-box · .analogy-label / .analogy-bridge</span>
+<div class="analogy-box">
+  <div class="analogy-label">Antes de começar</div>
+  <p>
+    Imagina a sua caixa de ferramentas de casa. Enquanto são dez peças, tudo cabe numa gaveta
+    só e você acha qualquer coisa em dois segundos. Quando viram trezentas, aquela gaveta
+    vira um monte e você perde cinco minutos procurando uma chave allen. A saída não é
+    comprar uma gaveta gigante — é <strong>separar em várias gavetas</strong>, cada uma com
+    uma faixa de peças, e você saber de cabeça em qual gaveta procurar.
+  </p>
+  <p class="analogy-bridge">
+    Em system design, isso se chama <strong>sharding de widgets</strong>.
+  </p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: phase (seção 1) — Tipo A: recall escrito + ditado por voz
+     (LESSON-FORMAT § 4a / 4b / 4c-A) [OBRIGATÓRIO ≥1 por lição]
+     ══════════════════════════════════════════════════════════════════ -->
+<span class="cmp-tag">component: phase 1 · badge-1 · phase-body (desbloqueada)</span>
+<div class="phase" id="phase1">
+  <div class="phase-header">
+    <span class="phase-badge badge-1">Parte 1</span>
+    <span class="phase-title">Uma gaveta só não dá conta — sharding de widgets</span>
+  </div>
+  <div class="phase-body" id="body1">
+
+    <p>
+      No Widget Store fictício, todos os widgets moram num nó só. Com 300 milhões de widgets,
+      o disco enche e cada busca varre uma tabela gigante. Repartir os widgets em
+      <strong>shards</strong> por hash da chave resolve os dois problemas de uma vez.
+    </p>
+
+    <!-- component: diagram (tipo "fluxo de requisição") -->
+    <span class="cmp-tag">component: diagram-wrap · svg inline com marker/seta</span>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 600 140" xmlns="http://www.w3.org/2000/svg" class="diagram-svg">
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
+          </marker>
+        </defs>
+        <rect x="10" y="52" width="100" height="40" rx="6" fill="#eff6ff" stroke="#2563eb"/>
+        <text x="60" y="77" text-anchor="middle" font-size="12" fill="#1e40af">Cliente</text>
+        <line x1="110" y1="72" x2="160" y2="72" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="160" y="52" width="130" height="40" rx="6" fill="#eff6ff" stroke="#2563eb"/>
+        <text x="225" y="70" text-anchor="middle" font-size="12" fill="#1e40af">Roteador</text>
+        <text x="225" y="85" text-anchor="middle" font-size="9" fill="#64748b">hash(widget_id) % 3</text>
+        <line x1="290" y1="66" x2="345" y2="30" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="290" y1="72" x2="345" y2="72" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="290" y1="78" x2="345" y2="114" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="345" y="12" width="110" height="36" rx="6" fill="#f0fdf4" stroke="#16a34a"/>
+        <text x="400" y="34" text-anchor="middle" font-size="11" fill="#14532d">Shard A</text>
+        <rect x="345" y="54" width="110" height="36" rx="6" fill="#f0fdf4" stroke="#16a34a"/>
+        <text x="400" y="76" text-anchor="middle" font-size="11" fill="#14532d">Shard B</text>
+        <rect x="345" y="96" width="110" height="36" rx="6" fill="#f0fdf4" stroke="#16a34a"/>
+        <text x="400" y="118" text-anchor="middle" font-size="11" fill="#14532d">Shard C</text>
+        <text x="470" y="68" font-size="10" fill="#64748b">1/3 dos dados</text>
+        <text x="470" y="82" font-size="10" fill="#64748b">em cada nó</text>
+      </svg>
+    </div>
+
+    <!-- component: callout (variante padrão) -->
+    <span class="cmp-tag">component: callout (padrão / warn / danger)</span>
+    <div class="callout">
+      <span class="callout-label">Liga com o que você já viu</span>
+      A chave de sharding é a decisão mais cara de desfazer. Escolheu errado, a repartição
+      não te salva — ela só espalha o problema por mais máquinas.
+    </div>
+    <div class="callout callout--warn">
+      <span class="callout-label">Cuidado</span>
+      Hash simples (<code>% N</code>) rebalanceia quase tudo quando você adiciona um nó.
+      É por isso que existe consistent hashing.
+    </div>
+    <div class="callout callout--danger">
+      <span class="callout-label">Erro comum</span>
+      Sharding não substitui backup. Perder um shard é perder 1/N dos dados, não 0.
+    </div>
+
+    <!-- component: TIPO A — ai-validate-block (online) -->
+    <span class="cmp-tag">component: ai-validate-block (Tipo A · online · validação IA)</span>
+    <div class="ai-validate-block" id="validate-1"
+         data-concept-id="sandbox_widget_sharding"
+         data-section-summary="Sharding de widgets reparte a base entre vários nós usando uma chave (hash do widget_id). Cada nó guarda 1/N dos dados, o que resolve limite de disco e reduz o volume varrido por query. O custo é que a chave de sharding fica difícil de mudar depois e queries que cruzam shards ficam caras.">
+      <div class="q-label">
+        Por que uma gaveta só (um nó) trava quando a base cresce, e o que o sharding
+        muda concretamente em cada nó?
+      </div>
+      <textarea class="answer-textarea" id="answer-1"
+        placeholder="Explique com suas palavras... (ou clique em 🎤 para falar)"></textarea>
+      <div class="answer-tools">
+        <button type="button" class="mic-btn" data-target="answer-1" title="Ditar por voz">🎤 Falar</button>
+        <select class="mic-lang" title="Idioma do ditado"><option value="pt-BR">PT</option><option value="en-US">EN</option></select>
+      </div>
+      <button class="btn" id="btn-1" onclick="validateSection('1')">Validar com IA</button>
+      <div class="ai-result" id="result-1" style="display:none">
+        <div class="score-display" id="score-1"></div>
+        <div class="ai-feedback" id="feedback-1"></div>
+      </div>
+    </div>
+
+    <!-- component: TIPO A — offline-fallback (múltipla escolha) -->
+    <span class="cmp-tag">component: offline-fallback (Tipo A · offline · radio-group)</span>
+    <div class="offline-fallback" id="fallback-1" style="display:none">
+      <div class="q-label">
+        Por que uma gaveta só (um nó) trava quando a base cresce, e o que o sharding muda?
+      </div>
+      <div class="radio-group">
+        <label><input type="radio" name="q-1" value="a"/> O nó único fica lento porque o cabo de rede satura; o sharding troca o cabo por um mais rápido.</label>
+        <label><input type="radio" name="q-1" value="b"/> Um nó só tem teto de disco e de I/O, e cada query varre a base inteira; com sharding cada nó guarda 1/N dos widgets e cada query toca só o shard da chave.</label>
+        <label><input type="radio" name="q-1" value="c"/> Não trava nada — basta criar um índice e o problema desaparece para sempre.</label>
+      </div>
+      <button class="btn" onclick="checkOffline('1', 'b',
+        'Isso. O ganho do sharding é dividir volume E divisão de trabalho: 1/N dos dados e 1/N do I/O por nó.',
+        'Não é cabo nem índice. O limite é físico (disco/I/O de um nó) e de varredura. Sharding reparte os dois: cada nó fica com 1/N.')">
+        Verificar
+      </button>
+      <div class="inline-fb" id="fb-offline-1"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: phase (seção 2) — Tipo B: quiz sempre visível
+     (LESSON-FORMAT § 4c-B) · diagrama de COMPARAÇÃO lado a lado
+     ══════════════════════════════════════════════════════════════════ -->
+<span class="cmp-tag">component: phase 2 · badge-2 · phase-body.locked (bloqueada)</span>
+<div class="phase" id="phase2">
+  <div class="phase-header">
+    <span class="phase-badge badge-2">Parte 2</span>
+    <span class="phase-title">Uma cópia ou duas — replicação de widgets</span>
+  </div>
+  <div class="phase-body locked" id="body2">
+
+    <p>
+      Repartir resolve tamanho, mas não resolve <strong>morte de nó</strong>. Se o Shard B cai,
+      1/3 dos widgets somem. A resposta é manter <strong>réplicas</strong> de cada shard.
+    </p>
+
+    <!-- component: diagram (tipo "comparação lado a lado") -->
+    <span class="cmp-tag">component: compare-grid · compare-col · compare-label</span>
+    <div class="compare-grid">
+      <div class="compare-col">
+        <div class="compare-label">Opção A — sem réplica</div>
+        <svg viewBox="0 0 240 110" xmlns="http://www.w3.org/2000/svg" class="diagram-svg">
+          <defs>
+            <marker id="arrowA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
+            </marker>
+          </defs>
+          <rect x="10" y="38" width="70" height="34" rx="6" fill="#eff6ff" stroke="#2563eb"/>
+          <text x="45" y="59" text-anchor="middle" font-size="10" fill="#1e40af">App</text>
+          <line x1="80" y1="55" x2="120" y2="55" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowA)"/>
+          <rect x="120" y="38" width="90" height="34" rx="6" fill="#fef2f2" stroke="#dc2626"/>
+          <text x="165" y="59" text-anchor="middle" font-size="10" fill="#991b1b">Shard B ✗</text>
+          <text x="120" y="92" font-size="9" fill="#dc2626">1/3 dos dados fora do ar</text>
+        </svg>
+        <p>Barato e simples. Um nó morre e você perde a fatia dele até restaurar backup.</p>
+      </div>
+      <div class="compare-col">
+        <div class="compare-label">Opção B — com réplica</div>
+        <svg viewBox="0 0 240 110" xmlns="http://www.w3.org/2000/svg" class="diagram-svg">
+          <defs>
+            <marker id="arrowB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
+            </marker>
+          </defs>
+          <rect x="10" y="38" width="60" height="34" rx="6" fill="#eff6ff" stroke="#2563eb"/>
+          <text x="40" y="59" text-anchor="middle" font-size="10" fill="#1e40af">App</text>
+          <line x1="70" y1="50" x2="110" y2="26" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowB)"/>
+          <line x1="70" y1="60" x2="110" y2="84" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowB)"/>
+          <rect x="110" y="10" width="100" height="30" rx="6" fill="#fef2f2" stroke="#dc2626"/>
+          <text x="160" y="29" text-anchor="middle" font-size="10" fill="#991b1b">Primária ✗</text>
+          <rect x="110" y="70" width="100" height="30" rx="6" fill="#f0fdf4" stroke="#16a34a"/>
+          <text x="160" y="89" text-anchor="middle" font-size="10" fill="#14532d">Réplica ✓</text>
+        </svg>
+        <p>Custa 2× de armazenamento, mas a réplica assume e a fatia continua servindo.</p>
+      </div>
+    </div>
+
+    <!-- component: bloco de código -->
+    <span class="cmp-tag">component: bloco de código (pre &gt; code)</span>
+<pre><code>// roteamento fictício de widget → shard
+function shardFor(widgetId, replicas) {
+  const h = hash(widgetId) % replicas.length;
+  return replicas[h].healthy ? replicas[h] : replicas[h].fallback;
+}</code></pre>
+
+    <!-- component: tabela -->
+    <span class="cmp-tag">component: tabela (.data-table + caption)</span>
+    <table class="data-table">
+      <caption>Tabela fictícia — só para checar borda, zebra e alinhamento.</caption>
+      <thead>
+        <tr><th>Estratégia</th><th>Custo de disco</th><th>Perda se um nó cai</th><th>Complexidade</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Sem réplica</td><td>1×</td><td>1/N dos widgets</td><td>Baixa</td></tr>
+        <tr><td>Réplica síncrona</td><td>2×</td><td>Nenhuma</td><td>Alta (latência de escrita)</td></tr>
+        <tr><td>Réplica assíncrona</td><td>2×</td><td>Últimas escritas</td><td>Média</td></tr>
+      </tbody>
+    </table>
+
+    <!-- component: TIPO B — quiz-block (sempre visível, online e offline) -->
+    <span class="cmp-tag">component: quiz-block (Tipo B · sempre visível · sem servidor)</span>
+    <div class="quiz-block" id="quiz-2">
+      <div class="q-label">
+        O Shard B do Widget Store morreu às 3h da manhã. Qual configuração mantém
+        os widgets desse shard disponíveis sem intervenção humana?
+      </div>
+      <div class="radio-group">
+        <label><input type="radio" name="q-2" value="a"/> Cada shard tem uma réplica que assume automaticamente; o roteador passa a mandar as leituras e escritas para ela.</label>
+        <label><input type="radio" name="q-2" value="b"/> Aumentar o número de shards de 3 para 6, porque com mais shards a chance de falha diminui.</label>
+        <label><input type="radio" name="q-2" value="c"/> Guardar um backup diário em disco frio e restaurar quando alguém acordar.</label>
+      </div>
+      <button class="btn" onclick="checkOffline('2', 'a',
+        'Exato. Réplica com failover automático é o que mantém a fatia no ar sem ninguém acordar às 3h.',
+        'Mais shards não reduz falha (aumenta a superfície). Backup frio te devolve os dados horas depois, não segundos. Só réplica quente resolve.')">
+        Verificar
+      </button>
+      <div class="inline-fb" id="fb-offline-2"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: phase (seção 3) — Tipo A: 2º recall escrito
+     ══════════════════════════════════════════════════════════════════ -->
+<span class="cmp-tag">component: phase 3 · badge-3 · phase-body.locked</span>
+<div class="phase" id="phase3">
+  <div class="phase-header">
+    <span class="phase-badge badge-3">Parte 3</span>
+    <span class="phase-title">Quando a esteira entope — backpressure</span>
+  </div>
+  <div class="phase-body locked" id="body3">
+
+    <p>
+      Os widgets chegam para processamento numa esteira. Se os produtores empurram
+      50 mil widgets por segundo e os consumidores dão conta de 5 mil, a esteira cresce
+      até estourar a memória. <strong>Backpressure</strong> é o sinal de volta que faz o
+      produtor desacelerar em vez de deixar o sistema cair.
+    </p>
+
+    <span class="cmp-tag">component: diagram-wrap (segundo diagrama de fluxo)</span>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg" class="diagram-svg">
+        <defs>
+          <marker id="arrow3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
+          </marker>
+          <marker id="arrow3r" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#d97706"/>
+          </marker>
+        </defs>
+        <rect x="15" y="45" width="110" height="38" rx="6" fill="#f3e8ff" stroke="#7c3aed"/>
+        <text x="70" y="68" text-anchor="middle" font-size="11" fill="#4c1d95">Produtor 50k/s</text>
+        <line x1="125" y1="55" x2="185" y2="55" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow3)"/>
+        <line x1="185" y1="80" x2="125" y2="80" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow3r)"/>
+        <text x="150" y="98" text-anchor="middle" font-size="9" fill="#d97706">backpressure</text>
+        <rect x="185" y="38" width="150" height="52" rx="6" fill="#fffbeb" stroke="#d97706"/>
+        <text x="260" y="57" text-anchor="middle" font-size="11" fill="#92400e">Esteira (buffer)</text>
+        <text x="260" y="75" text-anchor="middle" font-size="10" fill="#b45309">▨ ▨ ▨ ▨ ▨ ▨ cheia</text>
+        <line x1="335" y1="64" x2="395" y2="64" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow3)"/>
+        <rect x="395" y="45" width="120" height="38" rx="6" fill="#f0fdf4" stroke="#16a34a"/>
+        <text x="455" y="68" text-anchor="middle" font-size="11" fill="#14532d">Consumidor 5k/s</text>
+      </svg>
+    </div>
+
+    <p>
+      Sem esse sinal, o sistema escolhe entre duas mortes: estourar memória ou descartar
+      widgets em silêncio. Com backpressure, o produtor recebe um "segura aí" explícito
+      e a degradação vira uma decisão, não um acidente.
+    </p>
+
+    <span class="cmp-tag">component: ai-validate-block (Tipo A · segunda instância)</span>
+    <div class="ai-validate-block" id="validate-3"
+         data-concept-id="sandbox_widget_backpressure"
+         data-section-summary="Backpressure é o sinal que o consumidor manda de volta ao produtor quando não dá conta do ritmo de chegada. Sem ele, o buffer entre os dois cresce até estourar memória ou o sistema descarta trabalho em silêncio. Com ele, o produtor desacelera (ou rejeita explicitamente com um erro claro), e a degradação passa a ser uma decisão consciente em vez de um colapso.">
+      <div class="q-label">
+        O consumidor dá conta de 5k/s e o produtor empurra 50k/s. Sem backpressure,
+        quais são as duas formas do sistema morrer? E o que muda quando o sinal existe?
+      </div>
+      <textarea class="answer-textarea" id="answer-3"
+        placeholder="Explique com suas palavras... (ou clique em 🎤 para falar)"></textarea>
+      <div class="answer-tools">
+        <button type="button" class="mic-btn" data-target="answer-3" title="Ditar por voz">🎤 Falar</button>
+        <select class="mic-lang" title="Idioma do ditado"><option value="pt-BR">PT</option><option value="en-US">EN</option></select>
+      </div>
+      <button class="btn" id="btn-3" onclick="validateSection('3')">Validar com IA</button>
+      <div class="ai-result" id="result-3" style="display:none">
+        <div class="score-display" id="score-3"></div>
+        <div class="ai-feedback" id="feedback-3"></div>
+      </div>
+    </div>
+
+    <span class="cmp-tag">component: offline-fallback (segunda instância)</span>
+    <div class="offline-fallback" id="fallback-3" style="display:none">
+      <div class="q-label">
+        Sem backpressure, como o sistema morre? E o que muda com o sinal?
+      </div>
+      <div class="radio-group">
+        <label><input type="radio" name="q-3" value="a"/> Não morre: o buffer cresce para sempre porque disco é barato.</label>
+        <label><input type="radio" name="q-3" value="b"/> Morre só de CPU; a solução é trocar por uma máquina maior.</label>
+        <label><input type="radio" name="q-3" value="c"/> O buffer cresce até estourar a memória, ou o sistema descarta widgets em silêncio. Com backpressure o produtor recebe um sinal para desacelerar (ou uma rejeição explícita) e a degradação vira uma decisão.</label>
+      </div>
+      <button class="btn" onclick="checkOffline('3', 'c',
+        'Isso. As duas mortes são estouro de memória e perda silenciosa. O sinal transforma colapso em degradação controlada.',
+        'Buffer infinito não existe (memória tem teto) e máquina maior só adia. O ponto é o sinal de volta que faz o produtor desacelerar.')">
+        Verificar
+      </button>
+      <div class="inline-fb" id="fb-offline-3"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: teachback  (LESSON-FORMAT § 5) [OBRIGATÓRIO]
+     Sempre Tipo A. Este score é o mastery score que alimenta o SM-2.
+     ══════════════════════════════════════════════════════════════════ -->
+<span class="cmp-tag">component: teachback · badge-final · score-bar · concepts-demonstrated</span>
+<div class="phase" id="phase-teachback">
+  <div class="phase-header">
+    <span class="phase-badge badge-final">Ensina de volta</span>
+    <span class="phase-title">Explique como se fosse ensinar um colega</span>
+  </div>
+  <div class="phase-body locked" id="body-teachback">
+    <p class="q-sub">
+      Imagine que um colega nunca ouviu falar de widgets distribuídos.
+      Explique o conceito (sharding, replicação e backpressure), quando usá-lo e qual o
+      principal risco. Não precisa ser perfeito — escreva o que você entendeu.
+    </p>
+    <p class="sbx-note">
+      Sandbox: comece o texto com <code>!0</code>, <code>!p</code>, <code>!ok</code> ou
+      <code>!m</code> para forçar cada faixa de score e ver a barra, o feedback e a tela
+      de conclusão em cada estado.
+    </p>
+
+    <!-- Online -->
+    <div class="ai-validate-block" id="validate-teachback"
+         data-concept-id="sandbox_widget_sharding,sandbox_widget_replication,sandbox_widget_backpressure"
+         data-section-summary="Widgets distribuídos combinam três decisões. Sharding reparte a base entre N nós por uma chave (hash do widget_id), resolvendo teto de disco e volume varrido por query — o risco é a chave de sharding ser quase impossível de mudar depois e queries cross-shard ficarem caras. Replicação mantém cópias de cada shard para que a morte de um nó não derrube 1/N dos dados; síncrona custa latência de escrita, assíncrona arrisca perder as últimas escritas. Backpressure é o sinal de volta do consumidor para o produtor quando o ritmo de chegada excede a capacidade — sem ele o buffer estoura a memória ou o sistema descarta trabalho em silêncio. Usar quando o volume passa do que um nó aguenta e a indisponibilidade de uma fatia é inaceitável; não usar enquanto uma máquina única ainda der conta, porque toda essa complexidade tem custo operacional."
+         data-is-teachback="true">
+      <textarea class="answer-textarea answer-textarea--large" id="answer-teachback"
+        placeholder="Escreva sua explicação aqui... (ou clique em 🎤 para falar)"></textarea>
+      <div class="answer-tools">
+        <button type="button" class="mic-btn" data-target="answer-teachback" title="Ditar por voz">🎤 Falar</button>
+        <select class="mic-lang" title="Idioma do ditado"><option value="pt-BR">PT</option><option value="en-US">EN</option></select>
+      </div>
+      <button class="btn" id="btn-teachback" onclick="validateTeachback()">Enviar para avaliação</button>
+      <div class="ai-result" id="result-teachback" style="display:none">
+        <div class="score-display" id="score-teachback"></div>
+        <div class="score-bar-wrap">
+          <div class="score-bar" id="score-bar-teachback"></div>
+        </div>
+        <div class="ai-feedback" id="feedback-teachback"></div>
+        <div class="concepts-demonstrated" id="concepts-teachback"></div>
+      </div>
+    </div>
+
+    <!-- Offline fallback para teach-back -->
+    <span class="cmp-tag">component: offline-fallback do teach-back</span>
+    <div class="offline-fallback" id="fallback-teachback" style="display:none">
+      <p style="color:var(--muted); font-size:0.9rem">
+        Validação IA indisponível. Responda às perguntas de revisão abaixo.
+      </p>
+      <div class="q-label">Qual resumo cobre as três decisões da lição?</div>
+      <div class="radio-group">
+        <label><input type="radio" name="q-teachback" value="a"/> Widgets ficam num nó só, com cache na frente e um índice bem escolhido — é isso que escala.</label>
+        <label><input type="radio" name="q-teachback" value="b"/> Sharding reparte a base por uma chave (1/N por nó); replicação mantém cópias para sobreviver à morte de um nó; backpressure faz o produtor desacelerar quando o consumidor não dá conta. Risco maior: a chave de sharding é quase impossível de mudar depois.</label>
+        <label><input type="radio" name="q-teachback" value="c"/> Sharding e replicação são a mesma coisa vista de ângulos diferentes, e backpressure é um tipo de load balancer.</label>
+      </div>
+      <button class="btn" onclick="checkOffline('teachback', 'b',
+        'Completo: reparte (sharding), sobrevive (replicação), não estoura (backpressure) — e o risco da chave.',
+        'Sharding reparte dados diferentes; replicação copia os mesmos dados. Backpressure não distribui carga, ele freia o produtor. Reveja as três partes.')">
+        Verificar
+      </button>
+      <div class="inline-fb" id="fb-offline-teachback"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: flashcard-section + next-review-box (tela de conclusão)
+     (LESSON-FORMAT § 6) [OBRIGATÓRIO]
+     ══════════════════════════════════════════════════════════════════ -->
+<span class="cmp-tag">component: flashcards + next-review-box (tela de conclusão)</span>
+<div id="flashcard-section" style="display:none">
+  <hr/>
+  <div class="flashcard-header">Revisão imediata — antes de fechar</div>
+  <p class="q-sub">Clique em cada card para revelar. Não precisa acertar — o objetivo é ativar a memória.</p>
+
+  <div class="flashcard-grid">
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-front">O que é sharding de widgets?</div>
+      <div class="flashcard-back">Repartir a base entre N nós por uma chave — cada nó guarda 1/N dos widgets.</div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-front">Quando usar replicação?</div>
+      <div class="flashcard-back">Quando a morte de um nó não pode derrubar a fatia dele — custa 2× de disco.</div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-front">Sharding vs. replicação?</div>
+      <div class="flashcard-back">Sharding reparte dados diferentes; replicação copia os mesmos dados.</div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-front">O que backpressure evita?</div>
+      <div class="flashcard-back">Buffer estourando a memória e descarte silencioso de trabalho.</div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-front">Maior risco do sharding?</div>
+      <div class="flashcard-back">Escolher a chave errada — mudá-la depois custa uma migração inteira.</div>
+    </div>
+
+  </div>
+
+  <div class="next-review-box" id="next-review-box" style="display:none">
+    <strong>Próxima revisão agendada:</strong>
+    <span id="next-review-date"></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: sandbox-catalog-probe  [SANDBOX-ONLY]
+     Exercita GET /api/catalog — não faz parte do LESSON-FORMAT.
+     ══════════════════════════════════════════════════════════════════ -->
+<span class="cmp-tag">component: catalog probe [SANDBOX-ONLY] · GET /api/catalog</span>
+<div class="callout">
+  <span class="callout-label">Sandbox · diagnóstico</span>
+  Lista os arquivos de lição e revisão que o servidor enxerga em disco.
+  <div class="sbx-controls">
+    <button type="button" class="sbx-btn" onclick="sbxLoadCatalog()">Buscar catálogo</button>
+  </div>
+  <div class="sbx-out" id="catalog-out">nenhuma chamada feita ainda.</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     component: footer  (LESSON-FORMAT § 7) [OBRIGATÓRIO]
+     ══════════════════════════════════════════════════════════════════ -->
+<span class="cmp-tag">component: footer · .source-box</span>
+<footer>
+  <strong>Fonte primária:</strong>
+  <div class="source-box">
+    Fictícia — <em>The Distributed Widget Companion</em>, cap. 0. Esta página é um fixture de
+    layout; nenhuma afirmação aqui deve ser levada a sério.
+  </div>
+  <p><strong>Referência:</strong>
+    <a href="../../reference/glossary.html">Glossário</a> &nbsp;·&nbsp;
+    <a href="../../lessons/0010-message-queues.html">Lição anterior</a> &nbsp;·&nbsp;
+    <a href="../../reference/my-learning.html">Dashboard</a>
+  </p>
+  <p>Dúvidas? Pergunte ao professor — é para isso que estou aqui.</p>
+</footer>
+
+<script>
+  /* ══════════════════════════════════════════════════════════════════
+     8. SCRIPT OBRIGATÓRIO — LESSON-FORMAT.md § 8
+     Mantido fiel ao spec. Os únicos desvios estão marcados com
+     [DESVIO] e explicados na linha.
+     ══════════════════════════════════════════════════════════════════ */
+
+  // ── Constantes que cada lição define no topo do seu script ──
+  const LESSON_ID       = 'sandbox-kitchen-sink';
+  const UNLOCK_SEQUENCE = ['1', '2', '3', 'teachback'];
+
+  // ── Detecção de servidor ────────────────────────────────────
+  // Usa a própria origem quando a página é servida por HTTP — funciona tanto em
+  // localhost quanto atrás de um túnel (para abrir a lição no celular). Só cai no
+  // localhost fixo quando o arquivo é aberto via file://.
+  const SERVER = location.protocol.startsWith('http') ? location.origin : 'http://localhost:9990';
+  let serverOnline = false;
+
+  async function detectServer() {
+    try {
+      const r = await fetch(`${SERVER}/api/health`, { signal: AbortSignal.timeout(1500) });
+      serverOnline = r.ok;
+    } catch {
+      serverOnline = false;
+    }
+    if (!serverOnline) {
+      document.getElementById('offline-banner').style.display = 'block';
+      // Trocar todos os blocos ai-validate por offline-fallback
+      // (quiz-block NÃO é tocado — é 1ª classe e funciona sem servidor)
+      document.querySelectorAll('.ai-validate-block').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.offline-fallback').forEach(el => el.style.display = 'block');
+    }
+    sbxLog(serverOnline ? 'GET /api/health → online' : 'GET /api/health → offline (fallbacks visíveis)');
+  }
+  detectServer();
+
+  // ── Ditado por voz (Web Speech API) ─────────────────────────
+  // Cada .mic-btn dita para a textarea apontada por data-target. O texto fica
+  // editável (fonte de verdade). Navegador sem suporte → o botão some.
+  function setupDictation() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const btns = document.querySelectorAll('.mic-btn');
+    if (!SR) { btns.forEach(b => { b.disabled = true; b.title = 'Navegador sem reconhecimento de voz'; }); return; }
+
+    btns.forEach(btn => {
+      const target = document.getElementById(btn.dataset.target);
+      const hint = document.createElement('span');       // mensagem visível quando o mic falha
+      hint.className = 'mic-hint';
+      btn.parentNode.appendChild(hint);
+      let rec = null, active = false;
+
+      btn.addEventListener('click', () => {
+        if (active) { rec && rec.stop(); return; }       // segundo clique = parar
+        hint.textContent = '';
+        rec = new SR();
+        rec.lang = (btn.parentNode.querySelector('.mic-lang') || {}).value || 'pt-BR';  // PT/EN escolhido pelo usuário
+        rec.interimResults = true;
+        rec.continuous = true;
+
+        let base = target.value ? target.value.trimEnd() + ' ' : '';
+        let gotAudio = false;
+        const t0 = Date.now();
+
+        rec.onaudiostart = () => { gotAudio = true; };
+        rec.onresult = (e) => {
+          gotAudio = true;
+          let finalTxt = '', interim = '';
+          for (let i = e.resultIndex; i < e.results.length; i++) {
+            const t = e.results[i][0].transcript;
+            if (e.results[i].isFinal) finalTxt += t; else interim += t;
+          }
+          if (finalTxt) base += finalTxt + ' ';
+          target.value = base + interim;                 // mostra parcial enquanto fala
+        };
+        rec.onerror = (e) => {
+          hint.textContent = e.error === 'not-allowed' || e.error === 'service-not-allowed'
+            ? 'Microfone bloqueado — libere a permissão (ou abra no Safari/Chrome).'
+            : e.error === 'no-speech' ? 'Não te ouvi — fale mais perto e tente de novo.'
+            : 'Falha no microfone (' + e.error + ').';
+        };
+        rec.onend = () => {
+          active = false; btn.classList.remove('recording'); btn.textContent = '🎤 Falar';
+          // Falha silenciosa (ex.: Arc não dispara o prompt de permissão): termina na hora, sem áudio
+          if (!gotAudio && Date.now() - t0 < 1200 && !hint.textContent) {
+            hint.textContent = 'Não consegui acessar o microfone neste navegador. Verifique a permissão de mic — ou abra no Safari/Chrome.';
+          }
+        };
+
+        try {
+          rec.start();
+          active = true; btn.classList.add('recording'); btn.textContent = '⏹ Parar';
+        } catch (err) {
+          hint.textContent = 'Não foi possível iniciar o microfone.';
+        }
+      });
+    });
+  }
+  setupDictation();
+
+  // ── Validação online (Gemini via servidor) ──────────────────
+  async function validateSection(sectionId) {
+    const block  = document.getElementById(`validate-${sectionId}`);
+    const answer = document.getElementById(`answer-${sectionId}`).value.trim();
+    if (!answer) return;
+
+    const conceptId = block.dataset.conceptId;
+    const summary   = block.dataset.sectionSummary;
+
+    // [DESVIO] botão em estado de carregamento + try/catch: no fixture a falha
+    // precisa ser visível em vez de virar uma promise rejeitada no console.
+    const btn = document.getElementById(`btn-${sectionId}`);
+    btn.disabled = true; btn.classList.add('btn-loading'); btn.textContent = 'Validando…';
+    try {
+      const res = await fetch(`${SERVER}/api/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ concept_id: conceptId, section_summary: summary, user_answer: answer })
+      });
+      const data = await res.json();
+
+      document.getElementById(`score-${sectionId}`).textContent = `${data.score}/100`;
+      document.getElementById(`feedback-${sectionId}`).textContent = data.feedback;
+      document.getElementById(`result-${sectionId}`).style.display = 'block';
+
+      if (data.score >= 50) unlockNext(sectionId);
+      sbxLog(`POST /api/validate (seção ${sectionId}) → score ${data.score}`);
+    } catch (err) {
+      document.getElementById(`feedback-${sectionId}`).textContent =
+        'Erro ao conectar no servidor. Use o botão "Forçar modo OFFLINE" no topo.';
+      document.getElementById(`result-${sectionId}`).style.display = 'block';
+      sbxLog(`POST /api/validate (seção ${sectionId}) → erro: ${err.message}`);
+    } finally {
+      btn.disabled = false; btn.classList.remove('btn-loading'); btn.textContent = 'Validar com IA';
+    }
+  }
+
+  async function validateTeachback() {
+    const answer = document.getElementById('answer-teachback').value.trim();
+    if (!answer) return;
+
+    const block     = document.getElementById('validate-teachback');
+    const conceptId = block.dataset.conceptId;
+    const summary   = block.dataset.sectionSummary;
+
+    // [DESVIO] mesmo estado de carregamento + try/catch da validateSection.
+    const btn = document.getElementById('btn-teachback');
+    btn.disabled = true; btn.classList.add('btn-loading'); btn.textContent = 'Avaliando…';
+    try {
+      const res = await fetch(`${SERVER}/api/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          concept_id: conceptId,
+          section_summary: summary,
+          user_answer: answer,
+          is_teachback: true,
+          lesson_id: LESSON_ID   // constante definida no topo do script de cada lição
+        })
+      });
+      const data = await res.json();
+
+      document.getElementById('score-teachback').textContent = `${data.score}/100`;
+      document.getElementById('score-bar-teachback').style.width = `${data.score}%`;
+      document.getElementById('feedback-teachback').textContent = data.feedback;
+
+      if (data.concepts_demonstrated?.length) {
+        document.getElementById('concepts-teachback').textContent =
+          'Conceitos demonstrados: ' + data.concepts_demonstrated.join(', ');
+      }
+      document.getElementById('result-teachback').style.display = 'block';
+      sbxLog(`POST /api/validate (teach-back) → score ${data.score}`);
+
+      // Salvar progresso + SM-2
+      const prog = await fetch(`${SERVER}/api/progress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lesson_id: LESSON_ID,
+          final_score: data.score,
+          concepts_demonstrated: data.concepts_demonstrated || []
+        })
+      });
+      const progData = await prog.json();
+
+      // Mostrar flash cards e próxima revisão
+      document.getElementById('flashcard-section').style.display = 'block';
+      if (progData.next_review) {
+        document.getElementById('next-review-date').textContent = progData.next_review;
+        document.getElementById('next-review-box').style.display = 'block';
+      }
+      sbxLog(`POST /api/progress → next_review: ${progData.next_review || '(nenhuma)'}`);
+
+      markProgress('seg-teachback');
+      setTimeout(() => document.getElementById('flashcard-section')
+        .scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+    } catch (err) {
+      document.getElementById('feedback-teachback').textContent =
+        'Erro ao conectar no servidor. Use o botão "Abrir tela de conclusão" no topo para ver os flash cards.';
+      document.getElementById('result-teachback').style.display = 'block';
+      sbxLog(`teach-back → erro: ${err.message}`);
+    } finally {
+      btn.disabled = false; btn.classList.remove('btn-loading'); btn.textContent = 'Enviar para avaliação';
+    }
+  }
+
+  // ── Fallback offline ────────────────────────────────────────
+  function checkOffline(sectionId, correctValue, feedbackOk, feedbackBad) {
+    const sel = document.querySelector(`input[name="q-${sectionId}"]:checked`);
+    if (!sel) return;
+    const el = document.getElementById(`fb-offline-${sectionId}`);
+    const isCorrect = sel.value === correctValue;
+    el.className = `inline-fb show ${isCorrect ? 'ok' : 'bad'}`;
+    el.textContent = isCorrect ? feedbackOk : feedbackBad;
+    document.querySelectorAll(`input[name="q-${sectionId}"]`).forEach(i => {
+      // [DESVIO] o spec usa classList.add(i.checked ? 'wrong' : '') — string vazia
+      // lança InvalidCharacterError no DOM. Trocado por toggle, que é o que as
+      // lições reais (0004..0010) já fazem.
+      i.parentElement.classList.toggle('correct', i.value === correctValue);
+      i.parentElement.classList.toggle('wrong',   i.checked && i.value !== correctValue);
+      i.disabled = true;
+    });
+    if (isCorrect) unlockNext(sectionId);
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────
+  function unlockNext(currentId) {
+    // Cada lição define sua sequência de desbloqueio
+    const idx = UNLOCK_SEQUENCE.indexOf(String(currentId));
+    if (idx >= 0 && idx < UNLOCK_SEQUENCE.length - 1) {
+      const nextId = UNLOCK_SEQUENCE[idx + 1];
+      const nextBody = document.getElementById(`body${nextId === 'teachback' ? '-teachback' : nextId}`);
+      if (nextBody) {
+        nextBody.classList.remove('locked');
+        nextBody.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    markProgress(`seg${currentId}`);
+  }
+
+  function markProgress(segId) {
+    const seg = document.getElementById(segId);
+    if (seg) seg.classList.add('done');
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     CONTROLES SANDBOX — [SANDBOX-ONLY], nada disto existe numa lição.
+     Servem para forçar estados de UI sem servidor, sem microfone e sem
+     precisar responder tudo em ordem.
+     ══════════════════════════════════════════════════════════════════ */
+
+  function sbxLog(msg) {
+    const out = document.getElementById('sbx-out');
+    if (!out) return;
+    const ts = new Date().toLocaleTimeString('pt-BR');
+    out.textContent = `[${ts}] ${msg}\n` + out.textContent;
+  }
+
+  function sbxForceOffline() {
+    document.getElementById('offline-banner').style.display = 'block';
+    document.querySelectorAll('.ai-validate-block').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.offline-fallback').forEach(el => el.style.display = 'block');
+    sbxLog('modo OFFLINE forçado — ai-validate-block oculto, offline-fallback visível, quiz-block intacto');
+  }
+
+  function sbxForceOnline() {
+    document.getElementById('offline-banner').style.display = 'none';
+    document.querySelectorAll('.ai-validate-block').forEach(el => el.style.display = '');
+    document.querySelectorAll('.offline-fallback').forEach(el => el.style.display = 'none');
+    sbxLog('modo ONLINE forçado — ai-validate-block visível, offline-fallback oculto');
+  }
+
+  function sbxToggleLocks() {
+    const bodies = Array.from(document.querySelectorAll('.phase-body'));
+    const anyLocked = bodies.some(b => b.classList.contains('locked'));
+    if (anyLocked) {
+      bodies.forEach(b => {
+        if (b.classList.contains('locked')) { b.dataset.wasLocked = '1'; b.classList.remove('locked'); }
+      });
+      sbxLog('todas as seções destravadas (.locked removido)');
+    } else {
+      bodies.forEach(b => { if (b.dataset.wasLocked === '1') b.classList.add('locked'); });
+      sbxLog('seções retravadas (.locked reaplicado)');
+    }
+  }
+
+  function sbxToggleMic() {
+    const btns = document.querySelectorAll('.mic-btn');
+    const on = !btns[0].classList.contains('recording');
+    btns.forEach(btn => {
+      // garante o .mic-hint mesmo em navegador sem Web Speech (setupDictation nem roda)
+      let hint = btn.parentNode.querySelector('.mic-hint');
+      if (!hint) { hint = document.createElement('span'); hint.className = 'mic-hint'; btn.parentNode.appendChild(hint); }
+      if (on) {
+        btn.classList.add('recording'); btn.textContent = '⏹ Parar';
+        hint.textContent = 'Não consegui acessar o microfone neste navegador. Verifique a permissão de mic — ou abra no Safari/Chrome.';
+      } else {
+        btn.classList.remove('recording'); btn.textContent = '🎤 Falar';
+        hint.textContent = '';
+      }
+    });
+    sbxLog(on ? 'mic simulado: .recording + .mic-hint ligados' : 'mic simulado: estados desligados');
+  }
+
+  function sbxShowCompletion() {
+    document.getElementById('flashcard-section').style.display = 'block';
+    document.getElementById('next-review-date').textContent = 'sexta-feira, 1 de agosto (fictício)';
+    document.getElementById('next-review-box').style.display = 'block';
+    document.querySelectorAll('.progress-seg').forEach(s => s.classList.add('done'));
+    document.getElementById('flashcard-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    sbxLog('tela de conclusão aberta (flash cards + next-review-box + progresso cheio)');
+  }
+
+  async function sbxLoadCatalog() {
+    const out = document.getElementById('catalog-out');
+    out.textContent = 'carregando…';
+    try {
+      const res  = await fetch(`${SERVER}/api/catalog`);
+      const data = await res.json();
+      const fmt  = (arr, label) =>
+        `${label} (${(arr || []).length}):\n` + (arr || []).map(x => `  · ${x.file} — ${x.title}`).join('\n');
+      out.textContent = fmt(data.lessons, 'lessons') + '\n\n' + fmt(data.reviews, 'reviews');
+      sbxLog(`GET /api/catalog → ${(data.lessons || []).length} lições, ${(data.reviews || []).length} revisões`);
+    } catch (err) {
+      out.textContent = 'falhou: ' + err.message;
+      sbxLog(`GET /api/catalog → erro: ${err.message}`);
+    }
+  }
+</script>
+</body>
+</html>

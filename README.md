@@ -194,6 +194,44 @@ Local Express app: Gemini proxy + MongoDB bridge. Routes used by the lessons/das
 
 `SKILL.md` queries these directly via `mongosh` at the start of every session.
 
+### Serving the workspace
+
+The server statically serves the study workspace, so lessons open over
+`http://localhost` (a secure context — the mic needs one) instead of `file://`.
+It infers the workspace root from its own location, assuming `<workspace>/skill/server`.
+Set **`LEARNO_WORKSPACE`** to override that for any other layout; the sandbox
+below relies on it.
+
+---
+
+## Developing the engine (`sandbox/`)
+
+Changing the lesson format, the styles, or the dashboard means testing against
+content — but you should never have to touch a real study workspace, spend a
+Gemini call, or provision a database to see whether a layout still renders.
+
+```sh
+make sandbox     # http://localhost:9991 — no MongoDB, no API key
+make tunnel      # same, plus a public URL to check it on a phone
+make check       # syntax-check the server, validate the seed fixture
+```
+
+`LEARNO_MODE=sandbox` swaps two things and nothing else:
+
+- **the store** — an in-memory stand-in seeded from `sandbox/fixtures/seed.json`.
+  The routes are untouched, so the real SM-2 scheduling code runs against it.
+- **the validator** — a deterministic verdict instead of the Gemini call, so
+  scoring is free, instant and repeatable. Prefix an answer with `!0`, `!p`,
+  `!ok` or `!m` to force each score band.
+
+State resets on every restart, so the sandbox always starts from the same place
+and a visual difference means a real regression. `sandbox/lessons/0001-kitchen-sink.html`
+holds one instance of every block `LESSON-FORMAT.md` defines — see
+[`sandbox/README.md`](sandbox/README.md).
+
+> When you add a block to the lesson format, add it to the kitchen-sink lesson in
+> the same commit. The fixture is only useful while it stays exhaustive.
+
 ---
 
 ## How a session works (the loop)
