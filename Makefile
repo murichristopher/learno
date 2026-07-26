@@ -13,7 +13,7 @@ SANDBOX   := $(CURDIR)/sandbox
 SERVER    := $(CURDIR)/server
 RUN        = LEARNO_MODE=sandbox LEARNO_WORKSPACE=$(SANDBOX) PORT=$(PORT)
 
-.PHONY: help sandbox tunnel stop check deps install-workspace
+.PHONY: help sandbox local stop check deps install-workspace
 
 # The engine repo ships no node_modules; install on first run so a fresh clone
 # goes straight to `make sandbox` without a separate setup step.
@@ -22,33 +22,39 @@ deps:
 
 help:
 	@echo "learno engine"
-	@echo "  make sandbox            serve the sandbox workspace on :$(PORT) (no DB, no API key)"
-	@echo "  make tunnel             same, plus a public Cloudflare URL for phone testing"
+	@echo "  make sandbox            serve the sandbox + a public Cloudflare URL (no DB, no API key)"
+	@echo "  make local              same, localhost only — no tunnel"
 	@echo "  make check              syntax-check the server and validate the seed fixture"
 	@echo "  make stop               kill whatever holds :$(PORT)"
 	@echo "  make install-workspace DEST=../my-study   copy the workspace Makefile into a study repo"
 
-# Kitchen-sink lesson + dashboard, wired to the stubbed backend.
+# Kitchen-sink lesson + dashboard, wired to the stubbed backend and exposed
+# through a Cloudflare quick tunnel so the layout can be checked on a real phone.
+# Ctrl-C tears both down.
+#
+# The *.trycloudflare.com hostname is random per run and unauthenticated. That is
+# acceptable here in a way it is not for a study workspace: this only ever serves
+# sandbox/, which is fixtures about a fake subject, backed by an in-memory store
+# and a stubbed validator — no real progress, no database, no API key to spend.
 sandbox: deps
-	@echo "sandbox → http://localhost:$(PORT)/lessons/0001-kitchen-sink.html"
-	@echo "        → http://localhost:$(PORT)/reference/my-learning.html"
-	@$(RUN) node --watch $(SERVER)/index.js
-
-# Same, exposed publicly so the layout can be checked on a real phone.
-# The *.trycloudflare.com hostname is random per run and unauthenticated — it is
-# only ever pointed at the sandbox, which holds fixtures rather than real data.
-tunnel: deps
-	@command -v cloudflared >/dev/null || { echo "cloudflared not installed: brew install cloudflared"; exit 1; }
+	@command -v cloudflared >/dev/null || { echo "cloudflared not installed: brew install cloudflared (or use: make local)"; exit 1; }
 	@set -m; \
 	$(RUN) node --watch $(SERVER)/index.js & srv=$$!; \
 	trap 'kill $$srv 2>/dev/null; exit 0' INT TERM EXIT; \
 	until curl -sf http://localhost:$(PORT)/api/health >/dev/null 2>&1; do sleep 0.3; done; \
 	echo "sandbox up on :$(PORT) — opening Cloudflare tunnel…"; \
+	echo "  local → http://localhost:$(PORT)/lessons/0001-kitchen-sink.html"; \
 	cloudflared tunnel --no-autoupdate --url http://localhost:$(PORT)
+
+# Localhost only — for when cloudflared is unavailable or you're offline.
+local: deps
+	@echo "sandbox → http://localhost:$(PORT)/lessons/0001-kitchen-sink.html"
+	@echo "        → http://localhost:$(PORT)/reference/my-learning.html"
+	@$(RUN) node --watch $(SERVER)/index.js
 
 check: deps
 	@for f in $(SERVER)/index.js $(SERVER)/db.js $(SERVER)/memdb.js \
-	          $(SERVER)/sandbox-validator.js $(SERVER)/routes/*.js; do \
+	          $(SERVER)/sandbox-validator.js $(SERVER)/workspace.js $(SERVER)/routes/*.js; do \
 	  node --check $$f || exit 1; \
 	done
 	@node -e "JSON.parse(require('fs').readFileSync('$(SANDBOX)/fixtures/seed.json','utf8'))" \

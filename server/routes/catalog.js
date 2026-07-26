@@ -1,34 +1,6 @@
 const router = require('express').Router();
-const fs = require('fs');
-const path = require('path');
+const { listWorkspace } = require('../workspace');
 
-// Lists the lesson/review HTML files actually present on disk (independent of
-// MongoDB progress), so the dashboard can show EVERYTHING — completed or not.
-// __dirname is skill/server/routes → three levels up is the workspace root.
-// Must stay in step with the static root in server/index.js; see the note there
-// on why LEARNO_WORKSPACE exists.
-const WORKSPACE = process.env.LEARNO_WORKSPACE
-  ? path.resolve(process.env.LEARNO_WORKSPACE)
-  : path.join(__dirname, '..', '..', '..');
-
-function listDir(rel) {
-  const dir = path.join(WORKSPACE, rel);
-  let files;
-  try { files = fs.readdirSync(dir).filter(f => f.endsWith('.html')); }
-  catch { return []; }
-  return files.sort().map(file => {
-    let title = file;
-    try {
-      const html = fs.readFileSync(path.join(dir, file), 'utf8');
-      const m = html.match(/<title>([^<]*)<\/title>/i);
-      if (m && m[1].trim()) title = m[1].trim();
-    } catch { /* keep filename as title */ }
-    return { file, title, path: '/' + rel + '/' + file };
-  });
-}
-
-router.get('/', (_req, res) => {
-  res.json({ lessons: listDir('lessons'), reviews: listDir('review') });
-});
+router.get('/', (_req, res) => res.json(listWorkspace()));
 
 module.exports = router;

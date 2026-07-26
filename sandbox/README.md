@@ -9,9 +9,16 @@ while clicking around survives a restart.
 ## Running it
 
 ```sh
-make sandbox          # http://localhost:9991
-make tunnel           # same, plus a public URL for testing on a phone
+make sandbox          # :9991 + a public Cloudflare URL, printed on startup
+make local            # same, localhost only — no tunnel
 ```
+
+The tunnel is on by default because layout work needs a real phone, and the
+exposure is harmless here: the sandbox serves fixtures about a fake subject,
+backed by an in-memory store and a stubbed validator. There is no real progress
+to leak, no database behind it, and no API key to spend. A **study** workspace is
+the opposite on every count — that one gets `make local` unless you specifically
+need the phone.
 
 No `MONGODB_URI` and no `GEMINI_API_KEY` are needed — that is the point. A
 client can clone the engine and see a lesson render without provisioning

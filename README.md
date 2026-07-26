@@ -76,7 +76,8 @@ my-study/                     ← the study workspace (one git repo PER subject,
 > The engine assumes it sits one level under the workspace:
 > - `skill/server/index.js` loads env from `../../.env` (i.e. the **workspace root**, two levels up).
 > - `SKILL.md` reads `../MISSION.md`, `../NOTES.md`, `../lessons/`, `../reference/glossary.html`, etc.
-> - Lessons call the server at a **hardcoded** `http://localhost:9990`.
+> - Lessons derive the API base from the page's own origin, so they work on any
+>   port and through a tunnel; `http://localhost:9990` is only the `file://` fallback.
 >
 > So consume this repo as a subfolder named `skill/` (copy it in, or add it as a **git submodule**).
 > If you clone it as a standalone repo root, those relative paths break.
@@ -108,7 +109,7 @@ my-study/                     ← the study workspace (one git repo PER subject,
    ```bash
    cp skill/.env.example .env
    # then edit: GEMINI_API_KEY, MONGODB_URI, and set MONGODB_DB per study.
-   # Keep PORT=9990 — lessons hardcode http://localhost:9990 (see Gotchas).
+   # PORT is free to change — lessons read the API base from their own origin.
    ```
 
 3. **Install and start the server** (from the workspace root):
@@ -211,8 +212,8 @@ content — but you should never have to touch a real study workspace, spend a
 Gemini call, or provision a database to see whether a layout still renders.
 
 ```sh
-make sandbox     # http://localhost:9991 — no MongoDB, no API key
-make tunnel      # same, plus a public URL to check it on a phone
+make sandbox     # serves the sandbox + a public Cloudflare URL (no MongoDB, no API key)
+make local       # same, localhost only — no tunnel
 make check       # syntax-check the server, validate the seed fixture
 ```
 
