@@ -1,0 +1,393 @@
+/* ============================================================================
+   learno style — the design system
+
+   Every token is named for its role, not its hue, so a rebrand touches only the
+   :root block below. Glass is the baseline: cards, bars and panels are all
+   translucent and blurred by default, and the inner glow is part of a card
+   rather than something a page opts into.
+
+   Theme: follows the OS by default, and `data-theme="light|dark"` on <html>
+   overrides it in both directions so a toggle always wins.
+
+   Transparency: `prefers-reduced-transparency` is honoured, because it is an
+   accessibility setting the reader asked their OS for. It drops the blur and
+   makes surfaces opaque without moving anything. `data-transparency="reduce"`
+   forces the same path for testing.
+   ========================================================================= */
+
+:root {
+  color-scheme: light dark;
+
+  /* Accent */
+  --lx-accent:        #9333ea;
+  --lx-accent-strong: #7e22ce;
+  --lx-accent-soft:   rgb(243 232 255 / .6);
+  --lx-accent-ring:   rgb(168 85 247 / .3);
+
+  /* Text — primary, secondary, muted, subtle */
+  --lx-text:        #111827;
+  --lx-text-2:      #374151;
+  --lx-text-muted:  #6b7280;
+  --lx-text-subtle: #9ca3af;
+
+  /* Glass card */
+  --lx-card:        rgb(255 255 255 / .6);
+  --lx-card-border: rgb(233 213 255 / .3);
+  --lx-card-shadow: 0 4px 24px -4px rgb(147 51 234 / .08);
+
+  /* Page container */
+  --lx-panel:        rgb(255 255 255 / .4);
+  --lx-panel-border: rgb(233 213 255 / .2);
+
+  /* Top bar */
+  --lx-bar:        rgb(255 255 255 / .6);
+  --lx-bar-border: rgb(233 213 255 / .4);
+
+  --lx-border: rgb(233 213 255 / .3);
+
+  /* Inputs */
+  --lx-input:        rgb(250 245 255 / .5);
+  --lx-input-border: rgb(233 213 255 / .3);
+  --lx-placeholder:  #9ca3af;
+
+  /* Shell gradient */
+  --lx-shell-from: rgb(243 232 255 / .8);
+  --lx-shell-via:  #ffffff;
+  --lx-shell-to:   rgb(224 231 255 / .8);
+
+  /* Overlay wash, on the shell and inside cards */
+  --lx-wash-from: rgb(216 180 254 / .10);
+  --lx-wash-to:   rgb(147 197 253 / .10);
+
+  /* Radii — rounded-3xl / rounded-xl */
+  --lx-radius:    1.5rem;
+  --lx-radius-sm: .75rem;
+
+  /* Blur strengths — backdrop-blur-sm / -xl / -2xl */
+  --lx-blur-sm: 4px;
+  --lx-blur:    24px;
+  --lx-blur-lg: 40px;
+}
+
+/* Dark values, applied by OS preference and by the explicit attribute. Kept in
+   one place via a custom-property block repeated for both selectors — CSS has
+   no way to share a declaration list between them without preprocessing. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --lx-text:        #ffffff;
+    --lx-text-2:      rgb(255 255 255 / .9);
+    --lx-text-muted:  rgb(255 255 255 / .6);
+    --lx-text-subtle: rgb(255 255 255 / .4);
+
+    --lx-card:        rgb(0 0 0 / .4);
+    --lx-card-border: rgb(255 255 255 / .2);
+    --lx-card-shadow: 0 4px 24px -4px rgb(0 0 0 / .4);
+
+    --lx-panel:        rgb(0 0 0 / .2);
+    --lx-panel-border: rgb(255 255 255 / .1);
+
+    --lx-bar:        rgb(0 0 0 / .3);
+    --lx-bar-border: rgb(255 255 255 / .1);
+
+    --lx-border: rgb(255 255 255 / .1);
+
+    --lx-input:        rgb(255 255 255 / .05);
+    --lx-input-border: rgb(255 255 255 / .1);
+    --lx-placeholder:  rgb(255 255 255 / .4);
+
+    --lx-accent-soft: rgb(168 85 247 / .1);
+    --lx-shell-from:  rgb(59 7 100 / .95);        /* purple-950/95 */
+    --lx-shell-via:   #111827;                     /* gray-900 */
+    --lx-shell-to:    rgb(30 27 75 / .95);        /* indigo-950/95 */
+    --lx-wash-from:   rgb(168 85 247 / .05);
+    --lx-wash-to:     rgb(59 130 246 / .05);
+  }
+}
+
+:root[data-theme="dark"] {
+  --lx-text:        #ffffff;
+  --lx-text-2:      rgb(255 255 255 / .9);
+  --lx-text-muted:  rgb(255 255 255 / .6);
+  --lx-text-subtle: rgb(255 255 255 / .4);
+
+  --lx-card:        rgb(0 0 0 / .4);
+  --lx-card-border: rgb(255 255 255 / .2);
+  --lx-card-shadow: 0 4px 24px -4px rgb(0 0 0 / .4);
+
+  --lx-panel:        rgb(0 0 0 / .2);
+  --lx-panel-border: rgb(255 255 255 / .1);
+
+  --lx-bar:        rgb(0 0 0 / .3);
+  --lx-bar-border: rgb(255 255 255 / .1);
+
+  --lx-border: rgb(255 255 255 / .1);
+
+  --lx-input:        rgb(255 255 255 / .05);
+  --lx-input-border: rgb(255 255 255 / .1);
+  --lx-placeholder:  rgb(255 255 255 / .4);
+
+  --lx-accent-soft: rgb(168 85 247 / .1);
+  --lx-shell-from:  rgb(59 7 100 / .95);
+  --lx-shell-via:   #111827;
+  --lx-shell-to:    rgb(30 27 75 / .95);
+  --lx-wash-from:   rgb(168 85 247 / .05);
+  --lx-wash-to:     rgb(59 130 246 / .05);
+}
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, h4, p, figure, blockquote, dl, dd, ol, ul { margin: 0; padding: 0; }
+ul[class], ol[class] { list-style: none; }
+img, svg { max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* ── Layer 1: shell ──────────────────────────────────────────────── */
+
+.lx-shell {
+  min-height: 100vh;
+  background-image: linear-gradient(to bottom right,
+    var(--lx-shell-from), var(--lx-shell-via), var(--lx-shell-to));
+  background-attachment: fixed;
+  color: var(--lx-text-2);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Layer 2 ─────────────────────────────────────────────────── */
+.lx-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: linear-gradient(to bottom right,
+    var(--lx-wash-from), transparent, var(--lx-wash-to));
+}
+
+/* Everything above the wash. */
+.lx-content { position: relative; z-index: 1; }
+
+/* ── Layer 3: bar ────────────────────────────────────────────── */
+
+.lx-bar {
+  border-bottom: 1px solid var(--lx-bar-border);
+  background: var(--lx-bar);
+  backdrop-filter: blur(var(--lx-blur));
+  -webkit-backdrop-filter: blur(var(--lx-blur));
+}
+
+/* ── Layer 5: page container ─────────────────────────────── */
+
+.lx-panel {
+  position: relative;
+  border-radius: var(--lx-radius);
+  border: 1px solid var(--lx-panel-border);
+  background: var(--lx-panel);
+  backdrop-filter: blur(var(--lx-blur-sm));
+  -webkit-backdrop-filter: blur(var(--lx-blur-sm));
+}
+
+/* ── Layer 6: glass card ─────────────────────────────────────── */
+
+.lx-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--lx-radius);
+  border: 1px solid var(--lx-card-border);
+  background: var(--lx-card);
+  box-shadow: var(--lx-card-shadow);
+  backdrop-filter: blur(var(--lx-blur));
+  -webkit-backdrop-filter: blur(var(--lx-blur));
+  padding: 1.25rem;
+}
+.lx-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--lx-radius);
+  pointer-events: none;
+  background-image: linear-gradient(to bottom right,
+    var(--lx-wash-from), transparent, var(--lx-wash-to));
+}
+
+/* Modal — heavier blur, floats above everything else */
+.lx-modal {
+  border-radius: var(--lx-radius);
+  border: 1px solid var(--lx-bar-border);
+  background: color-mix(in srgb, var(--lx-card) 100%, white 20%);
+  backdrop-filter: blur(var(--lx-blur-lg));
+  -webkit-backdrop-filter: blur(var(--lx-blur-lg));
+  box-shadow: 0 24px 80px -12px rgb(147 51 234 / .15);
+}
+
+/* ── Text ──────────────────────────────────────────────────────── */
+
+.lx-title    { color: var(--lx-text);        font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.25; }
+.lx-subtitle { color: var(--lx-text-muted);  font-size: .95rem; }
+.lx-text     { color: var(--lx-text-2); }
+.lx-muted    { color: var(--lx-text-muted);  font-size: .875rem; }
+.lx-subtle   { color: var(--lx-text-subtle); font-size: .8rem; }
+.lx-h2       { color: var(--lx-text);        font-size: 1.125rem; font-weight: 650; letter-spacing: -.01em; }
+
+/* ── Controls ────────────────────────────────────────────────────────────── */
+
+.lx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .5rem .9rem;
+  border-radius: var(--lx-radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.lx-btn--primary   { background: var(--lx-accent); color: #fff; border: 1px solid var(--lx-accent); }
+.lx-btn--primary:hover  { background: var(--lx-accent-strong); border-color: var(--lx-accent-strong); }
+.lx-btn--secondary { background: var(--lx-input); color: var(--lx-text-2); border: 1px solid var(--lx-border); }
+.lx-btn--secondary:hover { color: var(--lx-text); }
+.lx-btn--outline   { background: transparent; color: var(--lx-text-muted); border: 1px solid var(--lx-bar-border); }
+.lx-btn--outline:hover   { color: var(--lx-text); }
+.lx-btn:disabled   { opacity: .5; cursor: not-allowed; }
+
+.lx-input {
+  width: 100%;
+  padding: .55rem .75rem;
+  border-radius: var(--lx-radius-sm);
+  border: 1px solid var(--lx-input-border);
+  background: var(--lx-input);
+  color: var(--lx-text);
+  backdrop-filter: blur(var(--lx-blur-sm));
+  -webkit-backdrop-filter: blur(var(--lx-blur-sm));
+}
+.lx-input::placeholder { color: var(--lx-placeholder); }
+.lx-input:focus {
+  outline: none;
+  border-color: var(--lx-accent);
+  box-shadow: 0 0 0 2px var(--lx-accent-ring);
+}
+.lx-input:disabled { opacity: .6; cursor: not-allowed; }
+
+.lx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  padding: .1rem .6rem;
+  border-radius: 9999px;
+  font-size: .75rem;
+  font-weight: 500;
+  background: var(--lx-accent-soft);
+  color: var(--lx-accent-strong);
+  border: 1px solid var(--lx-bar-border);
+}
+:root[data-theme="dark"] .lx-badge,
+:root:not([data-theme="light"]) .lx-badge { color: var(--lx-text-2); }
+
+.lx-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--lx-radius-sm);
+  background: var(--lx-accent-soft);
+  color: var(--lx-accent);
+}
+
+.lx-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem;
+  border-radius: var(--lx-radius-sm);
+  transition: background-color .15s;
+}
+.lx-row:hover { background: var(--lx-input); }
+
+.lx-divider { border: 0; border-top: 1px solid var(--lx-border); }
+
+/* ── Diagram vocabulary ──────────────────────────────────────────────────────
+   Diagrams are hand-authored SVG, but they carry no colours of their own — the
+   classes below own every fill and stroke, so a diagram follows the theme and
+   cannot drift from the design system. The build rejects SVG containing a hex
+   value, an rgb()/hsl() literal, or an inline fill= / stroke= attribute.
+
+   `marker-end` needs a <marker> in the document; the page template emits one
+   shared <svg class="lx-defs"> so individual diagrams never repeat it.
+   ========================================================================= */
+
+.lx-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.lx-svg  { display: block; width: 100%; height: auto; color: var(--lx-text-2); }
+
+.lx-node          { fill: var(--lx-card); stroke: var(--lx-card-border); stroke-width: 1.5; rx: 12; }
+.lx-node--accent  { fill: var(--lx-accent-soft); stroke: var(--lx-accent); }
+.lx-node--muted   { fill: transparent; stroke: var(--lx-text-subtle); stroke-dasharray: 4 3; }
+
+.lx-edge          { stroke: var(--lx-text-muted); stroke-width: 1.5; fill: none; marker-end: url(#lx-arrow); }
+.lx-edge--accent  { stroke: var(--lx-accent); }
+.lx-edge--dashed  { stroke-dasharray: 5 4; }
+.lx-edge--plain   { marker-end: none; }
+
+.lx-label         { fill: var(--lx-text); font-size: 13px; font-weight: 500; }
+.lx-label--muted  { fill: var(--lx-text-muted); font-size: 11px; font-weight: 400; }
+
+.lx-arrowhead     { fill: var(--lx-text-muted); }
+
+.lx-figure  { margin: 1rem 0; }
+.lx-caption { color: var(--lx-text-muted); font-size: .8rem; text-align: center; margin-top: .5rem; }
+
+/* Wide diagrams and tables scroll inside their own box — never the page. */
+.lx-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ── Reduced transparency ────────────────────────────────────────────────────
+   Stacked backdrop-filter is the most expensive paint on a mid-range phone,
+   which is where these lessons are read. Both the OS preference and the
+   explicit attribute drop every blur and make the surfaces opaque, so the
+   layout is unchanged and only the cost goes away.
+   ========================================================================= */
+
+@media (prefers-reduced-transparency: reduce) {
+  .lx-bar, .lx-panel, .lx-card, .lx-modal, .lx-input {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .lx-card, .lx-modal { background: Canvas; }
+  .lx-overlay, .lx-card::before { display: none; }
+  .lx-shell { background-image: none; background-color: Canvas; }
+}
+
+:root[data-transparency="reduce"] .lx-bar,
+:root[data-transparency="reduce"] .lx-panel,
+:root[data-transparency="reduce"] .lx-card,
+:root[data-transparency="reduce"] .lx-modal,
+:root[data-transparency="reduce"] .lx-input {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+:root[data-transparency="reduce"] .lx-card,
+:root[data-transparency="reduce"] .lx-modal { background: Canvas; }
+:root[data-transparency="reduce"] .lx-overlay,
+:root[data-transparency="reduce"] .lx-card::before { display: none; }
+:root[data-transparency="reduce"] .lx-shell { background-image: none; background-color: Canvas; }
+
+/* ── Motion ──────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ── Layout helpers ──────────────────────────────────────────────────────── */
+
+.lx-wrap  { max-width: 52rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+.lx-stack > * + * { margin-top: 1rem; }
+.lx-grid  { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+
+@media (max-width: 480px) {
+  .lx-wrap  { padding: 1.25rem .75rem 3rem; }
+  .lx-card  { padding: 1rem; border-radius: 1.25rem; }
+  .lx-title { font-size: 1.3rem; }
+}
