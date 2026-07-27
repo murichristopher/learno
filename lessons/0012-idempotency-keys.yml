@@ -1,0 +1,153 @@
+meta:
+  title: "Chaves de idempotência"
+  subtitle: "Como repetir a requisição sem repetir a cobrança."
+
+analogy:
+  label: "Pense na senha numerada da padaria"
+  text: |
+    Você pega a senha 47, pede um bolo e paga. A fila trava, você não tem certeza
+    se o pedido entrou, e volta ao balcão com a mesma senha 47 na mão. O atendente
+    olha o número, encontra o pedido já registrado e te entrega o bolo que já
+    estava embalado. Ele não assa outro. Se você tivesse pegado uma senha nova
+    antes de voltar, aí sim sairiam dois bolos.
+  bridge: "A senha 47 é a chave de idempotência: ela identifica o *pedido*, não a *ida ao balcão*."
+
+p1:
+  title: "A chave que transforma retry em repetição segura"
+  body: |
+    Um `POST /cobrancas` que estoura o timeout não te diz nada sobre o que
+    aconteceu do outro lado. A cobrança pode ter sido criada e só a resposta ter
+    se perdido. Se você repetir, arrisca cobrar duas vezes; se não repetir,
+    arrisca não cobrar nenhuma. Nenhum código de erro resolve isso, porque a
+    informação que falta nunca chegou até você.
+
+    A chave de idempotência inverte quem decide. **O cliente** gera um
+    identificador único para a *intenção* — um UUID v4 serve — e manda esse valor
+    no header `Idempotency-Key` em **todas** as tentativas daquele mesmo pedido.
+    O servidor grava a chave junto com o resultado. Quando a mesma chave chega de
+    novo, ele não executa nada: devolve a resposta que já tinha guardado, com o
+    mesmo status e o mesmo corpo.
+
+    Repare no detalhe que quebra implementações reais: a chave precisa nascer
+    **antes** da primeira tentativa e ser reaproveitada no retry. Se você gerar um
+    UUID novo dentro do laço de retry, cada tentativa vira um pedido diferente aos
+    olhos do servidor — você não tem idempotência, tem só um header bonito.
+  caption: "A mesma chave em duas tentativas produz uma cobrança só"
+  question: |
+    Explique com suas palavras por que gerar a chave de idempotência dentro da
+    rotina de retry destrói a garantia, mesmo que o servidor esteja implementado
+    corretamente.
+  summary: "Seção sobre a chave pertencer à intenção do cliente e não à tentativa HTTP, e sobre o servidor devolver a resposta guardada."
+  fallback:
+    options:
+      - { text: "Porque o servidor não consegue validar UUIDs gerados no cliente", correct: false }
+      - { text: "Porque cada tentativa passa a ter uma chave diferente, e o servidor não tem como saber que é o mesmo pedido", correct: true }
+      - { text: "Porque o header só pode ser enviado uma vez por conexão", correct: false }
+    ok: "Isso. A chave só significa alguma coisa se ela sobreviver ao retry."
+    bad: "O servidor está certo — ele compara chaves. Chaves diferentes são, por definição, pedidos diferentes."
+
+p2:
+  title: "Onde a chave mora, quanto tempo vive, e por que não é deduplicação"
+  body: |
+    O registro da chave precisa ser tão durável quanto o efeito que ele protege.
+    Na prática: uma tabela com índice único em `(consumer_id, idempotency_key)`,
+    gravada **na mesma transação** que cria a cobrança. É o índice único que
+    ganha a corrida quando dois retries chegam ao mesmo tempo — o segundo toma
+    violação de constraint e cai no caminho de "já existe". Redis funciona se você
+    aceitar perder chaves num failover; para dinheiro, geralmente não aceita.
+
+    Guarde três coisas junto da chave: o **estado** (`in_flight` ou `done`), a
+    **resposta** completa a ser reenviada, e o **hash do corpo** da requisição.
+    O hash é o que te protege do cliente com bug: mesma chave com corpo diferente
+    é erro (`422`), não é retry. Sem isso, um bug de reuso de chave silenciosamente
+    engole cobranças legítimas.
+
+    O **TTL** é uma decisão de negócio, não de infraestrutura. Ele precisa cobrir
+    a janela em que alguém ainda pode reenviar aquele pedido: o retry automático
+    (segundos), o retry manual do usuário (minutos), o reprocessamento de uma fila
+    parada (horas). **24 horas** é o padrão da indústria e o que a Stripe usa;
+    operações financeiras que passam por conciliação costumam ir a 7 dias. Curto
+    demais e o retry atrasado executa de novo — o pior dos mundos, porque parece
+    que funciona. Longo demais e você criou uma tabela de auditoria que ninguém
+    pediu e que só cresce.
+
+    E isso é diferente de **deduplicação a posteriori**. Deduplicar é olhar os
+    efeitos depois — duas cobranças do mesmo valor, do mesmo cliente, com 3
+    segundos de diferença — e adivinhar qual sobra. É heurística: você não
+    consegue distinguir a duplicata do cliente que realmente quis comprar duas
+    vezes. A chave elimina a adivinhação, porque é o próprio cliente declarando
+    "isto é o mesmo pedido". Com idempotência a duplicata nunca vira efeito; com
+    deduplicação ela vira efeito e você tenta desfazer.
+  caption: "O registro da chave: lock na primeira escrita, resposta guardada, expiração"
+  question: "Você guarda as chaves com TTL de 60 segundos. O que acontece quando uma fila de retries fica parada 20 minutos e depois é reprocessada?"
+  options:
+    - { text: "As requisições são rejeitadas com 409, porque a chave expirou", correct: false }
+    - { text: "As chaves já expiraram, então cada requisição é tratada como nova e os efeitos são duplicados", correct: true }
+    - { text: "Nada muda — o índice único continua bloqueando duplicatas para sempre", correct: false }
+    - { text: "O servidor recalcula o hash do corpo e reconhece o pedido mesmo sem a chave", correct: false }
+  ok: "Exato. TTL expirado é indistinguível de chave nunca vista — e é o modo de falha mais traiçoeiro, porque só aparece no dia do incidente."
+  bad: "Depois do TTL não sobra registro nenhum para comparar. Para o servidor, é um pedido novo em folha."
+
+teachback:
+  question: |
+    Explique, do começo ao fim, como uma chave de idempotência torna um retry
+    seguro: quem gera a chave e quando, o que o servidor grava junto dela, quanto
+    tempo esse registro precisa viver, e por que isso é diferente de deduplicar
+    os efeitos depois.
+  hint: "Cite o índice único, o hash do corpo e pelo menos um número concreto de TTL."
+
+cards:
+  title: "Revisão rápida"
+  items:
+    - front: "Quem gera a chave de idempotência?"
+      back: "O cliente, antes da primeira tentativa. Ela identifica a intenção, e é reenviada igual em todos os retries."
+    - front: "O que o servidor guarda junto da chave?"
+      back: "Estado (in_flight/done), a resposta completa para reenviar, e o hash do corpo da requisição."
+    - front: "O que o hash do corpo protege?"
+      back: "Contra reuso indevido de chave: mesma chave com corpo diferente é 422, não é retry."
+    - front: "Qual TTL usar?"
+      back: "24h é o padrão (Stripe). Precisa cobrir retry automático, retry manual e reprocessamento de fila parada. Financeiro com conciliação: até 7 dias."
+    - front: "Idempotência x deduplicação"
+      back: "Idempotência age antes: a duplicata nunca vira efeito, porque o cliente declarou que é o mesmo pedido. Deduplicação age depois, por heurística, e tenta desfazer o efeito."
+
+source:
+  title: "Stripe API Reference — Idempotent requests"
+  url: "https://docs.stripe.com/api/idempotent_requests"
+  note: "Documentação da própria API: header Idempotency-Key, resposta guardada e expiração em 24 horas."
+
+diagrams:
+  retry: |
+    <svg class="lx-svg" viewBox="0 0 620 170" role="img" aria-label="Duas tentativas do cliente com a mesma chave resultam em uma única cobrança">
+      <rect class="lx-node lx-node--accent" x="8" y="46" width="140" height="70"/>
+      <text class="lx-label" x="78" y="76" text-anchor="middle">Cliente</text>
+      <text class="lx-label lx-label--muted" x="78" y="96" text-anchor="middle">Idempotency-Key</text>
+      <path class="lx-edge lx-edge--accent" d="M150 66 H 254"/>
+      <text class="lx-label lx-label--muted" x="202" y="56" text-anchor="middle">1ª tentativa</text>
+      <path class="lx-edge lx-edge--dashed" d="M150 104 H 254"/>
+      <text class="lx-label lx-label--muted" x="202" y="126" text-anchor="middle">retry, mesma chave</text>
+      <rect class="lx-node" x="256" y="46" width="152" height="70"/>
+      <text class="lx-label" x="332" y="76" text-anchor="middle">API</text>
+      <text class="lx-label lx-label--muted" x="332" y="96" text-anchor="middle">chave já existe?</text>
+      <path class="lx-edge" d="M410 81 H 468"/>
+      <rect class="lx-node lx-node--muted" x="470" y="46" width="142" height="70"/>
+      <text class="lx-label" x="541" y="76" text-anchor="middle">1 cobrança</text>
+      <text class="lx-label lx-label--muted" x="541" y="96" text-anchor="middle">resposta repetida</text>
+    </svg>
+  storage: |
+    <svg class="lx-svg" viewBox="0 0 620 200" role="img" aria-label="Registro da chave passando de in flight para done e expirando pelo TTL">
+      <rect class="lx-node lx-node--accent" x="8" y="24" width="184" height="60"/>
+      <text class="lx-label" x="100" y="50" text-anchor="middle">chave + consumidor</text>
+      <text class="lx-label lx-label--muted" x="100" y="70" text-anchor="middle">índice único</text>
+      <path class="lx-edge" d="M194 54 H 260"/>
+      <rect class="lx-node" x="262" y="24" width="184" height="60"/>
+      <text class="lx-label" x="354" y="50" text-anchor="middle">in_flight</text>
+      <text class="lx-label lx-label--muted" x="354" y="70" text-anchor="middle">1ª escrita ganha a corrida</text>
+      <path class="lx-edge lx-edge--accent" d="M354 86 V 122"/>
+      <rect class="lx-node" x="262" y="124" width="184" height="60"/>
+      <text class="lx-label" x="354" y="150" text-anchor="middle">done + resposta</text>
+      <text class="lx-label lx-label--muted" x="354" y="170" text-anchor="middle">reenviada no retry</text>
+      <path class="lx-edge lx-edge--dashed" d="M448 154 H 506"/>
+      <rect class="lx-node lx-node--muted" x="508" y="124" width="104" height="60"/>
+      <text class="lx-label" x="560" y="150" text-anchor="middle">TTL 24h</text>
+      <text class="lx-label lx-label--muted" x="560" y="170" text-anchor="middle">expira</text>
+    </svg>

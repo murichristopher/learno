@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Consistent hashing</title>
+<link rel="stylesheet" href="../assets/learno.css" />
+<link rel="stylesheet" href="../assets/components.css" />
+<script>(function(){try{var t=localStorage.getItem('lx-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
+</head>
+<body class="lx-shell" data-lesson="0013-consistent-hashing">
+
+<div class="lx-overlay"></div>
+
+<!-- Shared arrowhead. Authored diagrams reference #lx-arrow and never carry
+     their own marker definition. -->
+<svg class="lx-defs" aria-hidden="true">
+  <defs>
+    <marker id="lx-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="lx-arrowhead" d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+  </defs>
+</svg>
+
+  <nav class="lx-topbar">
+    <a class="lx-topbar-home" href="../" title="Ir para o painel">
+      <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+  <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+      <span>learno</span>
+    </a>
+    <div class="lx-topbar-actions">
+      <button type="button" class="lx-theme-btn" data-theme-set="light" title="Tema claro" aria-label="Tema claro">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" /></svg>
+      </button>
+      <button type="button" class="lx-theme-btn" data-theme-set="auto" title="Seguir o sistema" aria-label="Seguir o sistema">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2" />
+  <line x1="8" x2="16" y1="21" y2="21" />
+  <line x1="12" x2="12" y1="17" y2="21" /></svg>
+      </button>
+      <button type="button" class="lx-theme-btn" data-theme-set="dark" title="Tema escuro" aria-label="Tema escuro">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></svg>
+      </button>
+    </div>
+  </nav>
+
+<div class="lx-content lx-wrap">
+  <header class="lx-lesson-head">
+    <span class="lx-badge">Lição 13 · System Design</span>
+    <h1 class="lx-title"><span class="lx-title-icon"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" />
+  <circle cx="12" cy="12" r="1" /></svg></span><span>Consistent hashing</span></h1>
+    <p class="lx-subtitle">Por que adicionar um servidor não deveria invalidar o cache inteiro.</p>
+  </header>
+
+  <div class="lx-offline-banner" id="lx-banner" hidden>
+    Servidor fora do ar. As seções continuam abrindo por múltipla escolha, mas a
+    validação por IA e o registro do progresso ficam indisponíveis.
+  </div>
+
+  <div class="lx-progress" role="presentation">
+    <span class="lx-progress-seg" data-seg="1"></span>
+    <span class="lx-progress-seg" data-seg="2"></span>
+    <span class="lx-progress-seg" data-seg="3"></span>
+  </div>
+
+  <div class="lx-blocks">
+  <div class="lx-card lx-analogy">
+    <span class="lx-analogy-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+  <path d="M9 18h6" />
+  <path d="M10 22h4" /></svg> Pense num rodízio de mesas de restaurante</span>
+    <p class="lx-analogy-text">As mesas estão dispostas em círculo e cada garçom cuida do trecho que vai da sua posição até o próximo garçom, no sentido horário. Entra um garçom novo? Ele se encaixa num ponto do círculo e assume só as mesas entre ele e quem estava ali antes. Ninguém mais precisa trocar de seção.
+</p>
+    <p class="lx-analogy-bridge">Esse círculo é o hash ring, e a regra &quot;vai para o próximo no sentido horário&quot; é literalmente como uma chave encontra seu nó.
+</p>
+  </div>
+  <div class="lx-prose">
+    <p>Você tem 3 servidores de cache e distribui as chaves com <code class="lx-code">hash(chave) % 3</code>.
+Funciona. Aí o tráfego cresce, você sobe o quarto servidor, troca para <code class="lx-code">% 4</code>
+— e o cache inteiro esfria de uma vez.</p>
+    <p>Esta lição é sobre por que isso acontece, por que a conta é muito pior do que
+a intuição diz, e qual é a estrutura que troca &quot;quase tudo se move&quot; por
+&quot;quase nada se move&quot;.</p>
+  </div>
+  <section class="lx-phase" data-phase="1" id="phase-1">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>1</span></span>
+      <h2 class="lx-phase-title">Por que `% N` quebra quando N muda</h2>
+    </div>
+    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
+    <div class="lx-phase-body">
+  <div class="lx-prose">
+    <p><code class="lx-code">hash(&quot;user:42&quot;) % 3</code> devolve um número entre 0 e 2. Estável, barato,
+distribui bem. O problema não está no hash — ele nem sabe quantos nós
+existem. O problema é o <strong>divisor</strong>.</p>
+    <p>Quando N vai de 3 para 4, o resto de praticamente toda chave muda. Não
+porque a chave mudou, mas porque você está dividindo por outro número. Cada
+chave que muda de resto é uma entrada que continua no nó antigo, sem ninguém
+para procurá-la, enquanto o nó novo responde miss e vai ao banco.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 620 210" role="img"
+     aria-label="Oito chaves distribuídas com módulo 3 e depois módulo 4, mostrando que a maioria muda de nó">
+  <text class="lx-label--muted" x="10" y="24">hash(chave) % 3</text>
+  <rect class="lx-node" x="10"  y="34" width="70" height="40"/>
+  <text class="lx-label" x="45"  y="59" text-anchor="middle">A</text>
+  <rect class="lx-node" x="86"  y="34" width="70" height="40"/>
+  <text class="lx-label" x="121" y="59" text-anchor="middle">B</text>
+  <rect class="lx-node" x="162" y="34" width="70" height="40"/>
+  <text class="lx-label" x="197" y="59" text-anchor="middle">C</text>
+  <rect class="lx-node" x="238" y="34" width="70" height="40"/>
+  <text class="lx-label" x="273" y="59" text-anchor="middle">A</text>
+  <rect class="lx-node" x="314" y="34" width="70" height="40"/>
+  <text class="lx-label" x="349" y="59" text-anchor="middle">B</text>
+  <rect class="lx-node" x="390" y="34" width="70" height="40"/>
+  <text class="lx-label" x="425" y="59" text-anchor="middle">C</text>
+  <rect class="lx-node" x="466" y="34" width="70" height="40"/>
+  <text class="lx-label" x="501" y="59" text-anchor="middle">A</text>
+  <rect class="lx-node" x="542" y="34" width="70" height="40"/>
+  <text class="lx-label" x="577" y="59" text-anchor="middle">B</text>
+
+  <text class="lx-label--muted" x="10" y="132">hash(chave) % 4</text>
+  <rect class="lx-node lx-node--accent" x="10"  y="142" width="70" height="40"/>
+  <text class="lx-label" x="45"  y="167" text-anchor="middle">A</text>
+  <rect class="lx-node lx-node--accent" x="86"  y="142" width="70" height="40"/>
+  <text class="lx-label" x="121" y="167" text-anchor="middle">B</text>
+  <rect class="lx-node lx-node--accent" x="162" y="142" width="70" height="40"/>
+  <text class="lx-label" x="197" y="167" text-anchor="middle">C</text>
+  <rect class="lx-node" x="238" y="142" width="70" height="40"/>
+  <text class="lx-label" x="273" y="167" text-anchor="middle">D</text>
+  <rect class="lx-node" x="314" y="142" width="70" height="40"/>
+  <text class="lx-label" x="349" y="167" text-anchor="middle">A</text>
+  <rect class="lx-node" x="390" y="142" width="70" height="40"/>
+  <text class="lx-label" x="425" y="167" text-anchor="middle">B</text>
+  <rect class="lx-node" x="466" y="142" width="70" height="40"/>
+  <text class="lx-label" x="501" y="167" text-anchor="middle">C</text>
+  <rect class="lx-node" x="542" y="142" width="70" height="40"/>
+  <text class="lx-label" x="577" y="167" text-anchor="middle">D</text>
+
+  <text class="lx-label--muted" x="10" y="200">as três primeiras ficaram — as cinco seguintes trocaram de nó</text>
+</svg>
+</div>
+    <figcaption class="lx-caption">Oito chaves, N=3 e depois N=4 — só as marcadas ficaram no lugar</figcaption>
+  </figure>
+  <div class="lx-card lx-callout lx-callout--danger">
+    <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16h.01" />
+  <path d="M12 8v4" />
+  <path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z" /></svg></span>
+    <div>
+      <p class="lx-callout-title">A fração que se move não é 1/N</p>
+      <p class="lx-callout-text">A intuição diz &quot;adicionei 1 de 4 nós, então uns 25% se movem&quot;. A conta real é o oposto: com módulo, o esperado é que cerca de (N-1)/N das chaves mudem de destino. Indo de 3 para 4 nós, aproximadamente 75% do cache é invalidado de uma vez — no exato momento em que você subiu capacidade porque já estava sob pressão.
+</p>
+    </div>
+  </div>
+  <div class="lx-card lx-ask lx-recall"
+       data-concept-id="modulo_remapping"
+       data-phase="1"
+       data-summary="Uma boa resposta separa hash de destino: o hash da chave é estável e não depende de N; o que muda é o divisor, então o resto muda para quase toda chave. Deve reconhecer que a fração afetada é próxima de (N-1)/N, não 1/N, e idealmente notar que a invalidação em massa chega junto com um pico de carga no banco.
+"
+       data-ok="Isso. O hash é estável; o que se move é o destino, porque a conta que escolhe o destino mudou."
+       data-bad="O hash da chave não mudou — `hash(\&quot;user:42\&quot;)` continua o mesmo número. O que mudou foi por quanto você divide, e é isso que remapeia quase tudo.
+">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
+  <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
+  <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
+    <p class="lx-ask-q">Explique, com suas palavras, por que trocar N de 3 para 4 invalida quase todo o cache, e por que &quot;o hash mudou&quot; não é a explicação correta.
+</p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="validate">Validar</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+      </div>
+    </div>
+
+    <div class="lx-fallback">
+      <p class="lx-fallback-note">Servidor fora do ar — respondendo por múltipla escolha.</p>
+      
+        <label class="lx-choice">
+          <input type="radio" name="fb-modulo_remapping" value="0" data-correct="0" />
+          <span>Porque a função de hash produz valores diferentes depois do redeploy</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-modulo_remapping" value="1" data-correct="1" />
+          <span>Porque o divisor mudou, então o resto de quase toda chave mudou junto</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-modulo_remapping" value="2" data-correct="0" />
+          <span>Porque o servidor novo começa com o cache vazio</span>
+        </label>
+      <p class="lx-inline-fb"></p>
+    </div>
+  </div>
+    </div>
+  </section>
+  <section class="lx-phase lx-phase--locked" data-phase="2" id="phase-2">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>2</span></span>
+      <h2 class="lx-phase-title">O anel: chaves e nós no mesmo espaço</h2>
+    </div>
+    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
+    <div class="lx-phase-body">
+  <div class="lx-prose">
+    <p>A virada é parar de mapear chave → índice de nó, e passar a mapear <strong>as duas
+coisas no mesmo espaço</strong>. Pegue a saída do hash e imagine-a como um círculo,
+de 0 até o valor máximo, com o fim emendando no começo.</p>
+    <p>Cada nó é posicionado nesse círculo pelo hash do seu identificador. Cada
+chave também. E a regra de roteamento é uma frase só: <strong>a chave pertence ao
+primeiro nó que aparece andando no sentido horário</strong>.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 620 320" role="img"
+     aria-label="Anel de hash com três nós e chaves roteadas no sentido horário">
+  <circle class="lx-edge lx-edge--plain" cx="310" cy="160" r="112"/>
+
+  <rect class="lx-node lx-node--accent" x="266" y="18" width="88" height="36"/>
+  <text class="lx-label" x="310" y="42" text-anchor="middle">nó A</text>
+
+  <rect class="lx-node lx-node--accent" x="378" y="252" width="88" height="36"/>
+  <text class="lx-label" x="422" y="276" text-anchor="middle">nó B</text>
+
+  <rect class="lx-node lx-node--accent" x="154" y="252" width="88" height="36"/>
+  <text class="lx-label" x="198" y="276" text-anchor="middle">nó C</text>
+
+  <text class="lx-label--muted" x="418" y="96" text-anchor="middle">k1</text>
+  <path class="lx-edge" d="M418 104 C 440 140, 440 200, 424 248"/>
+
+  <text class="lx-label--muted" x="310" y="300" text-anchor="middle">k2</text>
+  <path class="lx-edge" d="M296 296 C 250 292, 216 292, 200 290"/>
+
+  <text class="lx-label--muted" x="196" y="96" text-anchor="middle">k3</text>
+  <path class="lx-edge" d="M204 88 C 226 56, 256 40, 262 38"/>
+
+  <text class="lx-label--muted" x="310" y="150" text-anchor="middle">a chave vai para o</text>
+  <text class="lx-label--muted" x="310" y="168" text-anchor="middle">próximo nó no</text>
+  <text class="lx-label--muted" x="310" y="186" text-anchor="middle">sentido horário</text>
+</svg>
+</div>
+    <figcaption class="lx-caption">Três nós no anel — cada um dono do arco que termina nele</figcaption>
+  </figure>
+  <div class="lx-prose">
+    <p>Agora repare no que acontece quando um nó entra. Ele cai num ponto do
+círculo e assume <strong>apenas o arco entre ele e o nó anterior</strong>. Nenhuma outra
+chave troca de dono, porque o destino de uma chave nunca dependeu de quantos
+nós existem — só de quem é o próximo no círculo.</p>
+    <p>Sair é simétrico: as chaves do nó que saiu passam para o próximo no sentido
+horário, e ninguém mais é afetado. De <code class="lx-code">(N-1)/N</code> das chaves em movimento,
+você passa para aproximadamente <code class="lx-code">1/N</code>.</p>
+  </div>
+  <div class="lx-card lx-quiz" data-phase="2"
+       data-ok="Isso. O resto do círculo não tem motivo nenhum para se mexer — o vizinho de cada chave continua o mesmo." data-bad="O ponto do anel é justamente que o destino de uma chave não depende de N. Só as chaves do arco que o nó novo passou a cobrir mudam de dono.
+">
+    <span class="lx-quiz-label">Escolha uma</span>
+    <p class="lx-ask-q">No anel, quantas chaves mudam de dono quando um nó entra?</p>
+    
+      <label class="lx-choice">
+        <input type="radio" name="quiz-289047106" value="0" data-correct="0" />
+        <span>Quase todas, igual ao módulo — o anel só reorganiza o cálculo</span>
+      </label>
+      <label class="lx-choice">
+        <input type="radio" name="quiz-289047106" value="1" data-correct="1" />
+        <span>Só as do arco entre o nó novo e o nó anterior no círculo</span>
+      </label>
+      <label class="lx-choice">
+        <input type="radio" name="quiz-289047106" value="2" data-correct="0" />
+        <span>Metade, porque o espaço de hash é dividido ao meio</span>
+      </label>
+    <p class="lx-inline-fb"></p>
+  </div>
+    </div>
+  </section>
+  <section class="lx-phase lx-phase--locked" data-phase="3" id="phase-3">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>3</span></span>
+      <h2 class="lx-phase-title">Nós virtuais: por que o anel sozinho não basta</h2>
+    </div>
+    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
+    <div class="lx-phase-body">
+  <div class="lx-prose">
+    <p>O anel resolve o remapeamento e cria dois problemas novos, ambos pela mesma
+causa: <strong>três pontos aleatórios num círculo não o dividem em três partes
+iguais</strong>.</p>
+    <p>O primeiro é distribuição. Com poucos nós, é comum um deles ficar com um arco
+duas ou três vezes maior que o do vizinho — e portanto com o dobro ou o
+triplo das chaves.</p>
+    <p>O segundo é pior. Quando um nó cai, <strong>todo o arco dele vai para um único
+vizinho</strong>, o próximo no sentido horário. O nó que já estava atendendo sua
+própria fatia recebe outra inteira de uma vez. Se ele também cair sob essa
+carga, a fatia dobrada passa para o seguinte.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 620 320" role="img"
+     aria-label="Anel com cada nó físico ocupando várias posições intercaladas">
+  <circle class="lx-edge lx-edge--plain" cx="310" cy="160" r="112"/>
+
+  <rect class="lx-node lx-node--accent" x="278" y="26" width="64" height="30"/>
+  <text class="lx-label" x="310" y="47" text-anchor="middle">A1</text>
+
+  <rect class="lx-node" x="392" y="72" width="64" height="30"/>
+  <text class="lx-label" x="424" y="93" text-anchor="middle">B1</text>
+
+  <rect class="lx-node lx-node--muted" x="424" y="188" width="64" height="30"/>
+  <text class="lx-label" x="456" y="209" text-anchor="middle">C1</text>
+
+  <rect class="lx-node lx-node--accent" x="336" y="266" width="64" height="30"/>
+  <text class="lx-label" x="368" y="287" text-anchor="middle">A2</text>
+
+  <rect class="lx-node" x="222" y="266" width="64" height="30"/>
+  <text class="lx-label" x="254" y="287" text-anchor="middle">B2</text>
+
+  <rect class="lx-node lx-node--muted" x="132" y="188" width="64" height="30"/>
+  <text class="lx-label" x="164" y="209" text-anchor="middle">C2</text>
+
+  <rect class="lx-node lx-node--accent" x="164" y="72" width="64" height="30"/>
+  <text class="lx-label" x="196" y="93" text-anchor="middle">A3</text>
+
+  <text class="lx-label--muted" x="310" y="150" text-anchor="middle">se C sai, os arcos de C1 e C2</text>
+  <text class="lx-label--muted" x="310" y="170" text-anchor="middle">vão para vizinhos diferentes —</text>
+  <text class="lx-label--muted" x="310" y="190" text-anchor="middle">ninguém herda tudo sozinho</text>
+</svg>
+</div>
+    <figcaption class="lx-caption">Cada nó físico aparece várias vezes no anel — os arcos se intercalam</figcaption>
+  </figure>
+  <figure class="lx-figure">
+    <div class="lx-card lx-table-wrap lx-scroll">
+      <table class="lx-table">
+        <thead><tr><th scope="col">Nós virtuais por nó físico</th><th scope="col">Desvio típico da carga</th><th scope="col">Quem herda uma queda</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Nós virtuais por nó físico">1</td><td data-label="Desvio típico da carga">alto — arcos muito desiguais</td><td data-label="Quem herda uma queda">um único vizinho</td></tr>
+          <tr><td data-label="Nós virtuais por nó físico">16</td><td data-label="Desvio típico da carga">moderado</td><td data-label="Quem herda uma queda">poucos vizinhos</td></tr>
+          <tr><td data-label="Nós virtuais por nó físico">128–256</td><td data-label="Desvio típico da carga">baixo</td><td data-label="Quem herda uma queda">todos os nós restantes</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figcaption class="lx-caption">Desvio da distribuição conforme os nós virtuais por nó físico</figcaption>
+  </figure>
+  <div class="lx-card lx-callout lx-callout--warn">
+    <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" /></svg></span>
+    <div>
+      <p class="lx-callout-title">Falha em cascata é o problema que os nós virtuais resolvem</p>
+      <p class="lx-callout-text">Distribuição desigual é irritante; herança concentrada derruba o sistema. Com nós virtuais, a carga de um nó que cai se espalha por todos os sobreviventes em fatias pequenas, em vez de dobrar a carga de um único vizinho que provavelmente já está no limite.
+</p>
+    </div>
+  </div>
+  <div class="lx-card lx-ask lx-recall"
+       data-concept-id="virtual_nodes"
+       data-phase="3"
+       data-summary="Uma boa resposta explica que pontos aleatórios não dividem o círculo em partes iguais, então poucos nós geram arcos desiguais. Deve explicar que cada nó físico passa a ocupar muitas posições no anel, intercalando os arcos. E deve identificar a falha como o problema mais grave: sem nós virtuais, a carga de um nó que cai vai inteira para um vizinho, o que pode derrubá-lo em cascata; com eles, a carga se espalha por todos os sobreviventes.
+"
+       data-ok="Isso — e a segunda metade é a que importa: espalhar a herança de uma falha é o que evita a cascata."
+       data-bad="Não é sobre memória nem sobre funções de hash. É sobre pontos aleatórios dividirem mal o círculo, e sobre quem herda a carga quando um nó cai.
+">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
+  <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
+  <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
+    <p class="lx-ask-q">Explique por que nós virtuais existem, citando o problema de distribuição e o de falha — e por que o segundo é mais grave que o primeiro.
+</p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="validate">Validar</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+      </div>
+    </div>
+
+    <div class="lx-fallback">
+      <p class="lx-fallback-note">Servidor fora do ar — respondendo por múltipla escolha.</p>
+      
+        <label class="lx-choice">
+          <input type="radio" name="fb-virtual_nodes" value="0" data-correct="0" />
+          <span>Para o anel caber em menos memória</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-virtual_nodes" value="1" data-correct="1" />
+          <span>Porque poucos pontos dividem o círculo de forma desigual, e sem eles a queda de um nó cai inteira sobre um único vizinho</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-virtual_nodes" value="2" data-correct="0" />
+          <span>Para permitir mais de uma função de hash ao mesmo tempo</span>
+        </label>
+      <p class="lx-inline-fb"></p>
+    </div>
+  </div>
+    </div>
+  </section>
+  <figure class="lx-figure">
+    <div class="lx-compare">
+      <div class="lx-card lx-compare-col">
+        <span class="lx-compare-label">hash(chave) % N</span>
+        <p class="lx-compare-body">Uma linha de código, distribuição uniforme. Mudar N remapeia cerca de (N-1)/N das chaves de uma vez. Serve quando o conjunto de nós é fixo.
+</p>
+      </div>
+      <div class="lx-card lx-compare-col">
+        <span class="lx-compare-label">Anel + nós virtuais</span>
+        <p class="lx-compare-body">Estrutura para manter e posições para escolher. Mudar o conjunto de nós move aproximadamente 1/N das chaves, e a queda de um nó se espalha por todos os sobreviventes.
+</p>
+      </div>
+    </div>
+    <figcaption class="lx-caption">As duas contas, lado a lado</figcaption>
+  </figure>
+  <div class="lx-card lx-ask lx-teachback" data-concepts="modulo_remapping,hash_ring,virtual_nodes">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
+  <path d="M22 10v6" />
+  <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg> Ensina de volta</span>
+    <p class="lx-ask-q">Um colega vai subir o quarto nó de cache amanhã e planeja só trocar `% 3` por `% 4`. Explique para ele o que vai acontecer, por que a fração afetada é bem maior do que ele imagina, o que o anel muda, e por que só o anel ainda não é suficiente.
+</p>
+    <p class="lx-teachback-hint">Comece pelo divisor e pela fração (N-1)/N, depois o anel e a regra do sentido horário, e feche com nós virtuais — citando a herança concentrada numa falha, não só a distribuição desigual.
+</p>
+
+    <p class="lx-teachback-offline">
+      Esta parte precisa do servidor. Sem ele não dá para registrar a lição —
+      e um score inventado estragaria o agendamento da revisão.
+    </p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer lx-answer--large" placeholder="Explique o conceito inteiro, com suas palavras…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="teachback">Encerrar a lição</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+        <div class="lx-concepts"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lx-done">
+    <div class="lx-card lx-next-review">
+      <span class="lx-next-review-label">Próxima revisão</span>
+      <span class="lx-next-review-date">—</span>
+      <span class="lx-next-review-note"></span>
+    </div>
+  </div>
+  <section class="lx-flashcards">
+    <p class="lx-flash-title"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></svg> Revisão rápida</p>
+    <div class="lx-flash-grid">
+      <details class="lx-card lx-flash">
+        <summary>Por que `% N` remapeia quase tudo quando N muda?</summary>
+        <p class="lx-flash-back">Porque o hash da chave é estável, mas o divisor não. Muda o divisor, muda o resto de quase toda chave — cerca de (N-1)/N delas.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Qual é a regra de roteamento no hash ring?</summary>
+        <p class="lx-flash-back">Chaves e nós são posicionados no mesmo círculo pelo hash. A chave pertence ao primeiro nó encontrado andando no sentido horário.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Quantas chaves se movem ao adicionar um nó no anel?</summary>
+        <p class="lx-flash-back">Só as do arco entre o nó novo e o nó anterior — aproximadamente 1/N, em vez de (N-1)/N.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Que dois problemas os nós virtuais resolvem?</summary>
+        <p class="lx-flash-back">Distribuição desigual (pontos aleatórios não dividem o círculo em partes iguais) e herança concentrada: sem eles, a carga de um nó que cai vai inteira para um único vizinho.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Por que a herança concentrada é mais grave que a distribuição desigual?</summary>
+        <p class="lx-flash-back">Distribuição desigual é desperdício constante; herança concentrada dobra a carga de um vizinho de uma vez e pode derrubá-lo, propagando a falha em cascata.</p>
+      </details>
+    </div>
+  </section>
+  <div class="lx-card lx-source">
+    <p class="lx-source-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" />
+  <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg> Fonte primária</p>
+    <p class="lx-source-title"><a class="lx-link" href="https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf" rel="noopener noreferrer" target="_blank">Dynamo: Amazon's Highly Available Key-value Store (SOSP 2007)</a></p>
+    <p class="lx-source-note">A seção 4.2 é onde os nós virtuais aparecem, com a justificativa de distribuição e de redistribuição em falha. O artigo original de consistent hashing é Karger et al. (1997); DDIA cap. 6 discute o termo e por que ele é usado de forma ambígua na indústria.
+</p>
+  </div>
+  </div>
+
+  <footer class="lx-lesson-foot">
+    <a class="lx-btn lx-btn--outline" href="../reference/my-learning.html">Painel</a>
+    <a class="lx-btn lx-btn--outline" href="../reference/glossary.html">Glossário</a>
+  </footer>
+</div>
+
+<script type="application/json" id="lx-config">{"lesson":"0013-consistent-hashing","concepts":["modulo_remapping","hash_ring","virtual_nodes"],"phases":["1","2","3"]}</script>
+<script src="../assets/learno.js" defer></script>
+</body>
+</html>

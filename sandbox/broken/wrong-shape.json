@@ -1,0 +1,5 @@
+{ "id": "wrong-shape", "title": "@t.title", "concepts": [],
+  "blocks": [
+    { "component": "quiz", "props": { "question": "@t.q", "options": "@t.options", "ok": "@t.ok", "bad": "@t.bad" } },
+    { "component": "flashcards", "props": { "cards": "@t.cards" } }
+  ] }

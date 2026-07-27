@@ -13,7 +13,10 @@ module.exports = {
   meta: {
     name: 'flashcards',
     purpose: 'cartões de revisão imediata — frente visível, verso escondido',
-    props: { cards: 'array', title: 'string?' },
+    props: {
+      cards: 'array<{front: string, back: string}>',
+      title: 'string?'
+    },
     demo: {
       title: 'Revisão rápida',
       cards: [

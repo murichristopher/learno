@@ -1,0 +1,42 @@
+{
+  "id": "0012-idempotency-keys",
+  "tag": "Lição 12 · System Design",
+  "icon": "key",
+  "title": "@meta.title",
+  "subtitle": "@meta.subtitle",
+  "concepts": ["idempotency_key", "idempotency_window"],
+  "blocks": [
+    { "component": "analogy",
+      "props": { "label": "@analogy.label", "text": "@analogy.text", "bridge": "@analogy.bridge" } },
+
+    { "component": "phase", "props": { "id": "1", "title": "@p1.title" },
+      "children": [
+        { "component": "prose",   "props": { "text": "@p1.body" } },
+        { "component": "diagram", "props": { "svg": "@diagrams.retry", "caption": "@p1.caption" } },
+        { "component": "recall",
+          "props": { "conceptId": "idempotency_key", "phase": "1",
+                     "question": "@p1.question", "summary": "@p1.summary",
+                     "fallback": "@p1.fallback" } }
+      ] },
+
+    { "component": "phase", "props": { "id": "2", "title": "@p2.title" },
+      "children": [
+        { "component": "prose",   "props": { "text": "@p2.body" } },
+        { "component": "diagram", "props": { "svg": "@diagrams.storage", "caption": "@p2.caption" } },
+        { "component": "quiz",
+          "props": { "phase": "2", "question": "@p2.question", "options": "@p2.options",
+                     "ok": "@p2.ok", "bad": "@p2.bad" } }
+      ] },
+
+    { "component": "teachback",
+      "props": { "question": "@teachback.question",
+                 "conceptIds": ["idempotency_key", "idempotency_window"],
+                 "hint": "@teachback.hint" } },
+
+    { "component": "flashcards",
+      "props": { "title": "@cards.title", "cards": "@cards.items" } },
+
+    { "component": "source",
+      "props": { "title": "@source.title", "url": "@source.url", "note": "@source.note" } }
+  ]
+}

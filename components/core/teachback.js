@@ -17,7 +17,11 @@ module.exports = {
   meta: {
     name: 'teachback',
     purpose: 'explicação final que fecha a lição e alimenta a revisão espaçada',
-    props: { question: 'string', conceptIds: 'array', hint: 'string?' },
+    props: {
+      question:   'string',
+      conceptIds: 'array<string>',
+      hint:       'string?'
+    },
     demo: {
       question: 'Explique consistent hashing para alguém que só conhece hash módulo N.',
       conceptIds: ['sandbox_widget_sharding', 'sandbox_widget_replication'],
