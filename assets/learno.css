@@ -382,12 +382,45 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ── Layout helpers ──────────────────────────────────────────────────────── */
 
-.lx-wrap  { max-width: 52rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+.lx-wrap  { max-width: 52rem; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
 .lx-stack > * + * { margin-top: 1rem; }
 .lx-grid  { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
 
-@media (max-width: 480px) {
-  .lx-wrap  { padding: 1.25rem .75rem 3rem; }
-  .lx-card  { padding: 1rem; border-radius: 1.25rem; }
+/* Vertical rhythm between a lesson's blocks. The blocks themselves carry no
+   outer margin — a component should not decide how far it sits from whatever
+   happens to precede it, since that depends on the neighbour, not on itself. */
+.lx-blocks > * + * { margin-top: 1.75rem; }
+.lx-blocks > .lx-figure { margin: 1.75rem 0 0; }
+
+.lx-lesson-head { margin-bottom: 2rem; }
+.lx-lesson-head .lx-badge    { margin-bottom: .6rem; }
+.lx-lesson-head .lx-subtitle { margin-top: .5rem; }
+
+.lx-lesson-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--lx-border);
+}
+
+/* Phones get MORE breathing room, not less. The earlier values narrowed the
+   gutter to .75rem on exactly the screens where text runs closest to the edge
+   and the thumb rests over it. */
+@media (max-width: 560px) {
+  .lx-wrap  { padding: 2rem 1.25rem 3.5rem; }
+  .lx-card  { padding: 1.35rem 1.25rem; border-radius: 1.25rem; }
   .lx-title { font-size: 1.3rem; }
+  .lx-blocks > * + * { margin-top: 1.5rem; }
+  .lx-blocks > .lx-figure { margin-top: 1.5rem; }
+  .lx-lesson-head { margin-bottom: 1.6rem; }
+  .lx-lesson-foot { margin-top: 2.25rem; }
+  .lx-lesson-foot .lx-btn { flex: 1 1 auto; justify-content: center; }
+}
+
+/* Below ~360px the gutter has to give a little, but never go under 1rem. */
+@media (max-width: 360px) {
+  .lx-wrap { padding: 1.75rem 1rem 3rem; }
+  .lx-card { padding: 1.15rem 1rem; }
 }

@@ -24,9 +24,12 @@ module.exports = {
     }
   },
 
+  // No margin and no padding override here on purpose: how far a figure sits
+  // from its neighbour is the container's business, and a diagram card that
+  // padded itself would have won on specificity and ignored the phone
+  // breakpoint — which is exactly how a card ends up cramped on a small screen.
   css: `
-.lx-figure  { margin: 1.25rem 0; }
-.lx-figure > .lx-card { padding: 1rem; }
+.lx-figure > .lx-card { display: block; }
 `,
 
   render({ svg, caption }) {

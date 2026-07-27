@@ -43,7 +43,9 @@ function page({ id, title, subtitle, tag, body, depth = 1 }) {
     ${subtitle ? `<p class="lx-subtitle">${esc(subtitle)}</p>` : ''}
   </header>
 
+  <div class="lx-blocks">
 ${body}
+  </div>
 
   <footer class="lx-lesson-foot">
     <a class="lx-btn lx-btn--outline" href="${a}reference/my-learning.html">Painel</a>
