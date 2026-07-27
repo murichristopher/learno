@@ -79,8 +79,9 @@
     <span class="lx-badge" id="current-label">—</span>
     <h1 class="lx-title"><span>Paleta</span></h1>
     <p class="lx-subtitle">
-      Nada aqui altera o produto. É a página onde a escolha é feita — troque acento
-      e fundo acima e veja como cada combinação se comporta em componentes reais.
+      A escolha já foi feita: <strong>cobalto com lavagem do acento</strong>, em #20.
+      Esta página fica como a ferramenta para a próxima — nada aqui altera o produto,
+      e o que está marcado como atual é só o ponto de partida da próxima comparação.
     </p>
   </header>
 
@@ -220,17 +221,17 @@
     // darkFrom/darkTo are the deep tones the dark background is built from. They
     // belong to the accent, not to the background proposals: an indigo accent on
     // the purple dark shell reads as two products stitched together.
-    { id:'purple', name:'Roxo (atual)', accent:'#9333ea', strong:'#7e22ce',
+    { id:'purple', name:'Roxo (anterior)', accent:'#9333ea', strong:'#7e22ce',
       soft:'rgb(243 232 255 / .6)', ring:'rgb(168 85 247 / .3)',
       softDark:'rgb(168 85 247 / .1)',
       darkFrom:'rgb(59 7 100 / .95)', darkTo:'rgb(30 27 75 / .95)',
-      note:'A referência. Tudo abaixo é comparado com ela.' },
+      note:'O que o produto usava antes de #20.' },
     { id:'indigo', name:'Índigo profundo', accent:'#4338ca', strong:'#3730a3',
       soft:'rgb(224 231 255 / .7)', ring:'rgb(99 102 241 / .3)',
       softDark:'rgb(99 102 241 / .12)',
       darkFrom:'rgb(30 27 75 / .95)', darkTo:'rgb(23 37 84 / .95)',
       note:'A transição mais curta a partir do roxo — ainda puxa para o violeta, e é o de maior contraste.' },
-    { id:'cobalt', name:'Cobalto', accent:'#2563eb', strong:'#1d4ed8',
+    { id:'cobalt', name:'Cobalto (atual)', accent:'#2563eb', strong:'#1d4ed8',
       soft:'rgb(219 234 254 / .7)', ring:'rgb(59 130 246 / .3)',
       softDark:'rgb(59 130 246 / .12)',
       darkFrom:'rgb(10 45 110 / .95)', darkTo:'rgb(12 58 120 / .95)',
@@ -243,7 +244,7 @@
   ];
 
   var BACKGROUNDS = [
-    { id:'current', name:'Atual (lavagem roxa)',
+    { id:'current', name:'Lavagem roxa (anterior)',
       from:'rgb(243 232 255 / .8)', via:'#ffffff', to:'rgb(224 231 255 / .8)',
       note:'Tingido de roxo. Os cards de vidro se destacam bem.' },
     { id:'near-white', name:'Quase branco',
@@ -252,12 +253,12 @@
     { id:'cool-tint', name:'Cinza-azulado',
       from:'#f1f5f9', via:'#f8fafc', to:'#e8eef6',
       note:'Neutro e frio. Dá contorno ao vidro sem tingir a página de uma cor.' },
-    { id:'accent-wash', name:'Lavagem do acento',
+    { id:'accent-wash', name:'Lavagem do acento (atual)',
       from:null, via:'#ffffff', to:null,
       note:'Deriva do acento escolhido — a página inteira acompanha a cor primária.' }
   ];
 
-  var state = { accent: ACCENTS[0], bg: BACKGROUNDS[0] };
+  var state = { accent: ACCENTS[2], bg: BACKGROUNDS[3] };
 
   // ── colour maths, so the risks are measured rather than eyeballed ──
   function rgb(hex) {
