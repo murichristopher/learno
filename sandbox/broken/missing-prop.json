@@ -1,0 +1,2 @@
+{ "id": "missing-prop", "title": "@t.title",
+  "blocks": [ { "component": "analogy", "props": { "label": "@t.label", "text": "@t.text" } } ] }

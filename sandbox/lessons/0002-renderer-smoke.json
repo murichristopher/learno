@@ -1,0 +1,23 @@
+{
+  "id": "0002-renderer-smoke",
+  "tag": "Sandbox",
+  "title": "@meta.title",
+  "subtitle": "@meta.subtitle",
+  "concepts": ["sandbox_widget_sharding"],
+  "blocks": [
+    { "component": "analogy",
+      "props": { "label": "@analogy.label", "text": "@analogy.text", "bridge": "@analogy.bridge" } },
+
+    { "component": "prose",
+      "props": { "text": "@intro.body" } },
+
+    { "component": "diagram",
+      "props": { "svg": "@diagrams.flow", "caption": "@intro.caption" } },
+
+    { "component": "prose",
+      "props": { "text": "@detail.body" } },
+
+    { "component": "diagram",
+      "props": { "svg": "@diagrams.variants", "caption": "@detail.caption" } }
+  ]
+}

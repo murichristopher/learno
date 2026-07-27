@@ -13,20 +13,50 @@ SANDBOX   := $(CURDIR)/sandbox
 SERVER    := $(CURDIR)/server
 RUN        = LEARNO_MODE=sandbox LEARNO_WORKSPACE=$(SANDBOX) PORT=$(PORT)
 
-.PHONY: help sandbox local stop check deps install-workspace
+.PHONY: help sandbox local stop check deps install-workspace build lesson check-errors
 
-# The engine repo ships no node_modules; install on first run so a fresh clone
-# goes straight to `make sandbox` without a separate setup step.
+# Neither the engine nor the build ships node_modules; install on first run so a
+# fresh clone goes straight to `make sandbox` without a separate setup step.
 deps:
 	@test -d $(SERVER)/node_modules || (cd $(SERVER) && npm install --silent)
+	@test -d $(CURDIR)/node_modules || npm install --silent
 
 help:
 	@echo "learno engine"
+	@echo "  make build              render every lesson from its .json + .yml"
+	@echo "  make lesson SRC=...     render one (SRC=lessons/0011-name)"
+	@echo "  make check-errors       show the build refusing four broken lessons"
 	@echo "  make sandbox            serve the sandbox + a public Cloudflare URL (no DB, no API key)"
 	@echo "  make local              same, localhost only — no tunnel"
 	@echo "  make check              syntax-check the server and validate the seed fixture"
 	@echo "  make stop               kill whatever holds :$(PORT)"
 	@echo "  make install-workspace DEST=../my-study   copy the workspace Makefile into a study repo"
+
+# ── build ────────────────────────────────────────────────────────────────────
+
+build: deps
+	@node build/render.js --all
+
+lesson: deps
+	@test -n "$(SRC)" || { echo "usage: make lesson SRC=lessons/0011-name"; exit 1; }
+	@node build/render.js $(SRC)
+
+# The failure paths matter as much as the happy one: a lesson that renders
+# half-way still looks finished. Each of these must fail, so the target inverts
+# the exit code and complains if one of them ever succeeds.
+check-errors: deps
+	@for f in unknown-component dangling-ref coloured-svg missing-prop; do \
+	  echo "──────── $$f ────────"; \
+	  out=$$(node build/render.js sandbox/broken/$$f 2>&1); rc=$$?; \
+	  echo "$$out" | grep -v 'assets/components.css'; \
+	  if [ $$rc -eq 0 ]; then \
+	    echo "  ✗ FALHOU: essa lição deveria ter sido recusada"; exit 1; \
+	  fi; \
+	  if [ -f sandbox/broken/$$f.html ]; then \
+	    echo "  ✗ FALHOU: escreveu HTML apesar do erro"; exit 1; \
+	  fi; \
+	done; \
+	echo; echo "ok — as quatro foram recusadas e nenhum HTML foi escrito"
 
 # Kitchen-sink lesson + dashboard, wired to the stubbed backend and exposed
 # through a Cloudflare quick tunnel so the layout can be checked on a real phone.

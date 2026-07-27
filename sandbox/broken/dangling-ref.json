@@ -1,0 +1,2 @@
+{ "id": "dangling-ref", "title": "@t.title",
+  "blocks": [ { "component": "prose", "props": { "text": "@t.corpo" } } ] }

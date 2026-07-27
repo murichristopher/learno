@@ -1,0 +1,3 @@
+t:
+  title: "Referência que aponta para nada"
+  body: "Escrevi 'body' mas o JSON pede 'corpo'."

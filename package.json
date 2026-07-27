@@ -1,0 +1,13 @@
+{
+  "name": "learno",
+  "version": "1.0.0",
+  "description": "Stateful, multi-session tutoring engine",
+  "private": true,
+  "scripts": {
+    "build": "node build/render.js --all"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "engines": { "node": ">=18.0.0" }
+}
