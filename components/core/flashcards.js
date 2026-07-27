@@ -1,11 +1,17 @@
 // Immediate review cards at the end of a lesson.
 //
+// Gated behind the TEACH-BACK, not behind the last phase — the cards carry the
+// answers, so opening them before the effort turns the closing exercise into a
+// reading comprehension test. They are the reward for having tried, which is
+// also the moment they teach most.
+//
 // Built on <details> rather than a JS flip: retrieval practice only works if the
 // answer is genuinely hidden until the reader has tried, and <details> gives
 // that for free — keyboard-operable, screen-reader-announced, and it still works
 // with the page opened straight from disk with no server and no script.
 
 const { icon } = require('../../build/icons');
+const { gate } = require('../../build/gate');
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -75,10 +81,13 @@ module.exports = {
         <p class="lx-flash-back">${esc(c && c.back)}</p>
       </details>`).join('');
 
-    return `  <section class="lx-flashcards">
+    return gate(`  <section class="lx-flashcards">
     <p class="lx-flash-title">${icon('layers')} ${esc(title || 'Revisão rápida')}</p>
     <div class="lx-flash-grid">${items}
     </div>
-  </section>`;
+  </section>`, {
+      name: 'flashcards',
+      reason: 'Encerre a lição para abrir a revisão'
+    });
   }
 };

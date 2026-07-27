@@ -65,21 +65,37 @@
     return i;
   }
 
+  // Opening a gate is two things, and forgetting the second is the subtle bug:
+  // the class un-blurs it visually, and removing aria-hidden makes it exist for
+  // a screen reader again. Without the attribute the block would open and stay
+  // invisible to assistive tech, which is worse than the gate it replaced.
+  function openGate(name, scroll) {
+    var el = $('.lx-gate[data-gate="' + name + '"]');
+    if (!el) return null;
+    el.classList.remove('lx-gate--locked');
+    var body = $('.lx-gate-body', el);
+    if (body) body.removeAttribute('aria-hidden');
+    if (scroll) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return el;
+  }
+
   function unlockNext(fromId) {
     markPhaseDone(fromId);
     var i = PHASES.indexOf(String(fromId));
-    if (i < 0 || i + 1 >= PHASES.length) return;
+    if (i < 0) return;
+
+    // Last phase answered: the teach-back opens, and nothing else. The
+    // flash cards stay shut until the teach-back is actually submitted — they
+    // carry the answers, so opening them earlier turns the closing exercise
+    // into a reading comprehension test.
+    if (i + 1 >= PHASES.length) {
+      openGate('teachback', true);
+      return;
+    }
+
     var next = $('.lx-phase[data-phase="' + PHASES[i + 1] + '"]');
-    if (!next) return;
-    next.classList.remove('lx-phase--locked');
-
-    // The body carries aria-hidden while blurred, so a screen reader is not
-    // handed the answer. Removing the class un-blurs it visually; without this
-    // line the section would stay invisible to assistive tech after opening.
-    var body = $('.lx-phase-body', next);
-    if (body) body.removeAttribute('aria-hidden');
-
-    next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (next) next.classList.remove('lx-phase--locked');
+    openGate('phase-' + PHASES[i + 1], true);
   }
 
   // ── verdict rendering ───────────────────────────────────────────────────
@@ -260,6 +276,7 @@
       note.textContent = 'A lição foi avaliada, mas o progresso não pôde ser salvo.';
     }
     PHASES.forEach(markPhaseDone);
+    openGate('flashcards');
     done.classList.add('is-shown');
     done.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
@@ -375,6 +392,12 @@
     });
 
     setupTheme();
+
+    // A lesson with no phases has nothing to gate behind, so every gate opens
+    // at once. Otherwise a page without the usual structure — the component
+    // gallery, say — would render permanently locked with no way in.
+    if (!PHASES.length) $$('.lx-gate').forEach(function (g) { openGate(g.dataset.gate); });
+
     detectServer();
   }
 

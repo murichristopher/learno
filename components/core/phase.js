@@ -14,7 +14,7 @@
 // lesson is left and what it is building towards. Blurred behind a lock, the
 // gate is exactly as strict and reads as a door instead of an absence.
 
-const { icon } = require('../../build/icons');
+const { gate } = require('../../build/gate');
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -47,73 +47,8 @@ module.exports = {
 .lx-phase--done  .lx-phase-badge span { display: none; }
 .lx-phase-title { color: var(--lx-text); font-size: 1.05rem; font-weight: 650; letter-spacing: -.01em; }
 
-.lx-phase-body > * + * { margin-top: 1.25rem; }
+.lx-gate-body > * + * { margin-top: 1.25rem; }
 
-/* The lock lives OUTSIDE the blurred element — a child of a blurred parent is
-   blurred too, and an unreadable lock defeats the point. */
-.lx-phase-locked-wrap { position: relative; }
-
-.lx-phase--locked .lx-phase-body {
-  /* Heavy on purpose. A light blur is a puzzle, not a gate: legible-if-you-squint
-     text invites squinting, and the section stops being practice. */
-  filter: blur(9px);
-  user-select: none;
-  pointer-events: none;
-}
-/* Capped so a long section does not become a wall of blur. Enough shows that the
-   reader can see there is a diagram and a couple of paragraphs waiting. */
-.lx-phase--locked .lx-phase-locked-wrap {
-  max-height: 20rem;
-  overflow: hidden;
-  border-radius: var(--lx-radius);
-}
-/* Fades into the page rather than being sliced off at the cap. */
-.lx-phase--locked .lx-phase-locked-wrap::after {
-  content: "";
-  position: absolute; inset: auto 0 0 0; height: 6rem;
-  pointer-events: none;
-  background: linear-gradient(to bottom, transparent, var(--lx-shell-via));
-}
-
-.lx-phase-lock { display: none; }
-.lx-phase--locked .lx-phase-lock {
-  display: flex;
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  text-align: center;
-  padding: 1rem;
-}
-.lx-phase-lock-badge {
-  display: flex; align-items: center; justify-content: center;
-  width: 2.75rem; height: 2.75rem;
-  border-radius: 50%;
-  background: var(--lx-card);
-  border: 1px solid var(--lx-card-border);
-  box-shadow: var(--lx-card-shadow);
-  color: var(--lx-accent);
-  backdrop-filter: blur(var(--lx-blur));
-  -webkit-backdrop-filter: blur(var(--lx-blur));
-}
-.lx-phase-lock-badge .lx-icon-svg { width: 1.2rem; height: 1.2rem; }
-.lx-phase-lock-text {
-  color: var(--lx-text);
-  font-size: .85rem;
-  font-weight: 550;
-  background: var(--lx-card);
-  border: 1px solid var(--lx-card-border);
-  border-radius: 99px;
-  padding: .3rem .8rem;
-  backdrop-filter: blur(var(--lx-blur));
-  -webkit-backdrop-filter: blur(var(--lx-blur));
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .lx-phase-lock-badge, .lx-phase-lock-text { backdrop-filter: none; background: Canvas; }
 }
 
 /* Progress bar — one segment per phase, emitted by the template. */
@@ -134,15 +69,11 @@ module.exports = {
       <span class="lx-phase-badge"><span>${esc(id)}</span></span>
       <h2 class="lx-phase-title">${esc(title)}</h2>
     </div>
-    <div class="lx-phase-locked-wrap">
-      <div class="lx-phase-body"${unlocked ? '' : ' aria-hidden="true"'}>
-${ctx.children || ''}
-      </div>
-      <div class="lx-phase-lock">
-        <span class="lx-phase-lock-badge">${icon('lock')}</span>
-        <span class="lx-phase-lock-text">Responda a seção anterior para abrir</span>
-      </div>
-    </div>
+    ${gate(ctx.children || '', {
+      name: `phase-${id}`,
+      reason: 'Responda a seção anterior para abrir',
+      open: unlocked
+    })}
   </section>`;
   }
 };
