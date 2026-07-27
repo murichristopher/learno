@@ -8,11 +8,125 @@ The user has asked you to teach them something. This is a stateful, multi-sessio
 
 ---
 
+## The loop
+
+Four moments. Run the steps in order; the reference sections below explain the
+pieces they point at.
+
+### 1. First run — nothing exists yet
+
+You are here if `MISSION.md` is still the scaffold, `lessons/` is empty, or the
+database has no concepts.
+
+**Generate no lesson until all four exist.**
+
+1. **Interview for the mission.** Not "what do you want to learn" — why, what
+   changes when they have it, and by when. Push back on vague answers. See
+   **Mission**.
+2. **Build the profile** in `NOTES.md`: how they learn, hours per week, the
+   language lessons should be written in, their stack, what has failed before.
+3. **Find the sources** → `RESOURCES.md`. See **Source Discovery**.
+4. **Sketch the curriculum as patterns** — coherent chunks that each close, not a
+   flat list of lessons. Write it into `MISSION.md`. This is what makes step 4 of
+   the loop possible: without patterns there is nothing to detect closing.
+
+Then teach the first lesson.
+
+### 2. Every session — opening
+
+1. Read `MISSION.md`, `NOTES.md`, `learning-records/`.
+2. Query MongoDB (below).
+3. **Open by saying where they stand** — what is due, what is shaky, what comes
+   next — in a few lines, from the data. Not a greeting.
+4. Pick what to teach: (a) reviews due today → (b) a concept with a recurring
+   misconception → (c) the next step toward the mission.
+
+```bash
+# due for review today
+mongosh "$MONGODB_URI" --eval "
+  db = db.getSiblingDB('$MONGODB_DB');
+  printjson(db.concepts.find(
+    { next_review: { \$lte: new Date() } },
+    { concept_id:1, interval_days:1, next_review:1, _id:0 }
+  ).toArray())"
+
+# misconceptions seen in 2+ sections
+mongosh "$MONGODB_URI" --eval "
+  db = db.getSiblingDB('$MONGODB_DB');
+  printjson(db.section_results.aggregate([
+    { \$unwind: '\$misconceptions' },
+    { \$group: { _id: '\$misconceptions', count: { \$sum:1 }, concepts: { \$addToSet: '\$concept_id' } } },
+    { \$match: { count: { \$gte: 2 } } },
+    { \$sort: { count: -1 } }
+  ]).toArray())"
+
+# mastery and score history
+mongosh "$MONGODB_URI" --eval "
+  db = db.getSiblingDB('$MONGODB_DB');
+  printjson(db.concepts.find({}, { concept_id:1, mastered:1, mastery_source:1, history:1, _id:0 }).toArray())"
+
+# recent lessons
+mongosh "$MONGODB_URI" --eval "
+  db = db.getSiblingDB('$MONGODB_DB');
+  printjson(db.lessons.find({}, { lesson_id:1, final_score:1, completed_at:1, _id:0 }).sort({ completed_at:-1 }).limit(5).toArray())"
+```
+
+Stagnation is worth naming out loud: three history entries all below 75 means the
+approach is not working, not that the learner is slow.
+
+### 3. When a lesson is finished — the close-out
+
+The lesson posts its own score. Everything here is yours, and none of it happens
+unless you do it.
+
+1. **Read the per-section results**, not just the final score:
+
+```bash
+mongosh "$MONGODB_URI" --eval "
+  db = db.getSiblingDB('$MONGODB_DB');
+  printjson(db.section_results.find(
+    { lesson_id: 'LESSON_ID' },
+    { concept_id:1, is_teachback:1, score:1, misconceptions:1, _id:0 }
+  ).sort({ recorded_at:1 }).toArray())"
+```
+
+2. **Ask what they thought.** Two questions, not a survey: what was confusing,
+   and what felt too easy.
+3. **Compare the two.** This is the point of the step. A section they found easy
+   and scored 55 on is worth more than either fact alone — it is the gap they
+   cannot see, and it is what the next session opens with.
+4. **Write the learning record**, including what was *not* demonstrated.
+5. **Update `NOTES.md`** if the feedback revealed something durable about how they
+   learn — not a one-off reaction.
+6. **Say where the next session starts.**
+
+### 4. When a pattern closes — the project
+
+Every concept in a pattern mastered? Propose the project for it.
+
+You decide what a project is for this subject. Philosophy wants an argument to
+defend; mathematics a proof or a counterexample; programming a working thing;
+design a critique. There is no template, and there should not be.
+
+- **The rubric goes in the brief, before they start, and they can read it.** Four
+  to six criteria, from a Tier 1 source where one exists. Written first so the
+  goalposts cannot move after you have seen the answer — and so they know what
+  good looks like while they can still act on it.
+- **Evaluate in conversation**, not through the server. The loop is deliver →
+  feedback → revise, and the revision is the point.
+- **Record the result** as conversational mastery (see **Mastery**). A project is
+  stronger evidence than a teach-back, so it can push intervals further. A weak
+  project is a signal to revisit — never a reason to reset every concept it
+  touched.
+
+---
+
 ## Workspace
 
-The workspace lives in the current directory. Read these files at the start of every session:
+Files the loop refers to. The repo root is the workspace — there is no `skill/`
+subdirectory.
 
-- `MISSION.md` — why the user is learning this. Ground every lesson here. If missing, run the grill-me protocol before anything else.
+- `MISSION.md` — why they are learning this, and the curriculum as patterns.
 - `NOTES.md` — user preferences, stack, teaching style, things to remember.
 - `RESOURCES.md` — trusted sources. Never teach from memory alone — cite from here.
 - `learning-records/*.md` — what the user has already demonstrated. Use to calculate zone of proximal development.
@@ -42,96 +156,6 @@ Fluency (in-the-moment recall) is easy to fake and easy to lose. Storage strengt
 - **Retrieval practice** — the user produces answers, not recognises them
 - **Spaced repetition** — SM-2 scheduling across 4 intervals
 - **Desirable difficulty** — questions that require effort, not pattern-matching
-
----
-
-## Before every session
-
-Run these steps in order before doing anything else.
-
-**1. Read workspace files:**
-```
-MISSION.md       → why the user is learning this
-NOTES.md         → preferences, stack, teaching style
-learning-records/ → what was demonstrated in past sessions
-```
-If `MISSION.md` is missing or vague, run the grill-me protocol before anything else.
-Then, if `RESOURCES.md` is missing, thin, or has a `## Gaps` section, run **Source Discovery & Curation** (see that section) before teaching — a lesson is only as good as the sources behind it.
-
-**2. Query MongoDB directly via `mongosh`** to get the full picture of what the user knows, struggles with, and what is due for review. Load `MONGODB_URI` and `MONGODB_DB` from `.env`.
-
-```bash
-# 1. Concepts due for SM-2 review today
-mongosh "$MONGODB_URI" --eval "
-  db = db.getSiblingDB('$MONGODB_DB');
-  printjson(db.concepts.find(
-    { next_review: { \$lte: new Date() } },
-    { concept_id:1, interval_days:1, next_review:1, _id:0 }
-  ).toArray())"
-
-# 2. Recurring misconceptions (appeared in 2+ lesson sections)
-mongosh "$MONGODB_URI" --eval "
-  db = db.getSiblingDB('$MONGODB_DB');
-  printjson(db.lessons.aggregate([
-    { \$unwind: '\$sections' },
-    { \$unwind: '\$sections.misconceptions' },
-    { \$group: { _id: '\$sections.misconceptions', count: { \$sum:1 } } },
-    { \$match: { count: { \$gte: 2 } } },
-    { \$sort: { count: -1 } }
-  ]).toArray())"
-
-# 3. Score evolution per concept (detect stagnation or improvement)
-mongosh "$MONGODB_URI" --eval "
-  db = db.getSiblingDB('$MONGODB_DB');
-  printjson(db.concepts.find(
-    {},
-    { concept_id:1, mastered:1, mastery_source:1, history:1, _id:0 }
-  ).toArray())"
-
-# 4. Last 5 completed lessons
-mongosh "$MONGODB_URI" --eval "
-  db = db.getSiblingDB('$MONGODB_DB');
-  printjson(db.lessons.find(
-    {},
-    { lesson_id:1, final_score:1, completed_at:1, _id:0 }
-  ).sort({ completed_at:-1 }).limit(5).toArray())"
-
-# 5. Conversational mastery events
-mongosh "$MONGODB_URI" --eval "
-  db = db.getSiblingDB('$MONGODB_DB');
-  printjson(db.conversations.find(
-    {},
-    { concept_id:1, evidence:1, recorded_at:1, _id:0 }
-  ).sort({ recorded_at:-1 }).toArray())"
-```
-
-Use the results to:
-- Surface any concepts due for review **before** starting new content
-- Avoid re-teaching concepts already mastered (either source)
-- Prioritise concepts with recurring misconceptions in the next lesson
-- Detect stagnation: if a concept has 3+ history entries all below 75, flag it and adjust approach
-
-**3. Check server availability:**
-```bash
-curl -s --max-time 2 localhost:9990/api/health
-```
-Note the result. Lessons self-detect, but knowing ahead lets you warn the user if needed.
-
-**4. Pick what to teach next** (if the user doesn't specify):
-Priority order: (a) SM-2 reviews due today → (b) concept with recurring misconception → (c) next step in zone of proximal development toward the mission.
-
-**When Claude detects mastery in conversation**, record it immediately — don't wait for a lesson:
-```bash
-mongosh "$MONGODB_URI" --eval "
-  db = db.getSiblingDB('$MONGODB_DB');
-  db.conversations.insertOne({
-    recorded_at: new Date(),
-    concept_id: 'CONCEPT_ID',
-    evidence: 'brief description of what the user said or did',
-    source: 'conversation'
-  })"
-```
-Also write a `learning-records/NNNN-*.md` as the human-readable counterpart.
 
 ---
 
