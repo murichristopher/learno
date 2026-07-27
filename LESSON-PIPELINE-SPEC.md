@@ -436,6 +436,84 @@ since last touched — rather than printing a date.
 
 ---
 
+## Projects
+
+Lessons test whether the learner can **explain** something. Nothing tests whether
+they can **do** it under a constraint they have not seen before. That gap has a
+name — transfer — and it is where the current model is blind: a concept can be
+mastered in SM-2 and still fail the first time it has to be used, because the
+exam does not ask for the definition, it asks for the decision.
+
+### The model's Claude designs the project, not the engine
+
+learno teaches any subject, so there is no fixed project format. Philosophy is an
+argument to defend; mathematics a proof or a counterexample; programming a
+working thing; design a critique. **The engine does not model any of that.** The
+learner's Claude decides what a project is for the subject in front of it, the
+same way it decides what a lesson is.
+
+That is the whole reason projects can exist here at all. A generic "deliverable"
+shell would have forced every subject into the shape of whichever one was
+designed against first.
+
+### Evaluation happens in the conversation
+
+Not through `/api/validate`. A project deliverable is long, multi-part and
+iterative, and the interesting output is feedback rather than a number — none of
+which a single scoring call does well.
+
+So the loop is: read the brief → do the work → bring it to Claude → get feedback
+→ revise. **The revision is the point**, not the score.
+
+The result reaches the schedule through the path that already exists: `SKILL.md`
+already records mastery demonstrated in conversation via `POST /api/progress`.
+A project is that, with stronger evidence behind it.
+
+### The rubric is written before the attempt, and shown
+
+The open question was who writes the rubric, given that a model scoring against
+a rubric it invented after seeing the answer is grading itself.
+
+The rule that fixes it is not about authorship but about order: **the rubric goes
+into the brief, before the learner starts, and they can read it.** That stops the
+goalposts moving after the fact, and it tells the learner what good looks like
+while they can still act on it — which is worth more than the score.
+
+Where a Tier 1 source exists in `RESOURCES.md`, the criteria come from it rather
+than from the model's taste.
+
+### When
+
+On **pattern completion**, not on a lesson count. When the concepts that make up
+one coherent chunk of the mission are mastered, a project applies them together.
+"Every four lessons" is arbitrary; "when the pattern closes" means something.
+
+### Effect on SM-2, deliberately asymmetric
+
+A project is stronger evidence than a teach-back — it demonstrates transfer, not
+recall — so success should push intervals further than a lesson does.
+
+Failure must **not** be symmetric. A project touches many concepts at once, and
+one bad afternoon should not collapse a month of scheduling across all of them.
+A weak project is a signal to revisit, not a reason to reset.
+
+### Projects and the interviewer agent are both kept
+
+They cover the same gap from different sides and neither replaces the other: a
+project is asynchronous, written, and revisable; a mock interview is live,
+verbal, and unforgiving about hesitation. The learner should be able to reach for
+either.
+
+### Try the existing vocabulary first
+
+A project page is plausibly: `prose` for the brief, `callout` for the
+constraints, `table` for the rubric, `source` for the grounding. If that holds,
+projects need **no new components at all** — only a `projects/` directory and a
+line in `SKILL.md`. New components should be added only where that genuinely
+fails, not on the assumption that a new artifact needs new parts.
+
+---
+
 ## Sequence — done
 
 1. ~~Design system ported to CSS~~ — #2
@@ -463,10 +541,9 @@ Plus the dashboard on the design system — #10.
 - **Diagram geometry is unchecked.** The build refuses a diagram that carries its
   own colour, but accepts one whose boxes overlap or whose text runs outside the
   `viewBox`. A lesson can ship visually broken with a green build.
-- **Projects.** Lessons test whether you can *explain* something. Nothing tests
-  whether you can *do* it under a novel constraint, which is the transfer the
-  mission is usually about. Design pending — see the discussion in the session
-  that added this line.
+- **Projects.** Designed above; not built. Needs a `projects/` directory, a
+  `SKILL.md` section, and confirmation that the existing components cover a
+  project page.
 
 ## Original sequence, for the record
 
