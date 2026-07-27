@@ -36,9 +36,16 @@ app.use('/', require('./routes/home'));
 // simply keeps working.
 app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
 
+// Now that the repo IS the workspace, the static root contains the engine's own
+// dependencies. Nothing under these belongs to a lesson, and `make start` puts
+// the whole thing behind a public URL — so they are refused rather than served.
+// Dotfiles (.env, .git) are already ignored by express.static.
+const NEVER_SERVE = /^\/(node_modules|\.git)(\/|$)/;
+app.use((req, res, next) => (NEVER_SERVE.test(req.path) ? res.status(404).json({ error: 'Not found' }) : next()));
+
 // Serve the workspace statically so lessons open over http://localhost (a secure
 // context) instead of file:// — required for the mic / Web Speech API to work and
-// for the permission to be remembered. Dotfiles (.env) are ignored by default.
+// for the permission to be remembered.
 app.use(express.static(WORKSPACE));
 
 // Unknown routes
