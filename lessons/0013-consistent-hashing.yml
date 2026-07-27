@@ -1,0 +1,292 @@
+meta:
+  title: "Consistent hashing"
+  subtitle: "Por que adicionar um servidor não deveria invalidar o cache inteiro."
+
+analogy:
+  label: "Pense num rodízio de mesas de restaurante"
+  text: >
+    As mesas estão dispostas em círculo e cada garçom cuida do trecho que vai da
+    sua posição até o próximo garçom, no sentido horário. Entra um garçom novo?
+    Ele se encaixa num ponto do círculo e assume só as mesas entre ele e quem
+    estava ali antes. Ninguém mais precisa trocar de seção.
+  bridge: >
+    Esse círculo é o hash ring, e a regra "vai para o próximo no sentido horário"
+    é literalmente como uma chave encontra seu nó.
+
+intro:
+  body: |
+    Você tem 3 servidores de cache e distribui as chaves com `hash(chave) % 3`.
+    Funciona. Aí o tráfego cresce, você sobe o quarto servidor, troca para `% 4`
+    — e o cache inteiro esfria de uma vez.
+
+    Esta lição é sobre por que isso acontece, por que a conta é muito pior do que
+    a intuição diz, e qual é a estrutura que troca "quase tudo se move" por
+    "quase nada se move".
+
+p1:
+  title: "Por que `% N` quebra quando N muda"
+  body: |
+    `hash("user:42") % 3` devolve um número entre 0 e 2. Estável, barato,
+    distribui bem. O problema não está no hash — ele nem sabe quantos nós
+    existem. O problema é o **divisor**.
+
+    Quando N vai de 3 para 4, o resto de praticamente toda chave muda. Não
+    porque a chave mudou, mas porque você está dividindo por outro número. Cada
+    chave que muda de resto é uma entrada que continua no nó antigo, sem ninguém
+    para procurá-la, enquanto o nó novo responde miss e vai ao banco.
+  caption: "Oito chaves, N=3 e depois N=4 — só as marcadas ficaram no lugar"
+  callout:
+    title: "A fração que se move não é 1/N"
+    text: >
+      A intuição diz "adicionei 1 de 4 nós, então uns 25% se movem". A conta real
+      é o oposto: com módulo, o esperado é que cerca de (N-1)/N das chaves mudem
+      de destino. Indo de 3 para 4 nós, aproximadamente 75% do cache é
+      invalidado de uma vez — no exato momento em que você subiu capacidade
+      porque já estava sob pressão.
+  question: >
+    Explique, com suas palavras, por que trocar N de 3 para 4 invalida quase todo
+    o cache, e por que "o hash mudou" não é a explicação correta.
+  summary: >
+    Uma boa resposta separa hash de destino: o hash da chave é estável e não
+    depende de N; o que muda é o divisor, então o resto muda para quase toda
+    chave. Deve reconhecer que a fração afetada é próxima de (N-1)/N, não 1/N, e
+    idealmente notar que a invalidação em massa chega junto com um pico de carga
+    no banco.
+  fallback:
+    options:
+      - { text: "Porque a função de hash produz valores diferentes depois do redeploy", correct: false }
+      - { text: "Porque o divisor mudou, então o resto de quase toda chave mudou junto", correct: true }
+      - { text: "Porque o servidor novo começa com o cache vazio", correct: false }
+    ok: "Isso. O hash é estável; o que se move é o destino, porque a conta que escolhe o destino mudou."
+    bad: >
+      O hash da chave não mudou — `hash(\"user:42\")` continua o mesmo número. O que
+      mudou foi por quanto você divide, e é isso que remapeia quase tudo.
+
+p2:
+  title: "O anel: chaves e nós no mesmo espaço"
+  body: |
+    A virada é parar de mapear chave → índice de nó, e passar a mapear **as duas
+    coisas no mesmo espaço**. Pegue a saída do hash e imagine-a como um círculo,
+    de 0 até o valor máximo, com o fim emendando no começo.
+
+    Cada nó é posicionado nesse círculo pelo hash do seu identificador. Cada
+    chave também. E a regra de roteamento é uma frase só: **a chave pertence ao
+    primeiro nó que aparece andando no sentido horário**.
+  caption: "Três nós no anel — cada um dono do arco que termina nele"
+  body2: |
+    Agora repare no que acontece quando um nó entra. Ele cai num ponto do
+    círculo e assume **apenas o arco entre ele e o nó anterior**. Nenhuma outra
+    chave troca de dono, porque o destino de uma chave nunca dependeu de quantos
+    nós existem — só de quem é o próximo no círculo.
+
+    Sair é simétrico: as chaves do nó que saiu passam para o próximo no sentido
+    horário, e ninguém mais é afetado. De `(N-1)/N` das chaves em movimento,
+    você passa para aproximadamente `1/N`.
+  question: "No anel, quantas chaves mudam de dono quando um nó entra?"
+  options:
+    - { text: "Quase todas, igual ao módulo — o anel só reorganiza o cálculo", correct: false }
+    - { text: "Só as do arco entre o nó novo e o nó anterior no círculo", correct: true }
+    - { text: "Metade, porque o espaço de hash é dividido ao meio", correct: false }
+  ok: "Isso. O resto do círculo não tem motivo nenhum para se mexer — o vizinho de cada chave continua o mesmo."
+  bad: >
+    O ponto do anel é justamente que o destino de uma chave não depende de N. Só
+    as chaves do arco que o nó novo passou a cobrir mudam de dono.
+
+p3:
+  title: "Nós virtuais: por que o anel sozinho não basta"
+  body: |
+    O anel resolve o remapeamento e cria dois problemas novos, ambos pela mesma
+    causa: **três pontos aleatórios num círculo não o dividem em três partes
+    iguais**.
+
+    O primeiro é distribuição. Com poucos nós, é comum um deles ficar com um arco
+    duas ou três vezes maior que o do vizinho — e portanto com o dobro ou o
+    triplo das chaves.
+
+    O segundo é pior. Quando um nó cai, **todo o arco dele vai para um único
+    vizinho**, o próximo no sentido horário. O nó que já estava atendendo sua
+    própria fatia recebe outra inteira de uma vez. Se ele também cair sob essa
+    carga, a fatia dobrada passa para o seguinte.
+  caption: "Cada nó físico aparece várias vezes no anel — os arcos se intercalam"
+  table:
+    caption: "Desvio da distribuição conforme os nós virtuais por nó físico"
+    headers: ["Nós virtuais por nó físico", "Desvio típico da carga", "Quem herda uma queda"]
+    rows:
+      - ["1", "alto — arcos muito desiguais", "um único vizinho"]
+      - ["16", "moderado", "poucos vizinhos"]
+      - ["128–256", "baixo", "todos os nós restantes"]
+  callout:
+    title: "Falha em cascata é o problema que os nós virtuais resolvem"
+    text: >
+      Distribuição desigual é irritante; herança concentrada derruba o sistema.
+      Com nós virtuais, a carga de um nó que cai se espalha por todos os
+      sobreviventes em fatias pequenas, em vez de dobrar a carga de um único
+      vizinho que provavelmente já está no limite.
+  question: >
+    Explique por que nós virtuais existem, citando o problema de distribuição e o
+    de falha — e por que o segundo é mais grave que o primeiro.
+  summary: >
+    Uma boa resposta explica que pontos aleatórios não dividem o círculo em
+    partes iguais, então poucos nós geram arcos desiguais. Deve explicar que cada
+    nó físico passa a ocupar muitas posições no anel, intercalando os arcos. E
+    deve identificar a falha como o problema mais grave: sem nós virtuais, a
+    carga de um nó que cai vai inteira para um vizinho, o que pode derrubá-lo em
+    cascata; com eles, a carga se espalha por todos os sobreviventes.
+  fallback:
+    options:
+      - { text: "Para o anel caber em menos memória", correct: false }
+      - { text: "Porque poucos pontos dividem o círculo de forma desigual, e sem eles a queda de um nó cai inteira sobre um único vizinho", correct: true }
+      - { text: "Para permitir mais de uma função de hash ao mesmo tempo", correct: false }
+    ok: "Isso — e a segunda metade é a que importa: espalhar a herança de uma falha é o que evita a cascata."
+    bad: >
+      Não é sobre memória nem sobre funções de hash. É sobre pontos aleatórios
+      dividirem mal o círculo, e sobre quem herda a carga quando um nó cai.
+
+wrapup:
+  caption: "As duas contas, lado a lado"
+  columns:
+    - label: "hash(chave) % N"
+      body: >
+        Uma linha de código, distribuição uniforme. Mudar N remapeia cerca de
+        (N-1)/N das chaves de uma vez. Serve quando o conjunto de nós é fixo.
+    - label: "Anel + nós virtuais"
+      body: >
+        Estrutura para manter e posições para escolher. Mudar o conjunto de nós
+        move aproximadamente 1/N das chaves, e a queda de um nó se espalha por
+        todos os sobreviventes.
+
+teachback:
+  question: >
+    Um colega vai subir o quarto nó de cache amanhã e planeja só trocar `% 3` por
+    `% 4`. Explique para ele o que vai acontecer, por que a fração afetada é bem
+    maior do que ele imagina, o que o anel muda, e por que só o anel ainda não é
+    suficiente.
+  hint: >
+    Comece pelo divisor e pela fração (N-1)/N, depois o anel e a regra do sentido
+    horário, e feche com nós virtuais — citando a herança concentrada numa falha,
+    não só a distribuição desigual.
+
+flashcards:
+  title: "Revisão rápida"
+  cards:
+    - front: "Por que `% N` remapeia quase tudo quando N muda?"
+      back: "Porque o hash da chave é estável, mas o divisor não. Muda o divisor, muda o resto de quase toda chave — cerca de (N-1)/N delas."
+    - front: "Qual é a regra de roteamento no hash ring?"
+      back: "Chaves e nós são posicionados no mesmo círculo pelo hash. A chave pertence ao primeiro nó encontrado andando no sentido horário."
+    - front: "Quantas chaves se movem ao adicionar um nó no anel?"
+      back: "Só as do arco entre o nó novo e o nó anterior — aproximadamente 1/N, em vez de (N-1)/N."
+    - front: "Que dois problemas os nós virtuais resolvem?"
+      back: "Distribuição desigual (pontos aleatórios não dividem o círculo em partes iguais) e herança concentrada: sem eles, a carga de um nó que cai vai inteira para um único vizinho."
+    - front: "Por que a herança concentrada é mais grave que a distribuição desigual?"
+      back: "Distribuição desigual é desperdício constante; herança concentrada dobra a carga de um vizinho de uma vez e pode derrubá-lo, propagando a falha em cascata."
+
+source:
+  title: "Dynamo: Amazon's Highly Available Key-value Store (SOSP 2007)"
+  url: "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf"
+  note: >
+    A seção 4.2 é onde os nós virtuais aparecem, com a justificativa de
+    distribuição e de redistribuição em falha. O artigo original de consistent
+    hashing é Karger et al. (1997); DDIA cap. 6 discute o termo e por que ele é
+    usado de forma ambígua na indústria.
+
+diagrams:
+  modulo: |
+    <svg class="lx-svg" viewBox="0 0 620 210" role="img"
+         aria-label="Oito chaves distribuídas com módulo 3 e depois módulo 4, mostrando que a maioria muda de nó">
+      <text class="lx-label--muted" x="10" y="24">hash(chave) % 3</text>
+      <rect class="lx-node" x="10"  y="34" width="70" height="40"/>
+      <text class="lx-label" x="45"  y="59" text-anchor="middle">A</text>
+      <rect class="lx-node" x="86"  y="34" width="70" height="40"/>
+      <text class="lx-label" x="121" y="59" text-anchor="middle">B</text>
+      <rect class="lx-node" x="162" y="34" width="70" height="40"/>
+      <text class="lx-label" x="197" y="59" text-anchor="middle">C</text>
+      <rect class="lx-node" x="238" y="34" width="70" height="40"/>
+      <text class="lx-label" x="273" y="59" text-anchor="middle">A</text>
+      <rect class="lx-node" x="314" y="34" width="70" height="40"/>
+      <text class="lx-label" x="349" y="59" text-anchor="middle">B</text>
+      <rect class="lx-node" x="390" y="34" width="70" height="40"/>
+      <text class="lx-label" x="425" y="59" text-anchor="middle">C</text>
+      <rect class="lx-node" x="466" y="34" width="70" height="40"/>
+      <text class="lx-label" x="501" y="59" text-anchor="middle">A</text>
+      <rect class="lx-node" x="542" y="34" width="70" height="40"/>
+      <text class="lx-label" x="577" y="59" text-anchor="middle">B</text>
+
+      <text class="lx-label--muted" x="10" y="132">hash(chave) % 4</text>
+      <rect class="lx-node lx-node--accent" x="10"  y="142" width="70" height="40"/>
+      <text class="lx-label" x="45"  y="167" text-anchor="middle">A</text>
+      <rect class="lx-node lx-node--accent" x="86"  y="142" width="70" height="40"/>
+      <text class="lx-label" x="121" y="167" text-anchor="middle">B</text>
+      <rect class="lx-node lx-node--accent" x="162" y="142" width="70" height="40"/>
+      <text class="lx-label" x="197" y="167" text-anchor="middle">C</text>
+      <rect class="lx-node" x="238" y="142" width="70" height="40"/>
+      <text class="lx-label" x="273" y="167" text-anchor="middle">D</text>
+      <rect class="lx-node" x="314" y="142" width="70" height="40"/>
+      <text class="lx-label" x="349" y="167" text-anchor="middle">A</text>
+      <rect class="lx-node" x="390" y="142" width="70" height="40"/>
+      <text class="lx-label" x="425" y="167" text-anchor="middle">B</text>
+      <rect class="lx-node" x="466" y="142" width="70" height="40"/>
+      <text class="lx-label" x="501" y="167" text-anchor="middle">C</text>
+      <rect class="lx-node" x="542" y="142" width="70" height="40"/>
+      <text class="lx-label" x="577" y="167" text-anchor="middle">D</text>
+
+      <text class="lx-label--muted" x="10" y="200">as três primeiras ficaram — as cinco seguintes trocaram de nó</text>
+    </svg>
+
+  ring: |
+    <svg class="lx-svg" viewBox="0 0 620 320" role="img"
+         aria-label="Anel de hash com três nós e chaves roteadas no sentido horário">
+      <circle class="lx-edge lx-edge--plain" cx="310" cy="160" r="112"/>
+
+      <rect class="lx-node lx-node--accent" x="266" y="18" width="88" height="36"/>
+      <text class="lx-label" x="310" y="42" text-anchor="middle">nó A</text>
+
+      <rect class="lx-node lx-node--accent" x="378" y="252" width="88" height="36"/>
+      <text class="lx-label" x="422" y="276" text-anchor="middle">nó B</text>
+
+      <rect class="lx-node lx-node--accent" x="154" y="252" width="88" height="36"/>
+      <text class="lx-label" x="198" y="276" text-anchor="middle">nó C</text>
+
+      <text class="lx-label--muted" x="418" y="96" text-anchor="middle">k1</text>
+      <path class="lx-edge" d="M418 104 C 440 140, 440 200, 424 248"/>
+
+      <text class="lx-label--muted" x="310" y="300" text-anchor="middle">k2</text>
+      <path class="lx-edge" d="M296 296 C 250 292, 216 292, 200 290"/>
+
+      <text class="lx-label--muted" x="196" y="96" text-anchor="middle">k3</text>
+      <path class="lx-edge" d="M204 88 C 226 56, 256 40, 262 38"/>
+
+      <text class="lx-label--muted" x="310" y="150" text-anchor="middle">a chave vai para o</text>
+      <text class="lx-label--muted" x="310" y="168" text-anchor="middle">próximo nó no</text>
+      <text class="lx-label--muted" x="310" y="186" text-anchor="middle">sentido horário</text>
+    </svg>
+
+  vnodes: |
+    <svg class="lx-svg" viewBox="0 0 620 320" role="img"
+         aria-label="Anel com cada nó físico ocupando várias posições intercaladas">
+      <circle class="lx-edge lx-edge--plain" cx="310" cy="160" r="112"/>
+
+      <rect class="lx-node lx-node--accent" x="278" y="26" width="64" height="30"/>
+      <text class="lx-label" x="310" y="47" text-anchor="middle">A1</text>
+
+      <rect class="lx-node" x="392" y="72" width="64" height="30"/>
+      <text class="lx-label" x="424" y="93" text-anchor="middle">B1</text>
+
+      <rect class="lx-node lx-node--muted" x="424" y="188" width="64" height="30"/>
+      <text class="lx-label" x="456" y="209" text-anchor="middle">C1</text>
+
+      <rect class="lx-node lx-node--accent" x="336" y="266" width="64" height="30"/>
+      <text class="lx-label" x="368" y="287" text-anchor="middle">A2</text>
+
+      <rect class="lx-node" x="222" y="266" width="64" height="30"/>
+      <text class="lx-label" x="254" y="287" text-anchor="middle">B2</text>
+
+      <rect class="lx-node lx-node--muted" x="132" y="188" width="64" height="30"/>
+      <text class="lx-label" x="164" y="209" text-anchor="middle">C2</text>
+
+      <rect class="lx-node lx-node--accent" x="164" y="72" width="64" height="30"/>
+      <text class="lx-label" x="196" y="93" text-anchor="middle">A3</text>
+
+      <text class="lx-label--muted" x="310" y="150" text-anchor="middle">se C sai, os arcos de C1 e C2</text>
+      <text class="lx-label--muted" x="310" y="170" text-anchor="middle">vão para vizinhos diferentes —</text>
+      <text class="lx-label--muted" x="310" y="190" text-anchor="middle">ninguém herda tudo sozinho</text>
+    </svg>

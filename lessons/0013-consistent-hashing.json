@@ -1,0 +1,63 @@
+{
+  "id": "0013-consistent-hashing",
+  "tag": "Lição 13 · System Design",
+  "icon": "circle-dot",
+  "title": "@meta.title",
+  "subtitle": "@meta.subtitle",
+  "concepts": ["modulo_remapping", "hash_ring", "virtual_nodes"],
+  "blocks": [
+    { "component": "analogy",
+      "props": { "label": "@analogy.label", "text": "@analogy.text", "bridge": "@analogy.bridge" } },
+
+    { "component": "prose", "props": { "text": "@intro.body" } },
+
+    { "component": "phase",
+      "props": { "id": "1", "title": "@p1.title" },
+      "children": [
+        { "component": "prose",   "props": { "text": "@p1.body" } },
+        { "component": "diagram", "props": { "svg": "@diagrams.modulo", "caption": "@p1.caption" } },
+        { "component": "callout", "props": { "variant": "danger", "title": "@p1.callout.title", "text": "@p1.callout.text" } },
+        { "component": "recall",
+          "props": { "conceptId": "modulo_remapping", "phase": "1",
+                     "question": "@p1.question", "summary": "@p1.summary", "fallback": "@p1.fallback" } }
+      ] },
+
+    { "component": "phase",
+      "props": { "id": "2", "title": "@p2.title" },
+      "children": [
+        { "component": "prose",   "props": { "text": "@p2.body" } },
+        { "component": "diagram", "props": { "svg": "@diagrams.ring", "caption": "@p2.caption" } },
+        { "component": "prose",   "props": { "text": "@p2.body2" } },
+        { "component": "quiz",
+          "props": { "phase": "2", "question": "@p2.question", "options": "@p2.options",
+                     "ok": "@p2.ok", "bad": "@p2.bad" } }
+      ] },
+
+    { "component": "phase",
+      "props": { "id": "3", "title": "@p3.title" },
+      "children": [
+        { "component": "prose",   "props": { "text": "@p3.body" } },
+        { "component": "diagram", "props": { "svg": "@diagrams.vnodes", "caption": "@p3.caption" } },
+        { "component": "table",
+          "props": { "headers": "@p3.table.headers", "rows": "@p3.table.rows", "caption": "@p3.table.caption" } },
+        { "component": "callout", "props": { "variant": "warn", "title": "@p3.callout.title", "text": "@p3.callout.text" } },
+        { "component": "recall",
+          "props": { "conceptId": "virtual_nodes", "phase": "3",
+                     "question": "@p3.question", "summary": "@p3.summary", "fallback": "@p3.fallback" } }
+      ] },
+
+    { "component": "compare",
+      "props": { "columns": "@wrapup.columns", "caption": "@wrapup.caption" } },
+
+    { "component": "teachback",
+      "props": { "question": "@teachback.question",
+                 "conceptIds": ["modulo_remapping", "hash_ring", "virtual_nodes"],
+                 "hint": "@teachback.hint" } },
+
+    { "component": "flashcards",
+      "props": { "cards": "@flashcards.cards", "title": "@flashcards.title" } },
+
+    { "component": "source",
+      "props": { "title": "@source.title", "url": "@source.url", "note": "@source.note" } }
+  ]
+}
