@@ -9,6 +9,8 @@
 // The fallback is rendered always and hidden by CSS, so going offline is a class
 // toggle rather than a fetch that has to succeed to show the alternative.
 
+const { icon } = require('../../build/icons');
+
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 module.exports = {
@@ -41,7 +43,7 @@ module.exports = {
   css: `
 .lx-ask { border-left: 3px solid var(--lx-accent); }
 .lx-ask-label {
-  display: block;
+  display: flex; align-items: center; gap: .35rem;
   font-size: .68rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: .08em;
   color: var(--lx-accent);
@@ -124,7 +126,7 @@ module.exports = {
        data-summary="${esc(summary)}"
        data-ok="${esc((fallback && fallback.ok) || 'Correto.')}"
        data-bad="${esc((fallback && fallback.bad) || 'Não é essa.')}">
-    <span class="lx-ask-label">Explique com suas palavras</span>
+    <span class="lx-ask-label">${icon('message-square-quote')} Explique com suas palavras</span>
     <p class="lx-ask-q">${esc(question)}</p>
 
     <div class="lx-ask-online">

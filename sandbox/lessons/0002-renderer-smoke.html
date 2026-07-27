@@ -6,6 +6,7 @@
 <title>Sandbox — Renderer smoke test</title>
 <link rel="stylesheet" href="../assets/learno.css" />
 <link rel="stylesheet" href="../assets/components.css" />
+<script>(function(){try{var t=localStorage.getItem('lx-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
 </head>
 <body class="lx-shell" data-lesson="0002-renderer-smoke">
 
@@ -22,10 +23,43 @@
   </defs>
 </svg>
 
+  <nav class="lx-topbar">
+    <a class="lx-topbar-home" href="../" title="Ir para o painel">
+      <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+  <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+      <span>learno</span>
+    </a>
+    <div class="lx-topbar-actions">
+      <button type="button" class="lx-theme-btn" data-theme-set="light" title="Tema claro" aria-label="Tema claro">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" /></svg>
+      </button>
+      <button type="button" class="lx-theme-btn" data-theme-set="auto" title="Seguir o sistema" aria-label="Seguir o sistema">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2" />
+  <line x1="8" x2="16" y1="21" y2="21" />
+  <line x1="12" x2="12" y1="17" y2="21" /></svg>
+      </button>
+      <button type="button" class="lx-theme-btn" data-theme-set="dark" title="Tema escuro" aria-label="Tema escuro">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></svg>
+      </button>
+    </div>
+  </nav>
+
 <div class="lx-content lx-wrap">
   <header class="lx-lesson-head">
     <span class="lx-badge">Sandbox</span>
-    <h1 class="lx-title">Sandbox — Renderer smoke test</h1>
+    <h1 class="lx-title"><span class="lx-title-icon"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="16" y="16" width="6" height="6" rx="1" />
+  <rect x="2" y="16" width="6" height="6" rx="1" />
+  <rect x="9" y="2" width="6" height="6" rx="1" />
+  <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3" />
+  <path d="M12 12V8" /></svg></span><span>Sandbox — Renderer smoke test</span></h1>
     <p class="lx-subtitle">Lição descartável: existe só para provar o pipeline JSON + YAML de ponta a ponta</p>
   </header>
 
@@ -41,7 +75,9 @@
 
   <div class="lx-blocks">
   <div class="lx-card lx-analogy">
-    <span class="lx-analogy-label">Pense num guarda-volumes de academia</span>
+    <span class="lx-analogy-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+  <path d="M9 18h6" />
+  <path d="M10 22h4" /></svg> Pense num guarda-volumes de academia</span>
     <p class="lx-analogy-text">Cada armário guarda as coisas de uma pessoa. Você não precisa procurar em todos — a etiqueta na chave diz exatamente qual abrir.
 </p>
     <p class="lx-analogy-bridge">Essa etiqueta é a chave de shard, e o armário é o nó que guarda o dado.</p>
@@ -78,7 +114,9 @@ funcionam.</p>
     <figcaption class="lx-caption">Fluxo de uma requisição até o nó certo</figcaption>
   </figure>
   <div class="lx-card lx-callout lx-callout--note">
-    <span class="lx-callout-mark" aria-hidden="true">›</span>
+    <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" />
+  <path d="M12 16v-4" />
+  <path d="M12 8h.01" /></svg></span>
     <div>
       <p class="lx-callout-title">O JSON não tem uma frase sequer</p>
       <p class="lx-callout-text">Tudo que você lê nesta página está no .yml. O .json só diz qual componente usar, em que ordem, e qual chave do YAML cada prop referencia.
@@ -106,7 +144,9 @@ qual diagrama tem o problema.</p>
     <figcaption class="lx-caption">As duas metades do formato, e o que cada uma resolve</figcaption>
   </figure>
   <div class="lx-card lx-callout lx-callout--warn">
-    <span class="lx-callout-mark" aria-hidden="true">!</span>
+    <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" /></svg></span>
     <div>
       <p class="lx-callout-title">Componente não decide o próprio espaçamento</p>
       <p class="lx-callout-text">A distância entre um bloco e o vizinho é do container. Um componente que define a própria margem ganha por especificidade e passa por cima do breakpoint do celular — foi assim que o card do diagrama ficou apertado.
@@ -165,7 +205,9 @@ qual diagrama tem o problema.</p>
     <figcaption class="lx-caption">lang &quot;text&quot; desliga o destaque de propósito — um log não tem sintaxe</figcaption>
   </figure>
   <div class="lx-card lx-callout lx-callout--danger">
-    <span class="lx-callout-mark" aria-hidden="true">×</span>
+    <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16h.01" />
+  <path d="M12 8v4" />
+  <path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z" /></svg></span>
     <div>
       <p class="lx-callout-title">Build recusa a lição inteira</p>
       <p class="lx-callout-text">Componente desconhecido, referência quebrada, prop faltando ou SVG com cor própria não geram página parcial. Uma lição meio renderizada parece pronta, e é por isso que a falha é barulhenta.
@@ -197,7 +239,9 @@ qual diagrama tem o problema.</p>
     <figcaption class="lx-caption">Variantes de nó e de aresta na mesma figura</figcaption>
   </figure>
   <section class="lx-flashcards">
-    <p class="lx-flash-title">Revisão rápida</p>
+    <p class="lx-flash-title"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></svg> Revisão rápida</p>
     <div class="lx-flash-grid">
       <details class="lx-card lx-flash">
         <summary>O que o @ faz num valor do JSON?</summary>
@@ -214,7 +258,8 @@ qual diagrama tem o problema.</p>
     </div>
   </section>
   <div class="lx-card lx-source">
-    <p class="lx-source-label">Fonte primária</p>
+    <p class="lx-source-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" />
+  <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg> Fonte primária</p>
     <p class="lx-source-title"><a class="lx-link" href="https://github.com/murichristopher/learno/blob/master/LESSON-PIPELINE-SPEC.md" rel="noopener noreferrer" target="_blank">LESSON-PIPELINE-SPEC.md</a></p>
     <p class="lx-source-note">O spec que esta lição existe para provar.</p>
   </div>
@@ -234,7 +279,9 @@ qual diagrama tem o problema.</p>
        data-summary="Seção sobre travas de progressão e prática de recuperação."
        data-ok="Isso. Reconhecer parece aprender, e é justamente o que a trava impede."
        data-bad="Não é o tamanho — é a diferença entre reconhecer e produzir.">
-    <span class="lx-ask-label">Explique com suas palavras</span>
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
+  <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
+  <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
     <p class="lx-ask-q">Explique, com suas palavras, por que uma lição que dá para rolar até o fim ensina reconhecimento em vez de recuperação.</p>
 
     <div class="lx-ask-online">
@@ -303,7 +350,9 @@ qual diagrama tem o problema.</p>
     </div>
   </section>
   <div class="lx-card lx-ask lx-teachback" data-concepts="sandbox_widget_sharding,sandbox_widget_replication">
-    <span class="lx-ask-label">Ensina de volta</span>
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
+  <path d="M22 10v6" />
+  <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg> Ensina de volta</span>
     <p class="lx-ask-q">Explique o pipeline inteiro para alguém que só viu lições em HTML escrito à mão: o que é o JSON, o que é o YAML, e o que o build recusa.</p>
     <p class="lx-teachback-hint">Comece pelo problema (84% do que a IA escrevia era máquina), depois a divisão, depois as validações.</p>
 

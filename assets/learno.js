@@ -306,6 +306,33 @@
     });
   }
 
+
+  // ── theme ───────────────────────────────────────────────────────────────
+  // Three states, not two: "auto" has to stay reachable, otherwise the first
+  // click permanently opts the reader out of following their system.
+
+  function applyTheme(choice) {
+    if (choice === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', choice);
+
+    $$('.lx-theme-btn').forEach(function (b) {
+      b.classList.toggle('is-active', b.dataset.themeSet === choice);
+      b.setAttribute('aria-pressed', String(b.dataset.themeSet === choice));
+    });
+
+    try { localStorage.setItem('lx-theme', choice); } catch (e) { /* private mode */ }
+  }
+
+  function setupTheme() {
+    var stored = 'auto';
+    try { stored = localStorage.getItem('lx-theme') || 'auto'; } catch (e) { /* private mode */ }
+    applyTheme(stored);
+
+    $$('.lx-theme-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () { applyTheme(btn.dataset.themeSet); });
+    });
+  }
+
   // ── wiring ──────────────────────────────────────────────────────────────
 
   function init() {
@@ -337,6 +364,7 @@
       setupMic(block);
     });
 
+    setupTheme();
     detectServer();
   }
 

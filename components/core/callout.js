@@ -4,12 +4,14 @@
 // anything — the reader learns "purple means note, amber means careful" only if
 // the mapping never moves.
 
+const { icon } = require('../../build/icons');
+
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 const VARIANTS = {
-  note:   { mark: '›', label: 'Nota' },
-  warn:   { mark: '!', label: 'Atenção' },
-  danger: { mark: '×', label: 'Cuidado' }
+  note:   { icon: 'info',           label: 'Nota' },
+  warn:   { icon: 'triangle-alert', label: 'Atenção' },
+  danger: { icon: 'octagon-alert',  label: 'Cuidado' }
 };
 
 module.exports = {
@@ -36,11 +38,13 @@ module.exports = {
 .lx-callout--danger { --lx-callout-accent: #dc2626;           --lx-callout-bg: rgb(220 38 38 / .08); }
 .lx-callout-mark {
   flex-shrink: 0;
-  width: 1.5rem; height: 1.5rem;
+  width: 1.6rem; height: 1.6rem;
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%;
   background: var(--lx-callout-accent);
-  color: #fff; font-weight: 700; font-size: .85rem; line-height: 1;
+  color: #fff;
+}
+.lx-callout-mark .lx-icon-svg { width: .95rem; height: .95rem; stroke-width: 2.5;
 }
 .lx-callout-title { color: var(--lx-text); font-weight: 600; margin-bottom: .25rem; }
 .lx-callout-text  { color: var(--lx-text-2); }
@@ -49,7 +53,7 @@ module.exports = {
   render({ variant, text, title }) {
     const v = VARIANTS[variant] || VARIANTS.note;
     return `  <div class="lx-card lx-callout lx-callout--${esc(VARIANTS[variant] ? variant : 'note')}">
-    <span class="lx-callout-mark" aria-hidden="true">${v.mark}</span>
+    <span class="lx-callout-mark">${icon(v.icon)}</span>
     <div>
       <p class="lx-callout-title">${esc(title || v.label)}</p>
       <p class="lx-callout-text">${esc(text)}</p>

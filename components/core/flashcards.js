@@ -5,6 +5,8 @@
 // that for free — keyboard-operable, screen-reader-announced, and it still works
 // with the page opened straight from disk with no server and no script.
 
+const { icon } = require('../../build/icons');
+
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 module.exports = {
@@ -23,6 +25,7 @@ module.exports = {
 
   css: `
 .lx-flash-title {
+  display: flex; align-items: center; gap: .35rem;
   color: var(--lx-text-subtle);
   font-size: .7rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: .08em;
@@ -70,7 +73,7 @@ module.exports = {
       </details>`).join('');
 
     return `  <section class="lx-flashcards">
-    <p class="lx-flash-title">${esc(title || 'Revisão rápida')}</p>
+    <p class="lx-flash-title">${icon('layers')} ${esc(title || 'Revisão rápida')}</p>
     <div class="lx-flash-grid">${items}
     </div>
   </section>`;
