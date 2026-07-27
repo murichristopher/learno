@@ -156,13 +156,39 @@ ul[class], ol[class] { list-style: none; }
 img, svg { max-width: 100%; }
 button, input, select, textarea { font: inherit; color: inherit; }
 
-/* ── Layer 1: shell ──────────────────────────────────────────────── */
+/* ── Layer 1: shell ──────────────────────────────────────────────────────────
+   The gradient lives on `html`, and nowhere else.
 
-.lx-shell {
-  min-height: 100vh;
+   This is the third arrangement and the first that cannot fail, so the reasoning
+   is worth keeping. It was on <body> with `background-attachment: fixed`, which
+   is unreliable on iOS and — worse — broke the propagation that makes a body
+   background cover the canvas at all, so the page ended in the canvas default:
+   black. Moving the gradient to a `position: fixed` pseudo-element fixed the
+   black but not the ending: on iOS the gradient still stopped partway down,
+   most likely because a fixed element at `z-index: -1` is painted behind the
+   canvas background there.
+
+   The root element's background is the one thing that is guaranteed to cover the
+   whole canvas, in every browser, including the rubber-band area past the end of
+   an iOS scroll that no element covers. So it goes there, with no stacking, no
+   fixed positioning and no pseudo-element to get wrong.
+
+   The cost is that the gradient now sizes to the document rather than the
+   viewport, so it stretches on a long page instead of holding still while you
+   scroll. That parallax is worth less than a background that is always there. */
+
+html {
+  min-height: 100%;
+  background-color: var(--lx-shell-via);
   background-image: linear-gradient(to bottom right,
     var(--lx-shell-from), var(--lx-shell-via), var(--lx-shell-to));
-  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+.lx-shell {
+  min-height: 100vh;   /* fallback */
+  min-height: 100dvh;  /* iOS: 100vh is the LARGE viewport, so the painted box
+                          can be shorter than what actually scrolls */
   color: var(--lx-text-2);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
@@ -367,7 +393,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   }
   .lx-card, .lx-modal { background: Canvas; }
   .lx-overlay, .lx-card::before { display: none; }
-  .lx-shell { background-image: none; background-color: Canvas; }
+  html { background-image: none; background-color: Canvas; }
 }
 
 :root[data-transparency="reduce"] .lx-bar,
@@ -382,7 +408,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 :root[data-transparency="reduce"] .lx-modal { background: Canvas; }
 :root[data-transparency="reduce"] .lx-overlay,
 :root[data-transparency="reduce"] .lx-card::before { display: none; }
-:root[data-transparency="reduce"] .lx-shell { background-image: none; background-color: Canvas; }
+:root[data-transparency="reduce"] { background-image: none; background-color: Canvas; }
 
 /* ── Motion ──────────────────────────────────────────────────────────────── */
 
