@@ -34,8 +34,8 @@ module.exports = {
   background: var(--lx-callout-bg);
 }
 .lx-callout--note   { --lx-callout-accent: var(--lx-accent);  --lx-callout-bg: var(--lx-accent-soft); }
-.lx-callout--warn   { --lx-callout-accent: #d97706;           --lx-callout-bg: rgb(217 119 6 / .08); }
-.lx-callout--danger { --lx-callout-accent: #dc2626;           --lx-callout-bg: rgb(220 38 38 / .08); }
+.lx-callout--warn   { --lx-callout-accent: var(--lx-warn); --lx-callout-bg: color-mix(in srgb, var(--lx-warn) 10%, transparent); }
+.lx-callout--danger { --lx-callout-accent: var(--lx-bad);  --lx-callout-bg: color-mix(in srgb, var(--lx-bad) 10%, transparent); }
 .lx-callout-mark {
   flex-shrink: 0;
   width: 1.6rem; height: 1.6rem;
