@@ -48,6 +48,24 @@ The one exception is **lesson content** — `MISSION.md`, the `.yml` files, pros
 questions, feedback. That follows the learner's language, because it is the
 material being studied rather than something written about the code.
 
+## Comments are the exception
+
+A comment is worth writing when it explains **why the code is not the obvious
+way**: a browser bug being worked around, an ordering that looks arbitrary but is
+load-bearing, an attribute whose absence fails silently. Someone will otherwise
+"fix" it back.
+
+Not worth writing:
+
+- what the code already says
+- the justification for a choice nobody would question
+- the history of what was tried before — that is what git is for
+- a paragraph above a component explaining its purpose, when `meta.purpose` and
+  `LESSON-FORMAT.md` already carry it
+
+If a paragraph is needed to make code understandable, the code is usually the
+problem. Prefer a clearer name.
+
 ## Pull request structure
 
 Every PR uses these sections, in this order:

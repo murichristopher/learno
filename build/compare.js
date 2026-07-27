@@ -1,16 +1,9 @@
 #!/usr/bin/env node
 //
-// Measures what the pipeline actually bought, against hand-written lessons.
-//
 //   node build/compare.js <hand-written.html>... --against <lesson-base>
 //
-// The number that matters is **authored bytes**: what a model has to emit to
-// produce one lesson. Rendered size is a distant second — it is paid once by a
-// reader on a fast link, whereas authored size is paid on every generation, in
-// latency and in cost.
-//
-// A hand-written lesson is split the same way the original measurement was, so
-// the comparison is like for like rather than flattering.
+// Authored bytes are the number that matters — paid on every generation, in
+// latency and cost. Rendered size is paid once by a reader on a fast link.
 
 const fs   = require('fs');
 const path = require('path');

@@ -1,9 +1,3 @@
-// The real-world analogy that opens a lesson.
-//
-// Mandatory in LESSON-FORMAT.md §3, and it comes before any technical term —
-// the bridge line is where the image is handed over to the vocabulary, which is
-// why it is a separate prop rather than another paragraph.
-
 const { icon } = require('../../build/icons');
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

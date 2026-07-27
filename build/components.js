@@ -1,9 +1,5 @@
-// Loads the component vocabulary.
-//
-// components/core/ is upstream's. components/local/ belongs to this fork and
-// wins on a name collision, so a fork can override a core component without
-// ever editing an upstream file — and one component per file means git rarely
-// has to merge the same file from two sides.
+// components/local/ wins over components/core/ on a name collision, so a fork can
+// override a core component without editing an upstream file.
 
 const fs   = require('fs');
 const path = require('path');

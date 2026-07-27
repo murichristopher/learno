@@ -1,10 +1,3 @@
-// An inline SVG diagram.
-//
-// The `svg` prop type is what makes the design system stick: the build rejects
-// any SVG carrying its own colour, so a diagram can only be drawn with the
-// .lx-node / .lx-edge / .lx-label classes and therefore follows the theme. The
-// arrowhead marker comes from the page template — diagrams never repeat it.
-
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 module.exports = {

@@ -1,14 +1,5 @@
-// Immediate review cards at the end of a lesson.
-//
-// Gated behind the TEACH-BACK, not behind the last phase — the cards carry the
-// answers, so opening them before the effort turns the closing exercise into a
-// reading comprehension test. They are the reward for having tried, which is
-// also the moment they teach most.
-//
-// Built on <details> rather than a JS flip: retrieval practice only works if the
-// answer is genuinely hidden until the reader has tried, and <details> gives
-// that for free — keyboard-operable, screen-reader-announced, and it still works
-// with the page opened straight from disk with no server and no script.
+// <details> rather than a JS flip: it hides the answer for free, works from disk
+// with no script, and is keyboard- and screen-reader-operable.
 
 const { icon } = require('../../build/icons');
 const { gate } = require('../../build/gate');

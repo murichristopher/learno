@@ -1,18 +1,5 @@
-// A content section, locked until the previous one is answered.
-//
-// The lock is the pedagogy, not decoration: a lesson that can be scrolled to the
-// end teaches recognition, and recognition is what feels like learning without
-// being it. The runtime unlocks a phase only when the section before it has been
-// answered well enough.
-//
-// Rendered locked by default and opened by the runtime, so the wrong failure is
-// impossible: if the script never runs, the reader gets the first section and a
-// clear reason rather than a lesson silently missing its gates.
-//
-// A locked section is blurred, not hidden. Hidden content is indistinguishable
-// from content that does not exist, so the reader loses any sense of how much
-// lesson is left and what it is building towards. Blurred behind a lock, the
-// gate is exactly as strict and reads as a door instead of an absence.
+// Rendered locked and opened by the runtime, so a script that never runs leaves
+// the reader stuck rather than silently dropping every gate in the lesson.
 
 const { gate } = require('../../build/gate');
 

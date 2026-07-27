@@ -1,9 +1,3 @@
-// Two or three options side by side.
-//
-// The columns stack on a phone rather than shrinking, because the point of a
-// comparison is reading the alternatives against each other — three columns at
-// 375px are three columns of one word each, which compares nothing.
-
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 module.exports = {

@@ -1,13 +1,5 @@
-// Free-text recall, scored by the model.
-//
-// The expensive kind of practice and the reason the server exists: the reader
-// has to produce the explanation, not recognise it in a list. Every one of these
-// carries a multiple-choice fallback for when the server is unreachable —
-// weaker practice, but a lesson that dead-ends offline is worse than one that
-// degrades.
-//
-// The fallback is rendered always and hidden by CSS, so going offline is a class
-// toggle rather than a fetch that has to succeed to show the alternative.
+// The offline fallback is rendered always and hidden by CSS: switching modes is a
+// class toggle, not a fetch that would need the server precisely when it is gone.
 
 const { icon } = require('../../build/icons');
 
