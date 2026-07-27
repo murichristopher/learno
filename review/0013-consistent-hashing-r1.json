@@ -1,0 +1,44 @@
+{
+  "id": "0013-consistent-hashing-r1",
+  "tag": "Revisão R1 · System Design",
+  "icon": "rotate-ccw",
+  "title": "@meta.title",
+  "subtitle": "@meta.subtitle",
+  "concepts": ["modulo_remapping", "hash_ring", "virtual_nodes"],
+  "blocks": [
+    { "component": "prose", "props": { "text": "@intro.body" } },
+
+    { "component": "phase",
+      "props": { "id": "1", "title": "@p1.title" },
+      "children": [
+        { "component": "recall",
+          "props": { "conceptId": "modulo_remapping", "phase": "1",
+                     "question": "@p1.question", "summary": "@p1.summary", "fallback": "@p1.fallback" } }
+      ] },
+
+    { "component": "phase",
+      "props": { "id": "2", "title": "@p2.title" },
+      "children": [
+        { "component": "diagram", "props": { "svg": "@diagrams.ring", "caption": "@p2.caption" } },
+        { "component": "quiz",
+          "props": { "phase": "2", "question": "@p2.question", "options": "@p2.options",
+                     "ok": "@p2.ok", "bad": "@p2.bad" } }
+      ] },
+
+    { "component": "phase",
+      "props": { "id": "3", "title": "@p3.title" },
+      "children": [
+        { "component": "recall",
+          "props": { "conceptId": "virtual_nodes", "phase": "3",
+                     "question": "@p3.question", "summary": "@p3.summary", "fallback": "@p3.fallback" } }
+      ] },
+
+    { "component": "teachback",
+      "props": { "question": "@teachback.question",
+                 "conceptIds": ["modulo_remapping", "hash_ring", "virtual_nodes"],
+                 "hint": "@teachback.hint" } },
+
+    { "component": "source",
+      "props": { "title": "@source.title", "url": "@source.url", "note": "@source.note" } }
+  ]
+}

@@ -317,9 +317,9 @@ After the teach-back is scored, `POST /api/progress` triggers SM-2 scheduling fo
 | Phase | When | Format |
 |---|---|---|
 | 0 — Immediate | Same session | Flash cards inline in the lesson (no server needed) |
-| 1 — Next day | +1 day | Generated review lesson: `lessons/review-CONCEPT.html` |
-| 2 — Week | +7 days | Recall quiz — no context, pure retrieval |
-| 3 — Month | +30 days | Mini-design from scratch using the concept |
+| 1 — Next day | +1 day | A review in `review/` — see below |
+| 2 — Week | +7 days | A review, harder: no diagram, no context, pure retrieval |
+| 3 — Month | +30 days | A review that applies the concept to a situation it has not been seen in |
 
 **SM-2 algorithm:**
 ```
@@ -333,6 +333,29 @@ initial interval: 1 day
 ```
 
 **When the user opens a session:** check `GET /api/progress` for concepts where `next_review ≤ today`. If any are due, surface them before starting a new lesson. Reviews take priority over new content.
+
+### Writing a review
+
+Same pipeline as a lesson — `review/NNNN-concept-rN.json` + `.yml`, built with
+`make lesson SRC=review/NNNN-concept-rN`. Same components, same rules.
+
+What differs is the shape, and it follows from what a review is for:
+
+- **No `analogy`.** The concept was introduced already; opening with the image
+  again replaces retrieval with recognition.
+- **No `flashcards`.** Those are the immediate-review layer inside a lesson. A
+  review *is* the spaced layer.
+- **Ask before you tell.** A lesson explains and then tests. A review tests and
+  then corrects — most of a review is `recall` and `quiz`, with `prose` only
+  where an answer needs fixing.
+- **Keep the `teachback`.** It is what posts to `/api/progress`, so a review
+  without one does not move the schedule and the concept comes back on the same
+  date forever.
+- **Do not link back to the lesson** before the questions. Looking it up first
+  destroys exactly what the review measures.
+
+Later intervals get harder, not longer: R1 may carry a diagram, R2 should not,
+R3 should ask the concept to be used somewhere it has not been seen.
 
 ---
 

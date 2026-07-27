@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Revisão R1 — Consistent hashing</title>
+<link rel="stylesheet" href="../assets/learno.css" />
+<link rel="stylesheet" href="../assets/components.css" />
+<script>(function(){try{var t=localStorage.getItem('lx-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
+</head>
+<body class="lx-shell" data-lesson="0013-consistent-hashing-r1">
+
+<div class="lx-overlay"></div>
+
+<!-- Shared arrowhead. Authored diagrams reference #lx-arrow and never carry
+     their own marker definition. -->
+<svg class="lx-defs" aria-hidden="true">
+  <defs>
+    <marker id="lx-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="lx-arrowhead" d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+  </defs>
+</svg>
+
+  <nav class="lx-topbar">
+    <a class="lx-topbar-home" href="../" title="Ir para o painel">
+      <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+  <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+      <span>learno</span>
+    </a>
+    <div class="lx-topbar-actions">
+      <button type="button" class="lx-theme-btn" data-theme-set="light" title="Tema claro" aria-label="Tema claro">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" /></svg>
+      </button>
+      <button type="button" class="lx-theme-btn" data-theme-set="auto" title="Seguir o sistema" aria-label="Seguir o sistema">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2" />
+  <line x1="8" x2="16" y1="21" y2="21" />
+  <line x1="12" x2="12" y1="17" y2="21" /></svg>
+      </button>
+      <button type="button" class="lx-theme-btn" data-theme-set="dark" title="Tema escuro" aria-label="Tema escuro">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></svg>
+      </button>
+    </div>
+  </nav>
+
+<div class="lx-content lx-wrap">
+  <header class="lx-lesson-head">
+    <span class="lx-badge">Revisão R1 · System Design</span>
+    <h1 class="lx-title"><span class="lx-title-icon"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+  <path d="M3 3v5h5" /></svg></span><span>Revisão R1 — Consistent hashing</span></h1>
+    <p class="lx-subtitle">Sem reler a lição. Responda primeiro; a correção vem depois.</p>
+  </header>
+
+  <div class="lx-offline-banner" id="lx-banner" hidden>
+    Servidor fora do ar. As seções continuam abrindo por múltipla escolha, mas a
+    validação por IA e o registro do progresso ficam indisponíveis.
+  </div>
+
+  <div class="lx-progress" role="presentation">
+    <span class="lx-progress-seg" data-seg="1"></span>
+    <span class="lx-progress-seg" data-seg="2"></span>
+    <span class="lx-progress-seg" data-seg="3"></span>
+  </div>
+
+  <div class="lx-blocks">
+  <div class="lx-prose">
+    <p>Três perguntas sobre consistent hashing. Não volte na lição 13 antes de
+responder — o valor desta revisão está inteiro em tentar lembrar, e olhar a
+resposta antes de tentar destrói exatamente o que ela mede.</p>
+    <p>Errar aqui é informação, não fracasso. Uma resposta fraca move a data da
+próxima revisão para perto; uma resposta boa afasta.</p>
+  </div>
+  <section class="lx-phase" data-phase="1" id="phase-1">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>1</span></span>
+      <h2 class="lx-phase-title">O problema do módulo</h2>
+    </div>
+    <div class="lx-gate" data-gate="phase-1">
+      <div class="lx-gate-body">
+  <div class="lx-card lx-ask lx-recall"
+       data-concept-id="modulo_remapping"
+       data-phase="1"
+       data-summary="Uma boa resposta identifica que o hash da chave é estável e independente de N; o que muda é o divisor, então o resto muda para quase toda chave. Deve chegar em aproximadamente (N-1)/N — cerca de 80% indo de 4 para 5 nós — e não em 1/N. Resposta forte também nota que a invalidação em massa chega junto com o pico de carga que motivou subir o nó.
+"
+       data-ok="Isso. (N-1)/N, não 1/N — e o pior é que isso chega junto com o pico que motivou o nó novo."
+       data-bad="A intuição de 1/N é o erro clássico. O hash não mudou; o divisor mudou, e com ele o resto de quase toda chave. A conta real é (N-1)/N.
+">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
+  <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
+  <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
+    <p class="lx-ask-q">Um cache com 4 nós usa `hash(chave) % 4`. Você sobe o quinto nó e troca para `% 5`. Que fração das chaves muda de destino, e por quê? Não é 1/5 — explique de onde vem o número real.
+</p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="validate">Validar</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+      </div>
+    </div>
+
+    <div class="lx-fallback">
+      <p class="lx-fallback-note">Servidor fora do ar — respondendo por múltipla escolha.</p>
+      
+        <label class="lx-choice">
+          <input type="radio" name="fb-modulo_remapping" value="0" data-correct="0" />
+          <span>1/5 — só as chaves do nó novo se movem</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-modulo_remapping" value="1" data-correct="1" />
+          <span>Cerca de 4/5 — o divisor mudou, então o resto muda para quase toda chave</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-modulo_remapping" value="2" data-correct="0" />
+          <span>Nenhuma, se a função de hash for a mesma</span>
+        </label>
+      <p class="lx-inline-fb"></p>
+    </div>
+  </div>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Responda a seção anterior para abrir</span>
+      </div>
+    </div>
+  </section>
+  <section class="lx-phase lx-phase--locked" data-phase="2" id="phase-2">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>2</span></span>
+      <h2 class="lx-phase-title">A regra do anel</h2>
+    </div>
+    <div class="lx-gate lx-gate--locked" data-gate="phase-2">
+      <div class="lx-gate-body" aria-hidden="true">
+  <figure class="lx-figure">
+    <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 560 300" role="img"
+     aria-label="Anel de hash com três nós e uma chave entre C e A">
+  <circle class="lx-edge lx-edge--plain" cx="280" cy="150" r="104"/>
+
+  <rect class="lx-node lx-node--accent" x="238" y="14" width="84" height="34"/>
+  <text class="lx-label" x="280" y="37" text-anchor="middle">nó A</text>
+
+  <rect class="lx-node lx-node--accent" x="344" y="238" width="84" height="34"/>
+  <text class="lx-label" x="386" y="261" text-anchor="middle">nó B</text>
+
+  <rect class="lx-node lx-node--accent" x="132" y="238" width="84" height="34"/>
+  <text class="lx-label" x="174" y="261" text-anchor="middle">nó C</text>
+
+  <circle class="lx-node lx-node--muted" cx="182" cy="88" r="9"/>
+  <text class="lx-label--muted" x="150" y="76" text-anchor="middle">chave k</text>
+
+  <text class="lx-label--muted" x="280" y="140" text-anchor="middle">o círculo anda no</text>
+  <text class="lx-label--muted" x="280" y="160" text-anchor="middle">sentido horário</text>
+  <text class="lx-label--muted" x="280" y="180" text-anchor="middle">A → B → C → A</text>
+</svg>
+</div>
+    <figcaption class="lx-caption">Três nós no anel — para onde vai cada chave?</figcaption>
+  </figure>
+  <div class="lx-card lx-quiz" data-phase="2"
+       data-ok="Isso. É sempre o próximo no sentido horário — nunca o mais próximo, o que torna a regra barata de calcular." data-bad="Não é proximidade, é direção. A chave anda no sentido horário e para no primeiro nó que encontra — por isso adicionar um nó só afeta um arco.
+">
+    <span class="lx-quiz-label">Escolha uma</span>
+    <p class="lx-ask-q">No anel abaixo, a chave k cai entre o nó C e o nó A. Quem armazena k?</p>
+    
+      <label class="lx-choice">
+        <input type="radio" name="quiz-1333539200" value="0" data-correct="0" />
+        <span>O nó C, porque a chave passou por ele primeiro</span>
+      </label>
+      <label class="lx-choice">
+        <input type="radio" name="quiz-1333539200" value="1" data-correct="1" />
+        <span>O nó A, o primeiro encontrado andando no sentido horário</span>
+      </label>
+      <label class="lx-choice">
+        <input type="radio" name="quiz-1333539200" value="2" data-correct="0" />
+        <span>O nó mais próximo dos dois, medindo a distância no círculo</span>
+      </label>
+    <p class="lx-inline-fb"></p>
+  </div>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Responda a seção anterior para abrir</span>
+      </div>
+    </div>
+  </section>
+  <section class="lx-phase lx-phase--locked" data-phase="3" id="phase-3">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>3</span></span>
+      <h2 class="lx-phase-title">Por que o anel sozinho não basta</h2>
+    </div>
+    <div class="lx-gate lx-gate--locked" data-gate="phase-3">
+      <div class="lx-gate-body" aria-hidden="true">
+  <div class="lx-card lx-ask lx-recall"
+       data-concept-id="virtual_nodes"
+       data-phase="3"
+       data-summary="Uma boa resposta identifica que todo o arco de B vai para um único vizinho, o próximo no sentido horário, que passa a atender a própria fatia mais a de B de uma vez. Deve explicar por que isso é pior que distribuição desigual: se esse vizinho cair sob a carga dobrada, a fatia acumulada passa para o seguinte, e a falha se propaga em cascata. Distribuição desigual é desperdício constante; herança concentrada derruba o sistema.
+"
+       data-ok="Isso. A herança concentrada é o problema grave — distribuição desigual é só desperdício."
+       data-bad="Não se divide: o anel manda tudo para o próximo no sentido horário. Um vizinho recebe a fatia inteira de uma vez, e se ele cair a próxima herda as duas.
+">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
+  <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
+  <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
+    <p class="lx-ask-q">Um anel tem 3 nós físicos, sem nós virtuais. O nó B cai. Descreva o que acontece com a carga — e explique por que isso é mais perigoso do que a distribuição desigual que os nós virtuais também resolvem.
+</p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="validate">Validar</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+      </div>
+    </div>
+
+    <div class="lx-fallback">
+      <p class="lx-fallback-note">Servidor fora do ar — respondendo por múltipla escolha.</p>
+      
+        <label class="lx-choice">
+          <input type="radio" name="fb-virtual_nodes" value="0" data-correct="0" />
+          <span>A carga de B se divide igualmente entre A e C</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-virtual_nodes" value="1" data-correct="1" />
+          <span>Todo o arco de B vai para um vizinho só, que pode cair em cascata sob a carga dobrada</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-virtual_nodes" value="2" data-correct="0" />
+          <span>As chaves de B são perdidas até ele voltar</span>
+        </label>
+      <p class="lx-inline-fb"></p>
+    </div>
+  </div>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Responda a seção anterior para abrir</span>
+      </div>
+    </div>
+  </section>
+<div class="lx-gate lx-gate--locked" data-gate="teachback">
+      <div class="lx-gate-body" aria-hidden="true">
+  <div class="lx-card lx-ask lx-teachback" data-concepts="modulo_remapping,hash_ring,virtual_nodes">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
+  <path d="M22 10v6" />
+  <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg> Ensina de volta</span>
+    <p class="lx-ask-q">Reconstrua o argumento inteiro, do problema à solução: por que `% N` quebra, o que o anel muda, e por que o anel ainda precisa de nós virtuais.
+</p>
+    <p class="lx-teachback-hint">Se você travou em alguma das três perguntas acima, comece por ela — é onde a memória está mais fraca e onde este teach-back vale mais.
+</p>
+
+    <p class="lx-teachback-offline">
+      Esta parte precisa do servidor. Sem ele não dá para registrar a lição —
+      e um score inventado estragaria o agendamento da revisão.
+    </p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer lx-answer--large" placeholder="Explique o conceito inteiro, com suas palavras…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="teachback">Encerrar a lição</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+        <div class="lx-concepts"></div>
+      </div>
+    </div>
+  </div>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Termine as seções acima para abrir</span>
+      </div>
+    </div>
+  <div class="lx-done">
+    <div class="lx-card lx-next-review">
+      <span class="lx-next-review-label">Próxima revisão</span>
+      <span class="lx-next-review-date">—</span>
+      <span class="lx-next-review-note"></span>
+    </div>
+  </div>
+  <div class="lx-card lx-source">
+    <p class="lx-source-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" />
+  <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg> Fonte primária</p>
+    <p class="lx-source-title"><a class="lx-link" href="https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf" rel="noopener noreferrer" target="_blank">Dynamo: Amazon's Highly Available Key-value Store (SOSP 2007)</a></p>
+    <p class="lx-source-note">Seção 4.2 — os nós virtuais e as duas razões para eles.</p>
+  </div>
+  </div>
+
+  <footer class="lx-lesson-foot">
+    <a class="lx-btn lx-btn--outline" href="../reference/my-learning.html">Painel</a>
+    <a class="lx-btn lx-btn--outline" href="../reference/glossary.html">Glossário</a>
+  </footer>
+</div>
+
+<script type="application/json" id="lx-config">{"lesson":"0013-consistent-hashing-r1","concepts":["modulo_remapping","hash_ring","virtual_nodes"],"phases":["1","2","3"]}</script>
+<script src="../assets/learno.js" defer></script>
+</body>
+</html>
