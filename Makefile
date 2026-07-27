@@ -13,7 +13,7 @@ SANDBOX   := $(CURDIR)/sandbox
 SERVER    := $(CURDIR)/server
 RUN        = LEARNO_MODE=sandbox LEARNO_WORKSPACE=$(SANDBOX) PORT=$(PORT)
 
-.PHONY: help sandbox local stop check deps install-workspace build lesson check-errors
+.PHONY: help sandbox local stop check deps install-workspace build lesson check-errors catalog
 
 # Neither the engine nor the build ships node_modules; install on first run so a
 # fresh clone goes straight to `make sandbox` without a separate setup step.
@@ -25,7 +25,8 @@ help:
 	@echo "learno engine"
 	@echo "  make build              render every lesson from its .json + .yml"
 	@echo "  make lesson SRC=...     render one (SRC=lessons/0011-name)"
-	@echo "  make check-errors       show the build refusing four broken lessons"
+	@echo "  make catalog            regenerate COMPONENTS.md and the component gallery"
+	@echo "  make check-errors       show the build refusing broken lessons"
 	@echo "  make sandbox            serve the sandbox + a public Cloudflare URL (no DB, no API key)"
 	@echo "  make local              same, localhost only — no tunnel"
 	@echo "  make check              syntax-check the server and validate the seed fixture"
@@ -34,8 +35,13 @@ help:
 
 # ── build ────────────────────────────────────────────────────────────────────
 
-build: deps
+# The catalog runs first: both artifacts come from the component files, so a
+# build always ships a registry and a gallery that match the vocabulary it used.
+build: deps catalog
 	@node build/render.js --all
+
+catalog: deps
+	@node build/catalog.js
 
 lesson: deps
 	@test -n "$(SRC)" || { echo "usage: make lesson SRC=lessons/0011-name"; exit 1; }
