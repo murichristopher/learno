@@ -55,6 +55,14 @@
   --lx-shell-via:  #ffffff;
   --lx-shell-to:   rgb(224 231 255 / .8);
 
+
+  /* Verdict colours — good, warning, bad. Semantic rather than named by hue, so
+     a score bar, a callout and a sparkline all agree without any of them
+     hardcoding a value. */
+  --lx-good: #059669;
+  --lx-warn: #d97706;
+  --lx-bad:  #dc2626;
+
   /* Overlay wash, on the shell and inside cards */
   --lx-wash-from: rgb(216 180 254 / .10);
   --lx-wash-to:   rgb(147 197 253 / .10);
@@ -95,6 +103,9 @@
     --lx-input-border: rgb(255 255 255 / .1);
     --lx-placeholder:  rgb(255 255 255 / .4);
 
+    --lx-good: #34d399;
+    --lx-warn: #fbbf24;
+    --lx-bad:  #f87171;
     --lx-accent-soft: rgb(168 85 247 / .1);
     --lx-shell-from:  rgb(59 7 100 / .95);        /* purple-950/95 */
     --lx-shell-via:   #111827;                     /* gray-900 */
@@ -126,6 +137,9 @@
   --lx-input-border: rgb(255 255 255 / .1);
   --lx-placeholder:  rgb(255 255 255 / .4);
 
+  --lx-good: #34d399;
+  --lx-warn: #fbbf24;
+  --lx-bad:  #f87171;
   --lx-accent-soft: rgb(168 85 247 / .1);
   --lx-shell-from:  rgb(59 7 100 / .95);
   --lx-shell-via:   #111827;

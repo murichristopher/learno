@@ -69,7 +69,7 @@ module.exports = {
 
 .lx-ask-tools { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: .6rem; }
 .lx-mic { padding: .45rem .7rem; }
-.lx-mic.is-recording { background: #dc2626; border-color: #dc2626; color: #fff; }
+.lx-mic.is-recording { background: var(--lx-bad); border-color: var(--lx-bad); color: #fff; }
 .lx-mic-hint { color: var(--lx-text-muted); font-size: .78rem; }
 .lx-lang {
   padding: .4rem .5rem;
@@ -86,10 +86,10 @@ module.exports = {
 .lx-score-num { font-size: 1.6rem; font-weight: 700; color: var(--lx-text); line-height: 1; }
 .lx-score-of  { color: var(--lx-text-subtle); font-size: .8rem; }
 .lx-score-word { margin-left: auto; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
-.lx-score--bad  .lx-score-word { color: #dc2626; }
-.lx-score--mid  .lx-score-word { color: #d97706; }
+.lx-score--bad  .lx-score-word { color: var(--lx-bad); }
+.lx-score--mid  .lx-score-word { color: var(--lx-warn); }
 .lx-score--good .lx-score-word { color: var(--lx-accent); }
-.lx-score--top  .lx-score-word { color: #059669; }
+.lx-score--top  .lx-score-word { color: var(--lx-good); }
 .lx-bar { height: .35rem; border-radius: 99px; background: var(--lx-border); margin: .6rem 0 .75rem; overflow: hidden; }
 .lx-bar-fill { height: 100%; width: 0; border-radius: 99px; background: var(--lx-accent); transition: width .5s ease-out; }
 .lx-feedback { color: var(--lx-text-2); font-size: .9rem; }
@@ -106,12 +106,12 @@ module.exports = {
 .lx-choice + .lx-choice { margin-top: .3rem; }
 .lx-choice:hover { background: var(--lx-input); }
 .lx-choice input { margin-right: .5rem; }
-.lx-choice.is-correct { border-color: #059669; background: rgb(5 150 105 / .08); }
-.lx-choice.is-wrong   { border-color: #dc2626; background: rgb(220 38 38 / .08); }
+.lx-choice.is-correct { border-color: var(--lx-good); background: color-mix(in srgb, var(--lx-good) 10%, transparent); }
+.lx-choice.is-wrong   { border-color: var(--lx-bad); background: color-mix(in srgb, var(--lx-bad) 10%, transparent); }
 .lx-inline-fb { display: none; margin-top: .6rem; font-size: .875rem; }
 .lx-inline-fb.is-shown { display: block; }
-.lx-inline-fb.is-ok  { color: #059669; }
-.lx-inline-fb.is-bad { color: #dc2626; }
+.lx-inline-fb.is-ok  { color: var(--lx-good); }
+.lx-inline-fb.is-bad { color: var(--lx-bad); }
 `,
 
   render({ conceptId, question, summary, phase, fallback }) {
