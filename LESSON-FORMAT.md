@@ -108,7 +108,7 @@ Read the prop types literally:
 | Type | Means |
 |---|---|
 | `string` · `number` · `bool` | scalars |
-| `svg` | a string, additionally checked for hardcoded colour |
+| `svg` | a string, additionally checked for hardcoded colour and for geometry |
 | `array<{text: string, correct: bool}>` | a list whose every element has exactly those fields |
 | `{options: …, ok: string, bad: string}` | an object with exactly those fields |
 | `string?` | optional — everything else is required |
@@ -225,6 +225,30 @@ There is no fixed canvas size. A `viewBox` around 600 wide with nodes of roughly
 120×48 reads well at both desktop and phone widths; the SVG scales to its
 container either way.
 
+### Geometry
+
+The build bounds-checks the coordinates you wrote against the `viewBox`. A
+`<rect>`, `<circle>`, `<text>` or `<path>` reaching outside it is an **error**,
+naming the element and the coordinate that overflows:
+
+```
+error  blocks[0] (diagram)
+       prop "svg": <rect x="398" y="20" width="120" height="48"> falls outside
+       the viewBox "0 0 400 90" — x reaches 518, past 400.
+       → move the element inside, or widen the viewBox.
+```
+
+A missing `viewBox` on the root `<svg>` is also an error — without one nothing
+can be checked at all. Two units of tolerance are allowed, because a text
+baseline or a stroke legitimately sits a hair past an edge.
+
+Two `<rect>` elements overlapping is a **warning**, not an error: stacking is
+occasionally deliberate, but it is almost always a node placed wrong.
+
+**Text width is not checked.** Measuring a rendered label needs a font and a
+layout engine, so a label too long for its box passes the build. Sizing the box
+to the text is still on you — open the lesson and look.
+
 ---
 
 ## What the build refuses
@@ -235,13 +259,15 @@ Each of these stops the build and names the file and block:
 - an `@` reference that resolves to nothing, with the exact path
 - a missing or wrong-typed prop, per the component's `meta.props`
 - an SVG carrying its own colour
+- an SVG element sitting outside the `viewBox`, or a root `<svg>` without one
 - a concept cited by `recall` or `teachback` but absent from `concepts` — the
   server enforces the same vocabulary when scoring, so it would otherwise be
   dropped silently
 - an unknown `icon` on the envelope, or an unknown `lang` on a `code` block
 
 Warnings do not stop the build but should be zero: an unreferenced `.yml` key
-usually means a typo'd reference that would have rendered an empty block.
+usually means a typo'd reference that would have rendered an empty block, and
+two overlapping `<rect>` elements usually mean a misplaced node.
 
 ---
 
