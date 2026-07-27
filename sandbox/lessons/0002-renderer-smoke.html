@@ -120,12 +120,39 @@ qual diagrama tem o problema.</p>
   <figure class="lx-figure">
     <div class="lx-card lx-codeblock">
       <span class="lx-codeblock-lang">json</span>
-      <pre><code>{ &quot;component&quot;: &quot;diagram&quot;,
-  &quot;props&quot;: { &quot;svg&quot;: &quot;@diagrams.flow&quot;,
-             &quot;caption&quot;: &quot;@intro.caption&quot; } }
+      <pre><code class="hljs"><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;component&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;diagram&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;props&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;svg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;@diagrams.flow&quot;</span><span class="hljs-punctuation">,</span>
+             <span class="hljs-attr">&quot;caption&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;@intro.caption&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span>
 </code></pre>
     </div>
     <figcaption class="lx-caption">Um bloco do .json — nenhum texto, só estrutura</figcaption>
+  </figure>
+  <figure class="lx-figure">
+    <div class="lx-card lx-codeblock">
+      <span class="lx-codeblock-lang">javascript</span>
+      <pre><code class="hljs"><span class="hljs-keyword">const</span> hljs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;highlight.js&#x27;</span>);
+
+<span class="hljs-comment">// Sem lang, ou lang de texto puro, sai escapado e nada mais.</span>
+<span class="hljs-keyword">if</span> (!lang || <span class="hljs-variable constant_">PLAIN</span>.<span class="hljs-title function_">has</span>(lang.<span class="hljs-title function_">toLowerCase</span>())) {
+  body = <span class="hljs-title function_">esc</span>(source);
+} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (hljs.<span class="hljs-title function_">getLanguage</span>(lang)) {
+  body = hljs.<span class="hljs-title function_">highlight</span>(source, { <span class="hljs-attr">language</span>: lang }).<span class="hljs-property">value</span>;
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`unknown language &quot;<span class="hljs-subst">${lang}</span>&quot;`</span>);
+}
+</code></pre>
+    </div>
+    <figcaption class="lx-caption">O componente que renderiza este bloco — destacado no build, sem JS na página</figcaption>
+  </figure>
+  <figure class="lx-figure">
+    <div class="lx-card lx-codeblock">
+      <span class="lx-codeblock-lang">text</span>
+      <pre><code class="hljs">2026-07-26T19:53:29Z INF Registered tunnel connection
+2026-07-26T19:53:31Z WRN backpressure: queue depth 8412
+2026-07-26T19:53:34Z ERR dropping batch after 3 retries
+</code></pre>
+    </div>
+    <figcaption class="lx-caption">lang &quot;text&quot; desliga o destaque de propósito — um log não tem sintaxe</figcaption>
   </figure>
   <div class="lx-card lx-callout lx-callout--danger">
     <span class="lx-callout-mark" aria-hidden="true">×</span>

@@ -45,7 +45,7 @@ lesson: deps
 # half-way still looks finished. Each of these must fail, so the target inverts
 # the exit code and complains if one of them ever succeeds.
 check-errors: deps
-	@for f in unknown-component dangling-ref coloured-svg missing-prop; do \
+	@for f in unknown-component dangling-ref coloured-svg missing-prop bad-lang; do \
 	  echo "──────── $$f ────────"; \
 	  out=$$(node build/render.js sandbox/broken/$$f 2>&1); rc=$$?; \
 	  echo "$$out" | grep -v 'assets/components.css'; \
@@ -56,7 +56,7 @@ check-errors: deps
 	    echo "  ✗ FALHOU: escreveu HTML apesar do erro"; exit 1; \
 	  fi; \
 	done; \
-	echo; echo "ok — as quatro foram recusadas e nenhum HTML foi escrito"
+	echo; echo "ok — as $$(echo unknown-component dangling-ref coloured-svg missing-prop bad-lang | wc -w | tr -d " ") lições quebradas foram recusadas, nenhum HTML escrito"
 
 # Kitchen-sink lesson + dashboard, wired to the stubbed backend and exposed
 # through a Cloudflare quick tunnel so the layout can be checked on a real phone.

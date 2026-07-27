@@ -133,3 +133,26 @@ source:
   title: "LESSON-PIPELINE-SPEC.md"
   url: "https://github.com/murichristopher/learno/blob/master/LESSON-PIPELINE-SPEC.md"
   note: "O spec que esta lição existe para provar."
+
+code2:
+  lang: "javascript"
+  caption: "O componente que renderiza este bloco — destacado no build, sem JS na página"
+  source: |
+    const hljs = require('highlight.js');
+
+    // Sem lang, ou lang de texto puro, sai escapado e nada mais.
+    if (!lang || PLAIN.has(lang.toLowerCase())) {
+      body = esc(source);
+    } else if (hljs.getLanguage(lang)) {
+      body = hljs.highlight(source, { language: lang }).value;
+    } else {
+      throw new Error(`unknown language "${lang}"`);
+    }
+
+code3:
+  lang: "text"
+  caption: "lang \"text\" desliga o destaque de propósito — um log não tem sintaxe"
+  source: |
+    2026-07-26T19:53:29Z INF Registered tunnel connection
+    2026-07-26T19:53:31Z WRN backpressure: queue depth 8412
+    2026-07-26T19:53:34Z ERR dropping batch after 3 retries

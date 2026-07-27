@@ -1,0 +1,13 @@
+{
+  "id": "bad-lang",
+  "title": "@t.title",
+  "blocks": [
+    {
+      "component": "code",
+      "props": {
+        "lang": "@t.lang",
+        "source": "@t.src"
+      }
+    }
+  ]
+}
