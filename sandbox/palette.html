@@ -8,11 +8,18 @@
 <link rel="stylesheet" href="/assets/components.css" />
 <script>(function(){try{var t=localStorage.getItem('lx-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
 <style>
-  .pal-bar { position: sticky; top: 0; z-index: 30; padding: .8rem clamp(1rem,4vw,1.5rem); }
-  .pal-row { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
-  .pal-row + .pal-row { margin-top: .5rem; }
-  .pal-row > strong { font-size: .7rem; text-transform: uppercase; letter-spacing: .07em;
-                      color: var(--lx-text-subtle); min-width: 5.5rem; }
+  .pal-bar { position: sticky; top: 0; z-index: 30; display: block;
+             padding: .7rem clamp(.75rem,3vw,1.25rem); }
+  .pal-inner { max-width: 60rem; margin: 0 auto; display: flex; gap: 1rem; align-items: flex-start; }
+  .pal-choices { flex: 1; min-width: 0; }
+  .pal-row { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+  .pal-row + .pal-row { margin-top: .4rem; }
+  .pal-row > strong { font-size: .65rem; text-transform: uppercase; letter-spacing: .07em;
+                      color: var(--lx-text-subtle); flex: 0 0 100%; }
+  @media (min-width: 40rem) { .pal-row > strong { flex: 0 0 5rem; } }
+  .pal-row.is-na { opacity: .4; }
+  .pal-row.is-na::after { content: "só no tema claro"; font-size: .65rem; font-style: italic;
+                          color: var(--lx-text-subtle); }
   .pal-opt { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .7rem;
              border-radius: 99px; border: 1px solid var(--lx-border); background: transparent;
              color: var(--lx-text-2); font-size: .8rem; cursor: pointer; }
@@ -53,14 +60,16 @@
 </svg>
 
 <nav class="lx-topbar pal-bar">
-  <div style="flex:1">
+  <div class="pal-inner">
+  <div class="pal-choices">
     <div class="pal-row" id="accent-row"><strong>Acento</strong></div>
-    <div class="pal-row" id="bg-row"><strong>Fundo claro</strong></div>
+    <div class="pal-row" id="bg-row"><strong>Fundo</strong></div>
   </div>
   <div class="lx-topbar-actions">
     <button type="button" class="lx-theme-btn" data-theme-set="light" title="Claro" aria-label="Claro">☀</button>
     <button type="button" class="lx-theme-btn" data-theme-set="auto" title="Auto" aria-label="Auto">◐</button>
     <button type="button" class="lx-theme-btn" data-theme-set="dark" title="Escuro" aria-label="Escuro">☾</button>
+  </div>
   </div>
 </nav>
 
@@ -275,7 +284,13 @@
     var isDark = forced === 'dark' || (forced !== 'light' && dark);
     r.setProperty('--lx-accent-soft', isDark ? a.softDark : a.soft);
 
-    if (b.id === 'accent-wash') {
+    // Inline styles on :root outrank the dark-theme selector, so applying a light
+    // background in dark mode gives a light page with white text. The proposals
+    // are light-mode only; in dark the properties are cleared so the stylesheet
+    // wins back.
+    if (isDark) {
+      ['--lx-shell-from','--lx-shell-via','--lx-shell-to'].forEach(function(k){ r.removeProperty(k); });
+    } else if (b.id === 'accent-wash') {
       var c = rgb(a.accent).join(' ');
       r.setProperty('--lx-shell-from', 'rgb(' + c + ' / .10)');
       r.setProperty('--lx-shell-to',   'rgb(' + c + ' / .06)');
@@ -286,7 +301,10 @@
       r.setProperty('--lx-shell-to',   b.to);
     }
 
-    document.getElementById('current-label').textContent = a.name + ' · ' + b.name;
+    document.getElementById('bg-row').classList.toggle('is-na', isDark);
+
+    document.getElementById('current-label').textContent =
+      a.name + (isDark ? ' · fundo escuro' : ' · ' + b.name);
 
     // The soft tint is translucent, so measure against what it sits on: a white card.
     var ratio = contrast(a.accent, '#ffffff');
