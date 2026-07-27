@@ -20,7 +20,7 @@ SANDBOX   := $(CURDIR)/sandbox
 SERVER    := $(CURDIR)/server
 SBX_RUN    = LEARNO_MODE=sandbox LEARNO_WORKSPACE=$(SANDBOX) PORT=$(SBX_PORT)
 
-.PHONY: help start local sandbox sandbox-local stop check deps build lesson catalog check-errors
+.PHONY: help start local sandbox sandbox-local stop check deps build lesson catalog check-errors compare
 
 deps:
 	@test -d $(SERVER)/node_modules || (cd $(SERVER) && npm install --silent)
@@ -37,6 +37,7 @@ help:
 	@echo "    make build            render every lesson from its .json + .yml"
 	@echo "    make lesson SRC=...   render one (SRC=lessons/0011-name)"
 	@echo "    make catalog          regenerate COMPONENTS.md and the component gallery"
+	@echo "    make compare HAND=... SRC=...   measure authored size against hand-written lessons"
 	@echo
 	@echo "  engine development"
 	@echo "    make sandbox          serve the fixtures + a public URL  (:$(SBX_PORT))"
@@ -78,6 +79,14 @@ catalog: deps
 lesson: deps
 	@test -n "$(SRC)" || { echo "usage: make lesson SRC=lessons/0011-name"; exit 1; }
 	@node build/render.js $(SRC)
+
+# What the pipeline actually bought. HAND is a glob of hand-written lessons to
+# measure against — they live in a study workspace, not here.
+#   make compare HAND='../system-design/lessons/*.html' SRC=lessons/0011-async-jobs
+compare: deps
+	@test -n "$(HAND)" || { echo "usage: make compare HAND='../study/lessons/*.html' SRC=lessons/0011-name"; exit 1; }
+	@test -n "$(SRC)"  || { echo "usage: make compare HAND='../study/lessons/*.html' SRC=lessons/0011-name"; exit 1; }
+	@node build/compare.js $(HAND) --against $(SRC)
 
 # ── engine development ───────────────────────────────────────────────────────
 

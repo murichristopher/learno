@@ -127,6 +127,15 @@
     box.classList.add('is-shown');
   }
 
+  // The server distinguishes "misconfigured" from "broken", and passing its own
+  // sentence through is worth more than a status code the reader cannot act on.
+  function readVerdict(r) {
+    if (r.ok) return r.json();
+    return r.json().catch(function () { return {}; }).then(function (body) {
+      throw new Error(body.error || ('servidor respondeu ' + r.status));
+    });
+  }
+
   function busy(btn, isBusy, label) {
     btn.disabled = isBusy;
     if (isBusy) {
@@ -155,10 +164,7 @@
         lesson_id:         LESSON
       })
     })
-      .then(function (r) {
-        if (!r.ok) throw new Error('servidor respondeu ' + r.status);
-        return r.json();
-      })
+      .then(readVerdict)
       .then(function (data) {
         showVerdict(block, data);
         if (data.score >= PASS && block.dataset.phase) unlockNext(block.dataset.phase);
@@ -210,10 +216,7 @@
         lesson_id:         LESSON
       })
     })
-      .then(function (r) {
-        if (!r.ok) throw new Error('servidor respondeu ' + r.status);
-        return r.json();
-      })
+      .then(readVerdict)
       .then(function (data) {
         showVerdict(block, data);
         return fetch(SERVER + '/api/progress', {

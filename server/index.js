@@ -58,7 +58,11 @@ app.listen(PORT, () => {
     console.log('  Store        : in-memory (seeded, resets on restart)');
     console.log('  Validator    : stubbed — !0 / !p / !ok / !m force each score band');
   } else {
-    console.log(`  Gemini model : ${process.env.GEMINI_MODEL || 'gemini-2.5-flash'}`);
+    // Printed because .env is read once at boot: editing it while the server is
+    // running changes nothing, and the symptom is a validation that fails for a
+    // reason the page can only guess at.
+    console.log(`  Gemini model : ${process.env.GEMINI_MODEL || 'gemini-2.5-flash'}` +
+                `${process.env.GEMINI_API_KEY ? '' : '   ⚠ GEMINI_API_KEY not set'}`);
     console.log(`  MongoDB DB   : ${process.env.MONGODB_DB  || 'system_design_learn'}`);
   }
   console.log(`  Workspace    : ${WORKSPACE}`);

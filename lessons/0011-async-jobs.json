@@ -1,0 +1,233 @@
+{
+  "id": "0011-async-jobs",
+  "tag": "Lição 11 · System Design",
+  "icon": "hourglass",
+  "title": "@meta.title",
+  "subtitle": "@meta.subtitle",
+  "concepts": [
+    "request_cycle_limit",
+    "async_job_status",
+    "retry_backoff",
+    "dead_letter_queue",
+    "job_idempotency"
+  ],
+  "blocks": [
+    {
+      "component": "analogy",
+      "props": {
+        "label": "@analogy.label",
+        "text": "@analogy.text",
+        "bridge": "@analogy.bridge"
+      }
+    },
+    {
+      "component": "prose",
+      "props": {
+        "text": "@intro.body"
+      }
+    },
+    {
+      "component": "phase",
+      "props": {
+        "id": "1",
+        "title": "@p1.title"
+      },
+      "children": [
+        {
+          "component": "prose",
+          "props": {
+            "text": "@p1.body"
+          }
+        },
+        {
+          "component": "diagram",
+          "props": {
+            "svg": "@diagrams.blocked",
+            "caption": "@p1.caption"
+          }
+        },
+        {
+          "component": "prose",
+          "props": {
+            "text": "@p1.body2"
+          }
+        },
+        {
+          "component": "callout",
+          "props": {
+            "variant": "danger",
+            "title": "@callouts.danger.title",
+            "text": "@callouts.danger.text"
+          }
+        },
+        {
+          "component": "recall",
+          "props": {
+            "conceptId": "request_cycle_limit",
+            "phase": "1",
+            "question": "@p1.question",
+            "summary": "@p1.summary",
+            "fallback": "@p1.fallback"
+          }
+        }
+      ]
+    },
+    {
+      "component": "phase",
+      "props": {
+        "id": "2",
+        "title": "@p2.title"
+      },
+      "children": [
+        {
+          "component": "prose",
+          "props": {
+            "text": "@p2.body"
+          }
+        },
+        {
+          "component": "diagram",
+          "props": {
+            "svg": "@diagrams.submit",
+            "caption": "@p2.caption"
+          }
+        },
+        {
+          "component": "callout",
+          "props": {
+            "variant": "note",
+            "title": "@callouts.note.title",
+            "text": "@callouts.note.text"
+          }
+        },
+        {
+          "component": "prose",
+          "props": {
+            "text": "@p2.body2"
+          }
+        },
+        {
+          "component": "compare",
+          "props": {
+            "columns": "@compare.columns",
+            "caption": "@compare.caption"
+          }
+        },
+        {
+          "component": "quiz",
+          "props": {
+            "phase": "2",
+            "question": "@p2.question",
+            "options": "@p2.options",
+            "ok": "@p2.ok",
+            "bad": "@p2.bad"
+          }
+        }
+      ]
+    },
+    {
+      "component": "phase",
+      "props": {
+        "id": "3",
+        "title": "@p3.title"
+      },
+      "children": [
+        {
+          "component": "prose",
+          "props": {
+            "text": "@p3.body"
+          }
+        },
+        {
+          "component": "table",
+          "props": {
+            "headers": "@table.headers",
+            "rows": "@table.rows",
+            "caption": "@table.caption"
+          }
+        },
+        {
+          "component": "callout",
+          "props": {
+            "variant": "warn",
+            "title": "@callouts.warn.title",
+            "text": "@callouts.warn.text"
+          }
+        },
+        {
+          "component": "prose",
+          "props": {
+            "text": "@p3.body2"
+          }
+        },
+        {
+          "component": "diagram",
+          "props": {
+            "svg": "@diagrams.retry",
+            "caption": "@p3.caption"
+          }
+        },
+        {
+          "component": "prose",
+          "props": {
+            "text": "@p3.body3"
+          }
+        },
+        {
+          "component": "diagram",
+          "props": {
+            "svg": "@diagrams.idempotency",
+            "caption": "@p3.caption2"
+          }
+        },
+        {
+          "component": "code",
+          "props": {
+            "lang": "@code.lang",
+            "source": "@code.source",
+            "caption": "@code.caption"
+          }
+        },
+        {
+          "component": "recall",
+          "props": {
+            "conceptId": "job_idempotency",
+            "phase": "3",
+            "question": "@p3.question",
+            "summary": "@p3.summary",
+            "fallback": "@p3.fallback"
+          }
+        }
+      ]
+    },
+    {
+      "component": "teachback",
+      "props": {
+        "question": "@teachback.question",
+        "conceptIds": [
+          "request_cycle_limit",
+          "async_job_status",
+          "retry_backoff",
+          "dead_letter_queue",
+          "job_idempotency"
+        ],
+        "hint": "@teachback.hint"
+      }
+    },
+    {
+      "component": "flashcards",
+      "props": {
+        "cards": "@flashcards.cards",
+        "title": "@flashcards.title"
+      }
+    },
+    {
+      "component": "source",
+      "props": {
+        "title": "@source.title",
+        "url": "@source.url",
+        "note": "@source.note"
+      }
+    }
+  ]
+}
