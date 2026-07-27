@@ -55,7 +55,7 @@ module.exports = {
    Defined here rather than in learno.css so the component stays self-contained,
    and themed with the same light/dark mechanism as everything else. */
 :root {
-  --lx-syn-keyword: #7e22ce;
+  --lx-syn-keyword: #7c3aed;
   --lx-syn-string:  #047857;
   --lx-syn-number:  #b45309;
   --lx-syn-comment: #6b7280;
