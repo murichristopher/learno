@@ -91,17 +91,31 @@ function main(argv) {
   console.log(`  authored per lesson ${K(p.authored).padStart(6)}`);
   console.log(`  rendered            ${K(p.rendered).padStart(6)}   linked assets, not inlined`);
 
-  const saved = avg('authored') - p.authored;
-  const ratio = avg('authored') / p.authored;
-  console.log(`\nResult\n`);
-  console.log(`  authored  ${K(avg('authored'))} → ${K(p.authored)}   ${saved > 0 ? '−' + K(saved) : '+' + K(-saved)}  (${ratio.toFixed(1)}× less)`);
-  console.log(`  rendered  ${K(avg('total'))} → ${K(p.rendered)}`);
+  // Raw totals are confounded by how much lesson was written. A longer lesson
+  // authors more bytes in ANY format, so comparing totals across two different
+  // lessons flatters or punishes the format for something it did not cause.
+  //
+  // The honest measure is overhead: bytes of machinery per byte of content,
+  // where content is prose plus diagrams — the part a human actually decided.
+  const handContent   = avg('prose') + avg('svg');
+  const handMachinery = avg('authored') - handContent;
+  const pipeContent   = p.prose + p.svg;
+  const pipeMachinery = p.authored - pipeContent;
 
-  // Honest accounting: what did not move, and why.
-  const floor = p.svg + p.prose;
-  console.log(`\n  Of the ${K(p.authored)} authored, ${K(floor)} is content that no format removes:`);
-  console.log(`  ${K(p.prose)} of prose, because someone has to write the lesson, and ${K(p.svg)} of SVG,`);
-  console.log(`  because diagrams stay hand-drawn by choice. Structure is the remaining ${K(p.json)}.\n`);
+  console.log(`\nRaw totals — NOT comparable unless both lessons are the same length\n`);
+  console.log(`  authored  ${K(avg('authored'))} → ${K(p.authored)}`);
+  console.log(`  rendered  ${K(avg('total'))} → ${K(p.rendered)}`);
+  console.log(`  content   ${K(handContent)} → ${K(pipeContent)}   ${(pipeContent / handContent).toFixed(1)}× — this lesson is simply ${pipeContent > handContent ? 'longer' : 'shorter'}`);
+
+  console.log(`\nOverhead — what the format costs, normalised for length\n`);
+  console.log(`  hand-written  ${K(handMachinery)} of machinery per ${K(handContent)} of content   ${(handMachinery / handContent).toFixed(2)} bytes per byte`);
+  console.log(`  pipeline      ${K(pipeMachinery)} of machinery per ${K(pipeContent)} of content   ${(pipeMachinery / pipeContent).toFixed(2)} bytes per byte`);
+  console.log(`\n  overhead ${pct(handMachinery, avg('authored'))} → ${pct(pipeMachinery, p.authored)} of what gets authored` +
+              `   (${((handMachinery / handContent) / (pipeMachinery / pipeContent)).toFixed(1)}× less machinery)\n`);
+
+  console.log(`  Content itself does not shrink and was never going to: ${K(p.prose)} of prose`);
+  console.log(`  because someone has to write the lesson, ${K(p.svg)} of SVG because diagrams`);
+  console.log(`  stay hand-drawn by choice. Only the ${K(pipeMachinery)} around it is the format's doing.\n`);
 }
 
 if (require.main === module) main(process.argv.slice(2));

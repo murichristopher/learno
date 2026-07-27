@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tarefas longas e jobs assíncronos</title>
+<link rel="stylesheet" href="../assets/learno.css" />
+<link rel="stylesheet" href="../assets/components.css" />
+<script>(function(){try{var t=localStorage.getItem('lx-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
+</head>
+<body class="lx-shell" data-lesson="0011-async-jobs">
+
+<div class="lx-overlay"></div>
+
+<!-- Shared arrowhead. Authored diagrams reference #lx-arrow and never carry
+     their own marker definition. -->
+<svg class="lx-defs" aria-hidden="true">
+  <defs>
+    <marker id="lx-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="lx-arrowhead" d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+  </defs>
+</svg>
+
+  <nav class="lx-topbar">
+    <a class="lx-topbar-home" href="../" title="Ir para o painel">
+      <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+  <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+      <span>learno</span>
+    </a>
+    <div class="lx-topbar-actions">
+      <button type="button" class="lx-theme-btn" data-theme-set="light" title="Tema claro" aria-label="Tema claro">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" /></svg>
+      </button>
+      <button type="button" class="lx-theme-btn" data-theme-set="auto" title="Seguir o sistema" aria-label="Seguir o sistema">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2" />
+  <line x1="8" x2="16" y1="21" y2="21" />
+  <line x1="12" x2="12" y1="17" y2="21" /></svg>
+      </button>
+      <button type="button" class="lx-theme-btn" data-theme-set="dark" title="Tema escuro" aria-label="Tema escuro">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></svg>
+      </button>
+    </div>
+  </nav>
+
+<div class="lx-content lx-wrap">
+  <header class="lx-lesson-head">
+    <span class="lx-badge">Lição 11 · System Design</span>
+    <h1 class="lx-title"><span class="lx-title-icon"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" />
+  <path d="M5 2h14" />
+  <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" />
+  <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg></span><span>Tarefas longas e jobs assíncronos</span></h1>
+    <p class="lx-subtitle">Como tirar o trabalho de 90 segundos da requisição — e o que fazer quando ele falha na terceira tentativa.</p>
+  </header>
+
+  <div class="lx-offline-banner" id="lx-banner" hidden>
+    Servidor fora do ar. As seções continuam abrindo por múltipla escolha, mas a
+    validação por IA e o registro do progresso ficam indisponíveis.
+  </div>
+
+  <div class="lx-progress" role="presentation">
+    <span class="lx-progress-seg" data-seg="1"></span>
+    <span class="lx-progress-seg" data-seg="2"></span>
+    <span class="lx-progress-seg" data-seg="3"></span>
+  </div>
+
+  <div class="lx-blocks">
+  <div class="lx-card lx-analogy">
+    <span class="lx-analogy-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+  <path d="M9 18h6" />
+  <path d="M10 22h4" /></svg> Pense na lavanderia da esquina</span>
+    <p class="lx-analogy-text">Você entrega o terno e recebe uma ficha numerada. Ninguém espera de pé no balcão as quatro horas que a limpeza leva: você sai, faz sua vida, e volta com a ficha para perguntar se já ficou pronto. Naquele momento a ficha vale mais que o terno — é ela que prova que o pedido existe e é ela que te deixa consultar o estado.
+</p>
+    <p class="lx-analogy-bridge">Essa ficha é o job id, e o balcão que responde &quot;ainda não&quot; é o endpoint de status.</p>
+  </div>
+  <div class="lx-prose">
+    <p>Na lição passada você tirou o trabalho pesado da requisição e jogou numa
+fila. Isso resolveu o pico. Ficou faltando o outro lado do problema: <strong>o
+usuário ainda está lá</strong>, olhando a tela, e ninguém devolveu nada para ele.</p>
+    <p>Esta lição é sobre o contrato entre os dois lados. Como você responde na
+hora sem ter o resultado, onde o cliente busca esse resultado depois, e o
+que acontece quando o job explode no meio do caminho.</p>
+  </div>
+  <section class="lx-phase" data-phase="1" id="phase-1">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>1</span></span>
+      <h2 class="lx-phase-title">Por que a tarefa longa não cabe na requisição</h2>
+    </div>
+    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
+    <div class="lx-phase-body">
+  <div class="lx-prose">
+    <p>Cenário concreto. Um endpoint <code class="lx-code">POST /relatorios</code> roda uma consulta pesada no
+Postgres, monta um CSV de 400 mil linhas e devolve o arquivo. Leva 90
+segundos num dia bom.</p>
+    <p>Três coisas quebram, e elas quebram nessa ordem.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 660 210" role="img"
+     aria-label="Requisição de 90 segundos cortada pelo proxy aos 60 segundos, e o F5 do usuário abrindo uma segunda requisição idêntica">
+  <rect class="lx-node lx-node--accent" x="10" y="24" width="120" height="48"/>
+  <text class="lx-label" x="70" y="53" text-anchor="middle">Cliente</text>
+
+  <path class="lx-edge" d="M130 48 H 206"/>
+  <text class="lx-label--muted" x="168" y="40" text-anchor="middle">POST /relatorios</text>
+
+  <rect class="lx-node" x="208" y="24" width="130" height="48"/>
+  <text class="lx-label" x="273" y="46" text-anchor="middle">Proxy</text>
+  <text class="lx-label--muted" x="273" y="62" text-anchor="middle">timeout 60 s</text>
+
+  <path class="lx-edge" d="M338 48 H 414"/>
+
+  <rect class="lx-node" x="416" y="24" width="140" height="48"/>
+  <text class="lx-label" x="486" y="46" text-anchor="middle">Worker web</text>
+  <text class="lx-label--muted" x="486" y="62" text-anchor="middle">preso por 90 s</text>
+
+  <path class="lx-edge lx-edge--dashed" d="M273 74 V 104 H 70 V 76"/>
+  <text class="lx-label--muted" x="210" y="120" text-anchor="middle">504 aos 60 s — o trabalho continua rodando</text>
+
+  <rect class="lx-node lx-node--muted" x="10" y="146" width="120" height="48"/>
+  <text class="lx-label--muted" x="70" y="175" text-anchor="middle">F5 do usuário</text>
+
+  <path class="lx-edge lx-edge--accent" d="M130 170 H 414"/>
+  <text class="lx-label--muted" x="272" y="162" text-anchor="middle">a mesma requisição, do zero</text>
+
+  <rect class="lx-node lx-node--muted" x="416" y="146" width="140" height="48"/>
+  <text class="lx-label--muted" x="486" y="175" text-anchor="middle">segundo worker preso</text>
+</svg>
+</div>
+    <figcaption class="lx-caption">O proxy desiste aos 60 s; o worker continua preso até os 90 s — e o F5 duplica tudo.</figcaption>
+  </figure>
+  <div class="lx-prose">
+    <p><strong>O timeout não é seu.</strong> O ALB da AWS corta em 60 segundos por padrão, o
+Heroku em 30, o Cloudflare em 100. Quem decide quanto tempo a requisição
+vive é a camada mais impaciente do caminho — e ela devolve <code class="lx-code">504</code> sem avisar
+o seu processo, que segue queimando CPU por mais 30 segundos para um cliente
+que já foi embora.</p>
+    <p><strong>O worker fica preso.</strong> Um Puma com 5 threads aguenta 5 relatórios
+simultâneos. O sexto usuário não fica lento: ele não é atendido. E não é só
+o relatório que cai — o <code class="lx-code">/health</code> cai junto, porque não sobrou thread para
+responder a ele, e o balanceador tira a instância do ar bem no momento em
+que ela mais precisava de ajuda.</p>
+    <p><strong>O usuário retenta por você.</strong> Tela travada há 40 segundos, a pessoa aperta
+F5. Agora são dois relatórios idênticos rodando, cada um segurando uma
+thread, e o primeiro já não tem para quem responder.</p>
+  </div>
+  <div class="lx-card lx-callout lx-callout--danger">
+    <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16h.01" />
+  <path d="M12 8v4" />
+  <path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z" /></svg></span>
+    <div>
+      <p class="lx-callout-title">O refresh do usuário é um retry que você não controla</p>
+      <p class="lx-callout-text">Retry de cliente é o pior tipo: não tem backoff, não tem limite e acelera exatamente quando o sistema está pior. Uma tela que fica 40 segundos sem dar sinal de vida não é uma tela lenta — é um gerador de carga.
+</p>
+    </div>
+  </div>
+  <div class="lx-card lx-ask lx-recall"
+       data-concept-id="request_cycle_limit"
+       data-phase="1"
+       data-summary="Seção sobre por que trabalho longo não sobrevive dentro do ciclo de requisição: o timeout é de terceiros, a thread fica presa e o usuário retenta sozinho apertando F5.
+"
+       data-ok="Isso. O tempo em si não é o problema: o problema é segurar uma thread e um socket por 90 segundos esperando. Subir o timeout escala o problema junto.
+"
+       data-bad="Não. O proxy desistir não cancela o trabalho — ele continua rodando sem destinatário. E cada segundo a mais de timeout é um segundo a mais de thread ocupada, ou seja, menos capacidade, não mais.
+">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
+  <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
+  <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
+    <p class="lx-ask-q">Um endpoint que leva 90 segundos está atrás de um load balancer com timeout de 60 s. Explique, com suas palavras, o que o usuário vê, o que acontece com o trabalho que já estava rodando, e por que &quot;é só subir o timeout para 120 s&quot; não resolve o problema.
+</p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="validate">Validar</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+      </div>
+    </div>
+
+    <div class="lx-fallback">
+      <p class="lx-fallback-note">Servidor fora do ar — respondendo por múltipla escolha.</p>
+      
+        <label class="lx-choice">
+          <input type="radio" name="fb-request_cycle_limit" value="0" data-correct="0" />
+          <span>O usuário vê o relatório com uns 30 s de atraso; basta ajustar o timeout do balanceador e está resolvido.</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-request_cycle_limit" value="1" data-correct="1" />
+          <span>O usuário leva 504 aos 60 s, o processo continua rodando até o fim sem ninguém para receber o resultado, e subir o timeout só prende a thread por mais tempo — o pool esgota antes.</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-request_cycle_limit" value="2" data-correct="0" />
+          <span>O balanceador reenvia a requisição para outra instância automaticamente, e a segunda tentativa termina dentro do prazo.</span>
+        </label>
+      <p class="lx-inline-fb"></p>
+    </div>
+  </div>
+    </div>
+  </section>
+  <section class="lx-phase lx-phase--locked" data-phase="2" id="phase-2">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>2</span></span>
+      <h2 class="lx-phase-title">Submit, job id, status: o padrão do worker assíncrono</h2>
+    </div>
+    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
+    <div class="lx-phase-body">
+  <div class="lx-prose">
+    <p>Você inverte o contrato. O <code class="lx-code">POST /relatorios</code> não devolve mais o relatório:
+devolve <strong>um recibo</strong>. Em HTTP isso é <code class="lx-code">202 Accepted</code> com o id do job e a URL
+onde consultar. Três passos, sempre os mesmos.</p>
+    <p><strong>Submit.</strong> A API valida a entrada, cria uma linha em <code class="lx-code">jobs</code> com status
+<code class="lx-code">queued</code>, enfileira e responde em ~20 ms. Repare na ordem: a linha no banco
+vem <strong>antes</strong> do enfileiramento. Se você enfileira primeiro, existe uma
+janela real em que o worker pega o job e vai procurar um registro de status
+que ainda não foi criado.</p>
+    <p><strong>Trabalho.</strong> O worker puxa da fila, marca <code class="lx-code">running</code>, faz o serviço e grava
+<code class="lx-code">done</code> junto com um ponteiro para o resultado — a chave no S3, o id do
+arquivo. O resultado não volta pela fila.</p>
+    <p><strong>Consulta.</strong> O cliente pergunta <code class="lx-code">GET /jobs/{id}</code> e recebe o estado.
+Enquanto for <code class="lx-code">running</code>, ele espera; quando virar <code class="lx-code">done</code>, ele baixa. Se virar
+<code class="lx-code">failed</code>, ele mostra o motivo, que também está na linha.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 660 272" role="img"
+     aria-label="O cliente envia o pedido e recebe 202 com um job id; a fila entrega ao worker, que grava o estado do job; depois o cliente consulta esse estado">
+  <rect class="lx-node lx-node--accent" x="12" y="16" width="120" height="48"/>
+  <text class="lx-label" x="72" y="45" text-anchor="middle">Cliente</text>
+
+  <path class="lx-edge" d="M132 40 H 226"/>
+  <text class="lx-label--muted" x="179" y="32" text-anchor="middle">POST /relatorios</text>
+
+  <rect class="lx-node" x="228" y="16" width="120" height="48"/>
+  <text class="lx-label" x="288" y="45" text-anchor="middle">API</text>
+
+  <path class="lx-edge" d="M348 40 H 442"/>
+  <text class="lx-label--muted" x="395" y="32" text-anchor="middle">enfileira o job</text>
+
+  <rect class="lx-node" x="444" y="16" width="120" height="48"/>
+  <text class="lx-label" x="504" y="45" text-anchor="middle">Fila</text>
+
+  <path class="lx-edge lx-edge--accent" d="M288 66 V 90 H 72 V 68"/>
+  <text class="lx-label--muted" x="182" y="84" text-anchor="middle">202 Accepted + jobId</text>
+
+  <path class="lx-edge" d="M504 66 V 112"/>
+  <text class="lx-label--muted" x="536" y="94" text-anchor="middle">puxa</text>
+
+  <rect class="lx-node" x="444" y="114" width="120" height="48"/>
+  <text class="lx-label" x="504" y="143" text-anchor="middle">Worker</text>
+
+  <path class="lx-edge" d="M442 138 H 352"/>
+  <text class="lx-label--muted" x="397" y="130" text-anchor="middle">grava o estado</text>
+
+  <rect class="lx-node lx-node--accent" x="228" y="114" width="120" height="48"/>
+  <text class="lx-label" x="288" y="136" text-anchor="middle">Estado do job</text>
+  <text class="lx-label--muted" x="288" y="152" text-anchor="middle">Postgres ou Redis</text>
+
+  <rect class="lx-node lx-node--muted" x="12" y="204" width="120" height="48"/>
+  <text class="lx-label--muted" x="72" y="233" text-anchor="middle">Cliente</text>
+
+  <path class="lx-edge lx-edge--dashed" d="M132 228 H 288 V 166"/>
+  <text class="lx-label--muted" x="205" y="220" text-anchor="middle">GET /jobs/id a cada 2 s</text>
+</svg>
+</div>
+    <figcaption class="lx-caption">Submit devolve recibo; o worker grava o estado; o cliente consulta o estado, nunca a fila.</figcaption>
+  </figure>
+  <div class="lx-card lx-callout lx-callout--note">
+    <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" />
+  <path d="M12 16v-4" />
+  <path d="M12 8h.01" /></svg></span>
+    <div>
+      <p class="lx-callout-title">A fila é transporte, não banco de dados</p>
+      <p class="lx-callout-text">Fila entrega a mensagem e esquece. Ela não sabe responder &quot;em que pé está o job 8f3a&quot;. O estado do job é dado da sua aplicação: uma tabela no Postgres quando você precisa de histórico e auditoria, uma chave no Redis com TTL quando o registro é descartável em 24 horas.
+</p>
+    </div>
+  </div>
+  <div class="lx-prose">
+    <p>Onde esse estado mora é a decisão da seção, e ela é mais consequente do que
+parece. O Sidekiq guarda no Redis, o Oban guarda numa tabela do próprio
+Postgres — e não é coincidência que o Oban tenha ficado popular justamente
+por isso: estado de job na mesma transação do dado do negócio é uma classe
+inteira de inconsistência que deixa de existir.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-compare">
+      <div class="lx-card lx-compare-col">
+        <span class="lx-compare-label">Polling — o cliente pergunta</span>
+        <p class="lx-compare-body">Funciona em qualquer stack, atravessa qualquer proxy e é trivial de depurar com curl. Custa requisições vazias: 200 clientes perguntando a cada 2 s são 100 req/s de &quot;ainda não&quot;. Mitigue com intervalo crescente (1 s, 2 s, 4 s) e um teto, e o custo vira ruído.
+</p>
+      </div>
+      <div class="lx-card lx-compare-col">
+        <span class="lx-compare-label">Push — o servidor avisa</span>
+        <p class="lx-compare-body">WebSocket, SSE ou webhook. Latência quase zero e nenhuma requisição desperdiçada, mas agora você tem conexão de longa duração para balancear, ou um endpoint de terceiro que pode estar fora do ar. Push sempre precisa de um polling de reserva: se a notificação se perde, o cliente tem que conseguir perguntar.
+</p>
+      </div>
+    </div>
+    <figcaption class="lx-caption">Comece pelo polling. Troque por push quando a conta de requisições vazias doer — não antes.</figcaption>
+  </figure>
+  <div class="lx-card lx-quiz" data-phase="2"
+       data-ok="Isso. O estado do job é dado da aplicação, e criar a linha antes de enfileirar fecha a janela em que o worker chega antes do registro existir.
+" data-bad="Fila é transporte: entrega e esquece, e não sabe responder &quot;em que pé está o job 8f3a&quot;. E 404 não distingue &quot;ainda processando&quot; de &quot;esse job nunca existiu&quot; — o front não tem como decidir se insiste ou desiste.
+">
+    <span class="lx-quiz-label">Escolha uma</span>
+    <p class="lx-ask-q">Sua API responde 202 com um jobId e o worker leva de 30 s a 4 minutos. O front vai consultar o status. Qual desenho você defende num code review?
+</p>
+    
+      <label class="lx-choice">
+        <input type="radio" name="quiz-1795010966" value="0" data-correct="0" />
+        <span>Guardar o status na própria fila e ler a fila no GET /jobs/{id} — é onde a mensagem já está mesmo.</span>
+      </label>
+      <label class="lx-choice">
+        <input type="radio" name="quiz-1795010966" value="1" data-correct="1" />
+        <span>Gravar a linha do job com status queued antes de enfileirar, e responder o GET /jobs/{id} lendo essa linha.</span>
+      </label>
+      <label class="lx-choice">
+        <input type="radio" name="quiz-1795010966" value="2" data-correct="0" />
+        <span>Não gravar status nenhum: o front tenta baixar o resultado direto e trata 404 como &quot;ainda processando&quot;.</span>
+      </label>
+    <p class="lx-inline-fb"></p>
+  </div>
+    </div>
+  </section>
+  <section class="lx-phase lx-phase--locked" data-phase="3" id="phase-3">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>3</span></span>
+      <h2 class="lx-phase-title">Quando o job falha: backoff, dead-letter e idempotência</h2>
+    </div>
+    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
+    <div class="lx-phase-body">
+  <div class="lx-prose">
+    <p>Job assíncrono falha mais que requisição, e por um motivo bobo: ele vive
+mais tempo. Um job de 4 minutos atravessa deploy, failover do banco, rate
+limit do gateway de pagamento e timeout do S3. Retry não é enfeite — é parte
+do desenho.</p>
+    <p><strong>Retry imediato é quase sempre errado.</strong> Se o job falhou porque o gateway
+está sobrecarregado, tentar de novo em 100 ms adiciona carga exatamente onde
+já tem carga demais. Por isso você espera, e espera cada vez mais: 1 s, 2 s,
+4 s, 8 s, 16 s. Isso é <strong>exponential backoff</strong>.</p>
+    <p><strong>Backoff sozinho não basta.</strong> Se a dependência ficou fora por 30 segundos e
+5.000 jobs falharam juntos, os 5.000 dormem o mesmo 1 s e acordam no mesmo
+milissegundo — o pico foi reconstruído. A correção é somar aleatoriedade ao
+intervalo, o <strong>jitter</strong>. A Amazon publicou a medição disso: com backoff puro
+a contenção continua alta; com full jitter, o total de chamadas cai muito e
+o trabalho termina mais cedo.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-table-wrap lx-scroll">
+      <table class="lx-table">
+        <thead><tr><th scope="col">Tentativa</th><th scope="col">Backoff puro</th><th scope="col">Com full jitter</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Tentativa">1ª</td><td data-label="Backoff puro">1 s</td><td data-label="Com full jitter">sorteio entre 0 e 1 s</td></tr>
+          <tr><td data-label="Tentativa">2ª</td><td data-label="Backoff puro">2 s</td><td data-label="Com full jitter">sorteio entre 0 e 2 s</td></tr>
+          <tr><td data-label="Tentativa">3ª</td><td data-label="Backoff puro">4 s</td><td data-label="Com full jitter">sorteio entre 0 e 4 s</td></tr>
+          <tr><td data-label="Tentativa">4ª</td><td data-label="Backoff puro">8 s</td><td data-label="Com full jitter">sorteio entre 0 e 8 s</td></tr>
+          <tr><td data-label="Tentativa">5ª</td><td data-label="Backoff puro">16 s</td><td data-label="Com full jitter">sorteio entre 0 e 16 s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figcaption class="lx-caption">Full jitter sorteia dentro da janela em vez de esperar a janela inteira. Mesmo teto, retentativas espalhadas.</figcaption>
+  </figure>
+  <div class="lx-card lx-callout lx-callout--warn">
+    <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" /></svg></span>
+    <div>
+      <p class="lx-callout-title">Backoff sem jitter é um pico que você mesmo agendou</p>
+      <p class="lx-callout-text">Cinco mil jobs que falharam no mesmo segundo e usam o mesmo backoff voltam no mesmo milissegundo. A dependência derruba os cinco mil de novo, todos dobram o intervalo juntos, e você construiu um sistema que bate na dependência em ondas sincronizadas até alguém intervir na mão.
+</p>
+    </div>
+  </div>
+  <div class="lx-prose">
+    <p><strong>Retry não pode ser infinito.</strong> Um job que falha porque o CPF está
+malformado vai falhar 500 vezes com a mesma exceção, ocupando worker que
+faria trabalho útil. Depois de N tentativas — 5 é um padrão razoável — o job
+sai do loop e vai para a <strong>dead-letter queue</strong>: uma fila separada que
+ninguém consome automaticamente, guardando o payload original e o último
+erro.</p>
+    <p>A DLQ é onde o bug aparece. Fila de dead-letter vazia é sinal de saúde; fila
+crescendo é um alerta com nome e sobrenome. E, quando você corrigir o
+código, o payload continua ali para reprocessar.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 660 224" role="img"
+     aria-label="O job falha, espera um intervalo com backoff e jitter e volta para a fila; quando esgota as tentativas ele sai do loop e vai para a dead-letter queue">
+  <rect class="lx-node lx-node--accent" x="12" y="24" width="120" height="48"/>
+  <text class="lx-label" x="72" y="53" text-anchor="middle">Fila</text>
+
+  <path class="lx-edge" d="M132 48 H 226"/>
+
+  <rect class="lx-node" x="228" y="24" width="130" height="48"/>
+  <text class="lx-label" x="293" y="53" text-anchor="middle">Worker</text>
+
+  <path class="lx-edge" d="M358 48 H 454"/>
+  <text class="lx-label--muted" x="406" y="40" text-anchor="middle">erro</text>
+
+  <rect class="lx-node" x="456" y="24" width="150" height="48"/>
+  <text class="lx-label" x="531" y="46" text-anchor="middle">Espera</text>
+  <text class="lx-label--muted" x="531" y="62" text-anchor="middle">backoff + jitter</text>
+
+  <path class="lx-edge lx-edge--accent" d="M500 74 V 128 H 72 V 76"/>
+  <text class="lx-label--muted" x="290" y="122" text-anchor="middle">reenfileira: 1 s, 2 s, 4 s, 8 s…</text>
+
+  <path class="lx-edge" d="M580 74 V 152"/>
+  <text class="lx-label--muted" x="574" y="108" text-anchor="end">esgotou as tentativas</text>
+
+  <rect class="lx-node lx-node--muted" x="470" y="154" width="180" height="48"/>
+  <text class="lx-label" x="560" y="176" text-anchor="middle">Dead-letter queue</text>
+  <text class="lx-label--muted" x="560" y="192" text-anchor="middle">ninguém consome sozinho</text>
+</svg>
+</div>
+    <figcaption class="lx-caption">O loop de retry é finito de propósito: o que esgota as tentativas sai dele e vai para a dead-letter.</figcaption>
+  </figure>
+  <div class="lx-prose">
+    <p>Agora a parte que custa dinheiro. Retry só é seguro se rodar o job duas
+vezes tiver o mesmo efeito que rodar uma vez — isso é <strong>idempotência</strong>.</p>
+    <p>O caso clássico: o worker cobra o cartão, a cobrança passa no gateway, e o
+processo morre antes de gravar <code class="lx-code">done</code>. Para a fila esse job nunca terminou,
+então ela reentrega. Sem proteção, o cliente é cobrado duas vezes e você
+descobre pelo Twitter.</p>
+    <p>A proteção é uma <strong>chave de idempotência derivada do trabalho, não do
+envio</strong>: <code class="lx-code">cobranca-pedido-8231</code>, e não um UUID novo a cada tentativa — se a
+chave muda no retry, ela não protege nada. Você grava essa chave com índice
+<code class="lx-code">UNIQUE</code> junto do efeito; na reentrega o <code class="lx-code">INSERT</code> colide, o worker vê que
+já está feito e devolve o resultado registrado sem refazer o trabalho. Os
+gateways sérios aceitam a chave direto na API: o <code class="lx-code">Idempotency-Key</code> do Stripe
+é exatamente isso.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 660 184" role="img"
+     aria-label="A primeira tentativa grava a chave de idempotência e cobra o cartão; a reentrega encontra a mesma chave e devolve o resultado já registrado sem cobrar de novo">
+  <rect class="lx-node lx-node--accent" x="12" y="20" width="140" height="48"/>
+  <text class="lx-label" x="82" y="49" text-anchor="middle">Tentativa 1</text>
+
+  <path class="lx-edge" d="M152 44 H 236"/>
+
+  <rect class="lx-node" x="238" y="20" width="170" height="48"/>
+  <text class="lx-label" x="323" y="42" text-anchor="middle">Chave UNIQUE</text>
+  <text class="lx-label--muted" x="323" y="58" text-anchor="middle">cobranca-pedido-8231</text>
+
+  <path class="lx-edge" d="M408 44 H 494"/>
+  <text class="lx-label--muted" x="451" y="36" text-anchor="middle">chave nova</text>
+
+  <rect class="lx-node" x="496" y="20" width="152" height="48"/>
+  <text class="lx-label" x="572" y="42" text-anchor="middle">Cobra o cartão</text>
+  <text class="lx-label--muted" x="572" y="58" text-anchor="middle">uma vez</text>
+
+  <rect class="lx-node lx-node--muted" x="12" y="112" width="140" height="48"/>
+  <text class="lx-label--muted" x="82" y="141" text-anchor="middle">Tentativa 2 (retry)</text>
+
+  <path class="lx-edge lx-edge--dashed" d="M152 136 H 323 V 72"/>
+
+  <path class="lx-edge lx-edge--accent" d="M394 70 V 136 H 494"/>
+  <text class="lx-label--muted" x="432" y="104" text-anchor="middle">chave já existe</text>
+
+  <rect class="lx-node lx-node--accent" x="496" y="112" width="152" height="48"/>
+  <text class="lx-label" x="572" y="134" text-anchor="middle">Devolve o mesmo</text>
+  <text class="lx-label--muted" x="572" y="150" text-anchor="middle">resultado, sem cobrar</text>
+</svg>
+</div>
+    <figcaption class="lx-caption">A chave é derivada do trabalho, então a segunda tentativa cai na mesma linha e para antes de cobrar.</figcaption>
+  </figure>
+  <figure class="lx-figure">
+    <div class="lx-card lx-codeblock">
+      <span class="lx-codeblock-lang">ruby</span>
+      <pre><code class="hljs"><span class="hljs-keyword">class</span> <span class="hljs-title class_">ChargeOrderJob</span>
+  <span class="hljs-keyword">include</span> <span class="hljs-title class_">Sidekiq::Job</span>
+  sidekiq_options <span class="hljs-symbol">retry:</span> <span class="hljs-number">5</span>      <span class="hljs-comment"># backoff exponencial com jitter, depois a dead-letter</span>
+
+  <span class="hljs-keyword">def</span> <span class="hljs-title function_">perform</span>(<span class="hljs-params">order_id</span>)
+    <span class="hljs-comment"># Derivada do pedido, não do envio: a chave é a MESMA em toda tentativa.</span>
+    key    = <span class="hljs-string">&quot;cobranca-pedido-<span class="hljs-subst">#{order_id}</span>&quot;</span>
+    charge = <span class="hljs-title class_">Charge</span>.find_or_create_by!(<span class="hljs-symbol">idempotency_key:</span> key) { |<span class="hljs-params">c</span>| c.order_id = order_id }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> charge.done?      <span class="hljs-comment"># a reentrega para aqui: o trabalho já aconteceu</span>
+
+    <span class="hljs-comment"># A mesma chave vai para o gateway. Se a primeira chamada passou e o</span>
+    <span class="hljs-comment"># processo morreu antes de gravar, ele devolve a cobrança original em</span>
+    <span class="hljs-comment"># vez de criar uma segunda.</span>
+    receipt = <span class="hljs-title class_">Gateway</span>.charge(order_id, <span class="hljs-symbol">idempotency_key:</span> key)
+    charge.update!(<span class="hljs-symbol">state:</span> <span class="hljs-string">&quot;done&quot;</span>, <span class="hljs-symbol">external_id:</span> receipt.id)
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</code></pre>
+    </div>
+    <figcaption class="lx-caption">A coluna idempotency_key tem índice UNIQUE — é ele, e não o Ruby, que garante a unicidade sob concorrência.</figcaption>
+  </figure>
+  <div class="lx-card lx-ask lx-recall"
+       data-concept-id="job_idempotency"
+       data-phase="3"
+       data-summary="Seção sobre falha de job: retry com backoff exponencial e jitter, dead-letter queue para o que esgota as tentativas, e idempotência para que uma reentrega não cobre o cartão duas vezes.
+"
+       data-ok="Isso. O que faz a chave funcionar é ela ser derivada do trabalho e estável entre tentativas — e a garantia vir do índice UNIQUE, não de um if que consulta antes de gravar e perde a corrida.
+"
+       data-bad="Uma chave nova a cada tentativa não deduplica nada: ela é justamente o que muda. E a fila reentrega sim — sem ack ela assume que ninguém processou, o que é o comportamento correto dela e o problema do seu worker.
+">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
+  <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
+  <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
+    <p class="lx-ask-q">Seu worker cobra o cartão e depois grava done. O processo morre depois de a cobrança passar no gateway e antes de gravar, e a fila reentrega o job. Explique o que acontece sem proteção e descreva a proteção: de onde vem a chave, onde ela é gravada, e como a segunda tentativa decide não cobrar de novo.
+</p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="validate">Validar</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+      </div>
+    </div>
+
+    <div class="lx-fallback">
+      <p class="lx-fallback-note">Servidor fora do ar — respondendo por múltipla escolha.</p>
+      
+        <label class="lx-choice">
+          <input type="radio" name="fb-job_idempotency" value="0" data-correct="0" />
+          <span>Nada acontece: a fila só reentrega mensagens que nunca chegaram a ser processadas por nenhum worker.</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-job_idempotency" value="1" data-correct="0" />
+          <span>O cliente é cobrado duas vezes. A proteção é gerar um UUID novo em cada tentativa e mandar junto para o gateway.</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-job_idempotency" value="2" data-correct="1" />
+          <span>O cliente é cobrado duas vezes. A proteção é uma chave derivada do pedido, gravada com índice UNIQUE junto do efeito: na reentrega o INSERT colide, o worker vê que já está feito e devolve o resultado sem cobrar.</span>
+        </label>
+      <p class="lx-inline-fb"></p>
+    </div>
+  </div>
+    </div>
+  </section>
+  <div class="lx-card lx-ask lx-teachback" data-concepts="request_cycle_limit,async_job_status,retry_backoff,dead_letter_queue,job_idempotency">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
+  <path d="M22 10v6" />
+  <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg> Ensina de volta</span>
+    <p class="lx-ask-q">Um colega quer subir o timeout do load balancer para 5 minutos e chamar o dia de resolvido. Explique para ele o padrão inteiro: por que o trabalho longo sai da requisição, o que a API devolve no lugar do resultado, onde o cliente busca o status, e o que acontece com um job que falha três vezes seguidas cobrando um cartão.
+</p>
+    <p class="lx-teachback-hint">Comece pelo que quebra (timeout de terceiro, thread presa, F5 do usuário), depois o recibo 202 com jobId e onde mora o estado, e feche com backoff mais jitter, dead-letter e a chave de idempotência.
+</p>
+
+    <p class="lx-teachback-offline">
+      Esta parte precisa do servidor. Sem ele não dá para registrar a lição —
+      e um score inventado estragaria o agendamento da revisão.
+    </p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer lx-answer--large" placeholder="Explique o conceito inteiro, com suas palavras…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="teachback">Encerrar a lição</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+        <div class="lx-concepts"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lx-done">
+    <div class="lx-card lx-next-review">
+      <span class="lx-next-review-label">Próxima revisão</span>
+      <span class="lx-next-review-date">—</span>
+      <span class="lx-next-review-note"></span>
+    </div>
+  </div>
+  <section class="lx-flashcards">
+    <p class="lx-flash-title"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></svg> Revisão rápida</p>
+    <div class="lx-flash-grid">
+      <details class="lx-card lx-flash">
+        <summary>O que a API devolve quando o trabalho vai para a fila?</summary>
+        <p class="lx-flash-back">202 Accepted com um jobId e a URL de status. O recibo substitui o resultado; o resultado é buscado depois em GET /jobs/{id}.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Onde mora o status de um job?</summary>
+        <p class="lx-flash-back">Na sua aplicação — tabela no Postgres ou chave no Redis. A fila é transporte: entrega e esquece, e não responde &quot;em que pé está&quot;.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Por que backoff exponencial precisa de jitter?</summary>
+        <p class="lx-flash-back">Sem jitter, todos os jobs que falharam juntos acordam juntos e reconstroem o pico. O jitter sorteia dentro da janela e espalha as retentativas.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Para que serve a dead-letter queue?</summary>
+        <p class="lx-flash-back">Guardar, fora do loop de retry, o job que esgotou as tentativas — com payload e último erro. Ninguém consome automaticamente: é fila de investigação.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>O que faz uma chave de idempotência funcionar?</summary>
+        <p class="lx-flash-back">Ser derivada do trabalho (cobranca-pedido-8231) e estável entre tentativas, gravada com UNIQUE junto do efeito. Chave nova a cada retry não protege nada.</p>
+      </details>
+    </div>
+  </section>
+  <div class="lx-card lx-source">
+    <p class="lx-source-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" />
+  <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg> Fonte primária</p>
+    <p class="lx-source-title"><a class="lx-link" href="https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/" rel="noopener noreferrer" target="_blank">Amazon Builders' Library — Timeouts, retries, and backoff with jitter</a></p>
+    <p class="lx-source-note">Marc Brooker, AWS. Cobre timeout, política de retry, backoff com jitter e tokens de idempotência a partir do que a Amazon opera em produção. Para a camada de profundidade, DDIA cap. 11 trata at-least-once e o que &quot;exactly-once&quot; realmente significa.
+</p>
+  </div>
+  </div>
+
+  <footer class="lx-lesson-foot">
+    <a class="lx-btn lx-btn--outline" href="../reference/my-learning.html">Painel</a>
+    <a class="lx-btn lx-btn--outline" href="../reference/glossary.html">Glossário</a>
+  </footer>
+</div>
+
+<script type="application/json" id="lx-config">{"lesson":"0011-async-jobs","concepts":["request_cycle_limit","async_job_status","retry_backoff","dead_letter_queue","job_idempotency"],"phases":["1","2","3"]}</script>
+<script src="../assets/learno.js" defer></script>
+</body>
+</html>

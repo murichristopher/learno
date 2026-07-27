@@ -1,0 +1,435 @@
+meta:
+  title: "Tarefas longas e jobs assíncronos"
+  subtitle: "Como tirar o trabalho de 90 segundos da requisição — e o que fazer quando ele falha na terceira tentativa."
+
+analogy:
+  label: "Pense na lavanderia da esquina"
+  text: >
+    Você entrega o terno e recebe uma ficha numerada. Ninguém espera de pé no
+    balcão as quatro horas que a limpeza leva: você sai, faz sua vida, e volta
+    com a ficha para perguntar se já ficou pronto. Naquele momento a ficha vale
+    mais que o terno — é ela que prova que o pedido existe e é ela que te deixa
+    consultar o estado.
+  bridge: "Essa ficha é o job id, e o balcão que responde \"ainda não\" é o endpoint de status."
+
+intro:
+  body: |
+    Na lição passada você tirou o trabalho pesado da requisição e jogou numa
+    fila. Isso resolveu o pico. Ficou faltando o outro lado do problema: **o
+    usuário ainda está lá**, olhando a tela, e ninguém devolveu nada para ele.
+
+    Esta lição é sobre o contrato entre os dois lados. Como você responde na
+    hora sem ter o resultado, onde o cliente busca esse resultado depois, e o
+    que acontece quando o job explode no meio do caminho.
+
+diagrams:
+  blocked: |
+    <svg class="lx-svg" viewBox="0 0 660 210" role="img"
+         aria-label="Requisição de 90 segundos cortada pelo proxy aos 60 segundos, e o F5 do usuário abrindo uma segunda requisição idêntica">
+      <rect class="lx-node lx-node--accent" x="10" y="24" width="120" height="48"/>
+      <text class="lx-label" x="70" y="53" text-anchor="middle">Cliente</text>
+
+      <path class="lx-edge" d="M130 48 H 206"/>
+      <text class="lx-label--muted" x="168" y="40" text-anchor="middle">POST /relatorios</text>
+
+      <rect class="lx-node" x="208" y="24" width="130" height="48"/>
+      <text class="lx-label" x="273" y="46" text-anchor="middle">Proxy</text>
+      <text class="lx-label--muted" x="273" y="62" text-anchor="middle">timeout 60 s</text>
+
+      <path class="lx-edge" d="M338 48 H 414"/>
+
+      <rect class="lx-node" x="416" y="24" width="140" height="48"/>
+      <text class="lx-label" x="486" y="46" text-anchor="middle">Worker web</text>
+      <text class="lx-label--muted" x="486" y="62" text-anchor="middle">preso por 90 s</text>
+
+      <path class="lx-edge lx-edge--dashed" d="M273 74 V 104 H 70 V 76"/>
+      <text class="lx-label--muted" x="210" y="120" text-anchor="middle">504 aos 60 s — o trabalho continua rodando</text>
+
+      <rect class="lx-node lx-node--muted" x="10" y="146" width="120" height="48"/>
+      <text class="lx-label--muted" x="70" y="175" text-anchor="middle">F5 do usuário</text>
+
+      <path class="lx-edge lx-edge--accent" d="M130 170 H 414"/>
+      <text class="lx-label--muted" x="272" y="162" text-anchor="middle">a mesma requisição, do zero</text>
+
+      <rect class="lx-node lx-node--muted" x="416" y="146" width="140" height="48"/>
+      <text class="lx-label--muted" x="486" y="175" text-anchor="middle">segundo worker preso</text>
+    </svg>
+
+  submit: |
+    <svg class="lx-svg" viewBox="0 0 660 272" role="img"
+         aria-label="O cliente envia o pedido e recebe 202 com um job id; a fila entrega ao worker, que grava o estado do job; depois o cliente consulta esse estado">
+      <rect class="lx-node lx-node--accent" x="12" y="16" width="120" height="48"/>
+      <text class="lx-label" x="72" y="45" text-anchor="middle">Cliente</text>
+
+      <path class="lx-edge" d="M132 40 H 226"/>
+      <text class="lx-label--muted" x="179" y="32" text-anchor="middle">POST /relatorios</text>
+
+      <rect class="lx-node" x="228" y="16" width="120" height="48"/>
+      <text class="lx-label" x="288" y="45" text-anchor="middle">API</text>
+
+      <path class="lx-edge" d="M348 40 H 442"/>
+      <text class="lx-label--muted" x="395" y="32" text-anchor="middle">enfileira o job</text>
+
+      <rect class="lx-node" x="444" y="16" width="120" height="48"/>
+      <text class="lx-label" x="504" y="45" text-anchor="middle">Fila</text>
+
+      <path class="lx-edge lx-edge--accent" d="M288 66 V 90 H 72 V 68"/>
+      <text class="lx-label--muted" x="182" y="84" text-anchor="middle">202 Accepted + jobId</text>
+
+      <path class="lx-edge" d="M504 66 V 112"/>
+      <text class="lx-label--muted" x="536" y="94" text-anchor="middle">puxa</text>
+
+      <rect class="lx-node" x="444" y="114" width="120" height="48"/>
+      <text class="lx-label" x="504" y="143" text-anchor="middle">Worker</text>
+
+      <path class="lx-edge" d="M442 138 H 352"/>
+      <text class="lx-label--muted" x="397" y="130" text-anchor="middle">grava o estado</text>
+
+      <rect class="lx-node lx-node--accent" x="228" y="114" width="120" height="48"/>
+      <text class="lx-label" x="288" y="136" text-anchor="middle">Estado do job</text>
+      <text class="lx-label--muted" x="288" y="152" text-anchor="middle">Postgres ou Redis</text>
+
+      <rect class="lx-node lx-node--muted" x="12" y="204" width="120" height="48"/>
+      <text class="lx-label--muted" x="72" y="233" text-anchor="middle">Cliente</text>
+
+      <path class="lx-edge lx-edge--dashed" d="M132 228 H 288 V 166"/>
+      <text class="lx-label--muted" x="205" y="220" text-anchor="middle">GET /jobs/id a cada 2 s</text>
+    </svg>
+
+  retry: |
+    <svg class="lx-svg" viewBox="0 0 660 224" role="img"
+         aria-label="O job falha, espera um intervalo com backoff e jitter e volta para a fila; quando esgota as tentativas ele sai do loop e vai para a dead-letter queue">
+      <rect class="lx-node lx-node--accent" x="12" y="24" width="120" height="48"/>
+      <text class="lx-label" x="72" y="53" text-anchor="middle">Fila</text>
+
+      <path class="lx-edge" d="M132 48 H 226"/>
+
+      <rect class="lx-node" x="228" y="24" width="130" height="48"/>
+      <text class="lx-label" x="293" y="53" text-anchor="middle">Worker</text>
+
+      <path class="lx-edge" d="M358 48 H 454"/>
+      <text class="lx-label--muted" x="406" y="40" text-anchor="middle">erro</text>
+
+      <rect class="lx-node" x="456" y="24" width="150" height="48"/>
+      <text class="lx-label" x="531" y="46" text-anchor="middle">Espera</text>
+      <text class="lx-label--muted" x="531" y="62" text-anchor="middle">backoff + jitter</text>
+
+      <path class="lx-edge lx-edge--accent" d="M500 74 V 128 H 72 V 76"/>
+      <text class="lx-label--muted" x="290" y="122" text-anchor="middle">reenfileira: 1 s, 2 s, 4 s, 8 s…</text>
+
+      <path class="lx-edge" d="M580 74 V 152"/>
+      <text class="lx-label--muted" x="574" y="108" text-anchor="end">esgotou as tentativas</text>
+
+      <rect class="lx-node lx-node--muted" x="470" y="154" width="180" height="48"/>
+      <text class="lx-label" x="560" y="176" text-anchor="middle">Dead-letter queue</text>
+      <text class="lx-label--muted" x="560" y="192" text-anchor="middle">ninguém consome sozinho</text>
+    </svg>
+
+  idempotency: |
+    <svg class="lx-svg" viewBox="0 0 660 184" role="img"
+         aria-label="A primeira tentativa grava a chave de idempotência e cobra o cartão; a reentrega encontra a mesma chave e devolve o resultado já registrado sem cobrar de novo">
+      <rect class="lx-node lx-node--accent" x="12" y="20" width="140" height="48"/>
+      <text class="lx-label" x="82" y="49" text-anchor="middle">Tentativa 1</text>
+
+      <path class="lx-edge" d="M152 44 H 236"/>
+
+      <rect class="lx-node" x="238" y="20" width="170" height="48"/>
+      <text class="lx-label" x="323" y="42" text-anchor="middle">Chave UNIQUE</text>
+      <text class="lx-label--muted" x="323" y="58" text-anchor="middle">cobranca-pedido-8231</text>
+
+      <path class="lx-edge" d="M408 44 H 494"/>
+      <text class="lx-label--muted" x="451" y="36" text-anchor="middle">chave nova</text>
+
+      <rect class="lx-node" x="496" y="20" width="152" height="48"/>
+      <text class="lx-label" x="572" y="42" text-anchor="middle">Cobra o cartão</text>
+      <text class="lx-label--muted" x="572" y="58" text-anchor="middle">uma vez</text>
+
+      <rect class="lx-node lx-node--muted" x="12" y="112" width="140" height="48"/>
+      <text class="lx-label--muted" x="82" y="141" text-anchor="middle">Tentativa 2 (retry)</text>
+
+      <path class="lx-edge lx-edge--dashed" d="M152 136 H 323 V 72"/>
+
+      <path class="lx-edge lx-edge--accent" d="M394 70 V 136 H 494"/>
+      <text class="lx-label--muted" x="432" y="104" text-anchor="middle">chave já existe</text>
+
+      <rect class="lx-node lx-node--accent" x="496" y="112" width="152" height="48"/>
+      <text class="lx-label" x="572" y="134" text-anchor="middle">Devolve o mesmo</text>
+      <text class="lx-label--muted" x="572" y="150" text-anchor="middle">resultado, sem cobrar</text>
+    </svg>
+
+callouts:
+  danger:
+    title: "O refresh do usuário é um retry que você não controla"
+    text: >
+      Retry de cliente é o pior tipo: não tem backoff, não tem limite e acelera
+      exatamente quando o sistema está pior. Uma tela que fica 40 segundos sem
+      dar sinal de vida não é uma tela lenta — é um gerador de carga.
+  note:
+    title: "A fila é transporte, não banco de dados"
+    text: >
+      Fila entrega a mensagem e esquece. Ela não sabe responder "em que pé está
+      o job 8f3a". O estado do job é dado da sua aplicação: uma tabela no
+      Postgres quando você precisa de histórico e auditoria, uma chave no Redis
+      com TTL quando o registro é descartável em 24 horas.
+  warn:
+    title: "Backoff sem jitter é um pico que você mesmo agendou"
+    text: >
+      Cinco mil jobs que falharam no mesmo segundo e usam o mesmo backoff voltam
+      no mesmo milissegundo. A dependência derruba os cinco mil de novo, todos
+      dobram o intervalo juntos, e você construiu um sistema que bate na
+      dependência em ondas sincronizadas até alguém intervir na mão.
+
+compare:
+  caption: "Comece pelo polling. Troque por push quando a conta de requisições vazias doer — não antes."
+  columns:
+    - label: "Polling — o cliente pergunta"
+      body: >
+        Funciona em qualquer stack, atravessa qualquer proxy e é trivial de
+        depurar com curl. Custa requisições vazias: 200 clientes perguntando a
+        cada 2 s são 100 req/s de "ainda não". Mitigue com intervalo crescente
+        (1 s, 2 s, 4 s) e um teto, e o custo vira ruído.
+    - label: "Push — o servidor avisa"
+      body: >
+        WebSocket, SSE ou webhook. Latência quase zero e nenhuma requisição
+        desperdiçada, mas agora você tem conexão de longa duração para
+        balancear, ou um endpoint de terceiro que pode estar fora do ar. Push
+        sempre precisa de um polling de reserva: se a notificação se perde, o
+        cliente tem que conseguir perguntar.
+
+table:
+  caption: "Full jitter sorteia dentro da janela em vez de esperar a janela inteira. Mesmo teto, retentativas espalhadas."
+  headers: ["Tentativa", "Backoff puro", "Com full jitter"]
+  rows:
+    - ["1ª", "1 s", "sorteio entre 0 e 1 s"]
+    - ["2ª", "2 s", "sorteio entre 0 e 2 s"]
+    - ["3ª", "4 s", "sorteio entre 0 e 4 s"]
+    - ["4ª", "8 s", "sorteio entre 0 e 8 s"]
+    - ["5ª", "16 s", "sorteio entre 0 e 16 s"]
+
+code:
+  lang: "ruby"
+  caption: "A coluna idempotency_key tem índice UNIQUE — é ele, e não o Ruby, que garante a unicidade sob concorrência."
+  source: |
+    class ChargeOrderJob
+      include Sidekiq::Job
+      sidekiq_options retry: 5      # backoff exponencial com jitter, depois a dead-letter
+
+      def perform(order_id)
+        # Derivada do pedido, não do envio: a chave é a MESMA em toda tentativa.
+        key    = "cobranca-pedido-#{order_id}"
+        charge = Charge.find_or_create_by!(idempotency_key: key) { |c| c.order_id = order_id }
+
+        return if charge.done?      # a reentrega para aqui: o trabalho já aconteceu
+
+        # A mesma chave vai para o gateway. Se a primeira chamada passou e o
+        # processo morreu antes de gravar, ele devolve a cobrança original em
+        # vez de criar uma segunda.
+        receipt = Gateway.charge(order_id, idempotency_key: key)
+        charge.update!(state: "done", external_id: receipt.id)
+      end
+    end
+
+p1:
+  title: "Por que a tarefa longa não cabe na requisição"
+  caption: "O proxy desiste aos 60 s; o worker continua preso até os 90 s — e o F5 duplica tudo."
+  body: |
+    Cenário concreto. Um endpoint `POST /relatorios` roda uma consulta pesada no
+    Postgres, monta um CSV de 400 mil linhas e devolve o arquivo. Leva 90
+    segundos num dia bom.
+
+    Três coisas quebram, e elas quebram nessa ordem.
+  body2: |
+    **O timeout não é seu.** O ALB da AWS corta em 60 segundos por padrão, o
+    Heroku em 30, o Cloudflare em 100. Quem decide quanto tempo a requisição
+    vive é a camada mais impaciente do caminho — e ela devolve `504` sem avisar
+    o seu processo, que segue queimando CPU por mais 30 segundos para um cliente
+    que já foi embora.
+
+    **O worker fica preso.** Um Puma com 5 threads aguenta 5 relatórios
+    simultâneos. O sexto usuário não fica lento: ele não é atendido. E não é só
+    o relatório que cai — o `/health` cai junto, porque não sobrou thread para
+    responder a ele, e o balanceador tira a instância do ar bem no momento em
+    que ela mais precisava de ajuda.
+
+    **O usuário retenta por você.** Tela travada há 40 segundos, a pessoa aperta
+    F5. Agora são dois relatórios idênticos rodando, cada um segurando uma
+    thread, e o primeiro já não tem para quem responder.
+  question: >
+    Um endpoint que leva 90 segundos está atrás de um load balancer com timeout
+    de 60 s. Explique, com suas palavras, o que o usuário vê, o que acontece com
+    o trabalho que já estava rodando, e por que "é só subir o timeout para 120
+    s" não resolve o problema.
+  summary: >
+    Seção sobre por que trabalho longo não sobrevive dentro do ciclo de
+    requisição: o timeout é de terceiros, a thread fica presa e o usuário
+    retenta sozinho apertando F5.
+  fallback:
+    options:
+      - text: "O usuário vê o relatório com uns 30 s de atraso; basta ajustar o timeout do balanceador e está resolvido."
+        correct: false
+      - text: "O usuário leva 504 aos 60 s, o processo continua rodando até o fim sem ninguém para receber o resultado, e subir o timeout só prende a thread por mais tempo — o pool esgota antes."
+        correct: true
+      - text: "O balanceador reenvia a requisição para outra instância automaticamente, e a segunda tentativa termina dentro do prazo."
+        correct: false
+    ok: >
+      Isso. O tempo em si não é o problema: o problema é segurar uma thread e um
+      socket por 90 segundos esperando. Subir o timeout escala o problema junto.
+    bad: >
+      Não. O proxy desistir não cancela o trabalho — ele continua rodando sem
+      destinatário. E cada segundo a mais de timeout é um segundo a mais de
+      thread ocupada, ou seja, menos capacidade, não mais.
+
+p2:
+  title: "Submit, job id, status: o padrão do worker assíncrono"
+  caption: "Submit devolve recibo; o worker grava o estado; o cliente consulta o estado, nunca a fila."
+  body: |
+    Você inverte o contrato. O `POST /relatorios` não devolve mais o relatório:
+    devolve **um recibo**. Em HTTP isso é `202 Accepted` com o id do job e a URL
+    onde consultar. Três passos, sempre os mesmos.
+
+    **Submit.** A API valida a entrada, cria uma linha em `jobs` com status
+    `queued`, enfileira e responde em ~20 ms. Repare na ordem: a linha no banco
+    vem **antes** do enfileiramento. Se você enfileira primeiro, existe uma
+    janela real em que o worker pega o job e vai procurar um registro de status
+    que ainda não foi criado.
+
+    **Trabalho.** O worker puxa da fila, marca `running`, faz o serviço e grava
+    `done` junto com um ponteiro para o resultado — a chave no S3, o id do
+    arquivo. O resultado não volta pela fila.
+
+    **Consulta.** O cliente pergunta `GET /jobs/{id}` e recebe o estado.
+    Enquanto for `running`, ele espera; quando virar `done`, ele baixa. Se virar
+    `failed`, ele mostra o motivo, que também está na linha.
+  body2: |
+    Onde esse estado mora é a decisão da seção, e ela é mais consequente do que
+    parece. O Sidekiq guarda no Redis, o Oban guarda numa tabela do próprio
+    Postgres — e não é coincidência que o Oban tenha ficado popular justamente
+    por isso: estado de job na mesma transação do dado do negócio é uma classe
+    inteira de inconsistência que deixa de existir.
+  question: >
+    Sua API responde 202 com um jobId e o worker leva de 30 s a 4 minutos. O
+    front vai consultar o status. Qual desenho você defende num code review?
+  options:
+    - text: "Guardar o status na própria fila e ler a fila no GET /jobs/{id} — é onde a mensagem já está mesmo."
+      correct: false
+    - text: "Gravar a linha do job com status queued antes de enfileirar, e responder o GET /jobs/{id} lendo essa linha."
+      correct: true
+    - text: "Não gravar status nenhum: o front tenta baixar o resultado direto e trata 404 como \"ainda processando\"."
+      correct: false
+  ok: >
+    Isso. O estado do job é dado da aplicação, e criar a linha antes de
+    enfileirar fecha a janela em que o worker chega antes do registro existir.
+  bad: >
+    Fila é transporte: entrega e esquece, e não sabe responder "em que pé está
+    o job 8f3a". E 404 não distingue "ainda processando" de "esse job nunca
+    existiu" — o front não tem como decidir se insiste ou desiste.
+
+p3:
+  title: "Quando o job falha: backoff, dead-letter e idempotência"
+  caption: "O loop de retry é finito de propósito: o que esgota as tentativas sai dele e vai para a dead-letter."
+  caption2: "A chave é derivada do trabalho, então a segunda tentativa cai na mesma linha e para antes de cobrar."
+  body: |
+    Job assíncrono falha mais que requisição, e por um motivo bobo: ele vive
+    mais tempo. Um job de 4 minutos atravessa deploy, failover do banco, rate
+    limit do gateway de pagamento e timeout do S3. Retry não é enfeite — é parte
+    do desenho.
+
+    **Retry imediato é quase sempre errado.** Se o job falhou porque o gateway
+    está sobrecarregado, tentar de novo em 100 ms adiciona carga exatamente onde
+    já tem carga demais. Por isso você espera, e espera cada vez mais: 1 s, 2 s,
+    4 s, 8 s, 16 s. Isso é **exponential backoff**.
+
+    **Backoff sozinho não basta.** Se a dependência ficou fora por 30 segundos e
+    5.000 jobs falharam juntos, os 5.000 dormem o mesmo 1 s e acordam no mesmo
+    milissegundo — o pico foi reconstruído. A correção é somar aleatoriedade ao
+    intervalo, o **jitter**. A Amazon publicou a medição disso: com backoff puro
+    a contenção continua alta; com full jitter, o total de chamadas cai muito e
+    o trabalho termina mais cedo.
+  body2: |
+    **Retry não pode ser infinito.** Um job que falha porque o CPF está
+    malformado vai falhar 500 vezes com a mesma exceção, ocupando worker que
+    faria trabalho útil. Depois de N tentativas — 5 é um padrão razoável — o job
+    sai do loop e vai para a **dead-letter queue**: uma fila separada que
+    ninguém consome automaticamente, guardando o payload original e o último
+    erro.
+
+    A DLQ é onde o bug aparece. Fila de dead-letter vazia é sinal de saúde; fila
+    crescendo é um alerta com nome e sobrenome. E, quando você corrigir o
+    código, o payload continua ali para reprocessar.
+  body3: |
+    Agora a parte que custa dinheiro. Retry só é seguro se rodar o job duas
+    vezes tiver o mesmo efeito que rodar uma vez — isso é **idempotência**.
+
+    O caso clássico: o worker cobra o cartão, a cobrança passa no gateway, e o
+    processo morre antes de gravar `done`. Para a fila esse job nunca terminou,
+    então ela reentrega. Sem proteção, o cliente é cobrado duas vezes e você
+    descobre pelo Twitter.
+
+    A proteção é uma **chave de idempotência derivada do trabalho, não do
+    envio**: `cobranca-pedido-8231`, e não um UUID novo a cada tentativa — se a
+    chave muda no retry, ela não protege nada. Você grava essa chave com índice
+    `UNIQUE` junto do efeito; na reentrega o `INSERT` colide, o worker vê que
+    já está feito e devolve o resultado registrado sem refazer o trabalho. Os
+    gateways sérios aceitam a chave direto na API: o `Idempotency-Key` do Stripe
+    é exatamente isso.
+  question: >
+    Seu worker cobra o cartão e depois grava done. O processo morre depois de a
+    cobrança passar no gateway e antes de gravar, e a fila reentrega o job.
+    Explique o que acontece sem proteção e descreva a proteção: de onde vem a
+    chave, onde ela é gravada, e como a segunda tentativa decide não cobrar de
+    novo.
+  summary: >
+    Seção sobre falha de job: retry com backoff exponencial e jitter,
+    dead-letter queue para o que esgota as tentativas, e idempotência para que
+    uma reentrega não cobre o cartão duas vezes.
+  fallback:
+    options:
+      - text: "Nada acontece: a fila só reentrega mensagens que nunca chegaram a ser processadas por nenhum worker."
+        correct: false
+      - text: "O cliente é cobrado duas vezes. A proteção é gerar um UUID novo em cada tentativa e mandar junto para o gateway."
+        correct: false
+      - text: "O cliente é cobrado duas vezes. A proteção é uma chave derivada do pedido, gravada com índice UNIQUE junto do efeito: na reentrega o INSERT colide, o worker vê que já está feito e devolve o resultado sem cobrar."
+        correct: true
+    ok: >
+      Isso. O que faz a chave funcionar é ela ser derivada do trabalho e estável
+      entre tentativas — e a garantia vir do índice UNIQUE, não de um if que
+      consulta antes de gravar e perde a corrida.
+    bad: >
+      Uma chave nova a cada tentativa não deduplica nada: ela é justamente o que
+      muda. E a fila reentrega sim — sem ack ela assume que ninguém processou, o
+      que é o comportamento correto dela e o problema do seu worker.
+
+teachback:
+  question: >
+    Um colega quer subir o timeout do load balancer para 5 minutos e chamar o
+    dia de resolvido. Explique para ele o padrão inteiro: por que o trabalho
+    longo sai da requisição, o que a API devolve no lugar do resultado, onde o
+    cliente busca o status, e o que acontece com um job que falha três vezes
+    seguidas cobrando um cartão.
+  hint: >
+    Comece pelo que quebra (timeout de terceiro, thread presa, F5 do usuário),
+    depois o recibo 202 com jobId e onde mora o estado, e feche com backoff mais
+    jitter, dead-letter e a chave de idempotência.
+
+flashcards:
+  title: "Revisão rápida"
+  cards:
+    - front: "O que a API devolve quando o trabalho vai para a fila?"
+      back: "202 Accepted com um jobId e a URL de status. O recibo substitui o resultado; o resultado é buscado depois em GET /jobs/{id}."
+    - front: "Onde mora o status de um job?"
+      back: "Na sua aplicação — tabela no Postgres ou chave no Redis. A fila é transporte: entrega e esquece, e não responde \"em que pé está\"."
+    - front: "Por que backoff exponencial precisa de jitter?"
+      back: "Sem jitter, todos os jobs que falharam juntos acordam juntos e reconstroem o pico. O jitter sorteia dentro da janela e espalha as retentativas."
+    - front: "Para que serve a dead-letter queue?"
+      back: "Guardar, fora do loop de retry, o job que esgotou as tentativas — com payload e último erro. Ninguém consome automaticamente: é fila de investigação."
+    - front: "O que faz uma chave de idempotência funcionar?"
+      back: "Ser derivada do trabalho (cobranca-pedido-8231) e estável entre tentativas, gravada com UNIQUE junto do efeito. Chave nova a cada retry não protege nada."
+
+source:
+  title: "Amazon Builders' Library — Timeouts, retries, and backoff with jitter"
+  url: "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/"
+  note: >
+    Marc Brooker, AWS. Cobre timeout, política de retry, backoff com jitter e
+    tokens de idempotência a partir do que a Amazon opera em produção. Para a
+    camada de profundidade, DDIA cap. 11 trata at-least-once e o que
+    "exactly-once" realmente significa.
