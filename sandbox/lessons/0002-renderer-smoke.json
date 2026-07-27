@@ -3,21 +3,121 @@
   "tag": "Sandbox",
   "title": "@meta.title",
   "subtitle": "@meta.subtitle",
-  "concepts": ["sandbox_widget_sharding"],
+  "concepts": [
+    "sandbox_widget_sharding"
+  ],
   "blocks": [
-    { "component": "analogy",
-      "props": { "label": "@analogy.label", "text": "@analogy.text", "bridge": "@analogy.bridge" } },
-
-    { "component": "prose",
-      "props": { "text": "@intro.body" } },
-
-    { "component": "diagram",
-      "props": { "svg": "@diagrams.flow", "caption": "@intro.caption" } },
-
-    { "component": "prose",
-      "props": { "text": "@detail.body" } },
-
-    { "component": "diagram",
-      "props": { "svg": "@diagrams.variants", "caption": "@detail.caption" } }
+    {
+      "component": "analogy",
+      "props": {
+        "label": "@analogy.label",
+        "text": "@analogy.text",
+        "bridge": "@analogy.bridge"
+      }
+    },
+    {
+      "component": "prose",
+      "props": {
+        "text": "@intro.body"
+      }
+    },
+    {
+      "component": "diagram",
+      "props": {
+        "svg": "@diagrams.flow",
+        "caption": "@intro.caption"
+      }
+    },
+    {
+      "component": "callout",
+      "props": {
+        "variant": "note",
+        "title": "@callouts.note.title",
+        "text": "@callouts.note.text"
+      }
+    },
+    {
+      "component": "prose",
+      "props": {
+        "text": "@detail.body"
+      }
+    },
+    {
+      "component": "compare",
+      "props": {
+        "columns": "@compare.columns",
+        "caption": "@compare.caption"
+      }
+    },
+    {
+      "component": "callout",
+      "props": {
+        "variant": "warn",
+        "title": "@callouts.warn.title",
+        "text": "@callouts.warn.text"
+      }
+    },
+    {
+      "component": "table",
+      "props": {
+        "headers": "@table.headers",
+        "rows": "@table.rows",
+        "caption": "@table.caption"
+      }
+    },
+    {
+      "component": "code",
+      "props": {
+        "lang": "@code.lang",
+        "source": "@code.source",
+        "caption": "@code.caption"
+      }
+    },
+    {
+      "component": "code",
+      "props": {
+        "lang": "@code2.lang",
+        "source": "@code2.source",
+        "caption": "@code2.caption"
+      }
+    },
+    {
+      "component": "code",
+      "props": {
+        "lang": "@code3.lang",
+        "source": "@code3.source",
+        "caption": "@code3.caption"
+      }
+    },
+    {
+      "component": "callout",
+      "props": {
+        "variant": "danger",
+        "title": "@callouts.danger.title",
+        "text": "@callouts.danger.text"
+      }
+    },
+    {
+      "component": "diagram",
+      "props": {
+        "svg": "@diagrams.variants",
+        "caption": "@detail.caption"
+      }
+    },
+    {
+      "component": "flashcards",
+      "props": {
+        "cards": "@flashcards.cards",
+        "title": "@flashcards.title"
+      }
+    },
+    {
+      "component": "source",
+      "props": {
+        "title": "@source.title",
+        "url": "@source.url",
+        "note": "@source.note"
+      }
+    }
   ]
 }

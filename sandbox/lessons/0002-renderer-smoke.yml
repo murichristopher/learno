@@ -70,3 +70,89 @@ diagrams:
       <path class="lx-edge lx-edge--accent" d="M400 102 H 560"/>
       <text class="lx-label--muted" x="480" y="94" text-anchor="middle">destaque</text>
     </svg>
+
+callouts:
+  note:
+    title: "O JSON não tem uma frase sequer"
+    text: >
+      Tudo que você lê nesta página está no .yml. O .json só diz qual componente
+      usar, em que ordem, e qual chave do YAML cada prop referencia.
+  warn:
+    title: "Componente não decide o próprio espaçamento"
+    text: >
+      A distância entre um bloco e o vizinho é do container. Um componente que
+      define a própria margem ganha por especificidade e passa por cima do
+      breakpoint do celular — foi assim que o card do diagrama ficou apertado.
+  danger:
+    title: "Build recusa a lição inteira"
+    text: >
+      Componente desconhecido, referência quebrada, prop faltando ou SVG com cor
+      própria não geram página parcial. Uma lição meio renderizada parece pronta,
+      e é por isso que a falha é barulhenta.
+
+compare:
+  caption: "As duas metades do formato, e o que cada uma resolve"
+  columns:
+    - label: "JSON — estrutura"
+      body: >
+        Quais componentes, em que ordem, com quais ids. É o que o build valida
+        contra o vocabulário. Pequeno e chato de propósito.
+    - label: "YAML — conteúdo"
+      body: >
+        Prosa e SVG, endereçados por chave. É onde está tudo que uma pessoa
+        escreveu, e o único arquivo que muda quando o texto muda.
+
+table:
+  caption: "O que cada camada custa por lição"
+  headers: ["Camada", "Antes", "Agora"]
+  rows:
+    - ["CSS + JS", "13.1K", "linkado"]
+    - ["Tags estruturais", "12.3K", "gerado"]
+    - ["SVG", "6.6K", "6.6K"]
+    - ["Prosa", "6.2K", "6.2K"]
+
+code:
+  lang: "json"
+  caption: "Um bloco do .json — nenhum texto, só estrutura"
+  source: |
+    { "component": "diagram",
+      "props": { "svg": "@diagrams.flow",
+                 "caption": "@intro.caption" } }
+
+flashcards:
+  title: "Revisão rápida"
+  cards:
+    - front: "O que o @ faz num valor do JSON?"
+      back: "Marca um caminho dentro do .yml. É resolvido antes do componente ver a prop, então componente só lida com valor real."
+    - front: "Por que o build recusa SVG com cor?"
+      back: "Porque cor vem das classes do design system. Um diagrama que traz a própria cor não acompanha o tema e diverge do resto."
+    - front: "Onde mora o CSS de um componente?"
+      back: "No próprio componente, no campo css. O build concatena tudo em assets/components.css, então um componente local não edita arquivo compartilhado."
+
+source:
+  title: "LESSON-PIPELINE-SPEC.md"
+  url: "https://github.com/murichristopher/learno/blob/master/LESSON-PIPELINE-SPEC.md"
+  note: "O spec que esta lição existe para provar."
+
+code2:
+  lang: "javascript"
+  caption: "O componente que renderiza este bloco — destacado no build, sem JS na página"
+  source: |
+    const hljs = require('highlight.js');
+
+    // Sem lang, ou lang de texto puro, sai escapado e nada mais.
+    if (!lang || PLAIN.has(lang.toLowerCase())) {
+      body = esc(source);
+    } else if (hljs.getLanguage(lang)) {
+      body = hljs.highlight(source, { language: lang }).value;
+    } else {
+      throw new Error(`unknown language "${lang}"`);
+    }
+
+code3:
+  lang: "text"
+  caption: "lang \"text\" desliga o destaque de propósito — um log não tem sintaxe"
+  source: |
+    2026-07-26T19:53:29Z INF Registered tunnel connection
+    2026-07-26T19:53:31Z WRN backpressure: queue depth 8412
+    2026-07-26T19:53:34Z ERR dropping batch after 3 retries
