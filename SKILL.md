@@ -21,8 +21,9 @@ The workspace lives in the current directory. Read these files at the start of e
 - `reference/my-learning.html` — dynamic mastery dashboard (requires server).
 
 Supporting specs (read before generating any artifact):
-- `skill/LESSON-FORMAT.md` — mandatory template for every lesson HTML file.
-- `skill/design-system/SPEC.md` — component catalog. Use class names from here; never write ad-hoc CSS.
+- `LESSON-FORMAT.md` — the authoring contract: what you write, what the engine renders.
+- `COMPONENTS.md` — the component vocabulary (generated; naming anything outside it fails the build).
+- `assets/learno.css` — the design system. Components own their own styles; a lesson never writes CSS.
 
 ---
 
@@ -150,27 +151,48 @@ Both sources appear in the dashboard with their provenance. Never reduce mastery
 
 ## Lessons
 
-A lesson is the primary teaching artifact. It is one self-contained HTML file in `./lessons/`, named `NNNN-dash-case-name.html`.
+A lesson is the primary teaching artifact. You author **two files** in `./lessons/`,
+named `NNNN-dash-case-name.json` and `.yml`; the engine renders the `.html`.
 
-**Before writing any lesson HTML:**
-1. Read `skill/LESSON-FORMAT.md` — follow the mandatory structure exactly.
-2. Read `skill/design-system/SPEC.md` — use only documented component classes.
-3. Identify the 1–3 canonical concept IDs from `reference/glossary.html` that this lesson covers. Every `data-concept-id` attribute in the lesson must use these IDs exactly.
+**You do not write HTML, CSS or JavaScript.** The markup, design system, progress
+bar, offline banner, unlock logic and dictation button all come from the engine.
+What you write is either a decision about structure or something a human reads.
+
+**Before authoring:**
+1. Read `LESSON-FORMAT.md` — the contract, and short enough to read in full.
+2. Read `COMPONENTS.md` — the vocabulary. It is generated, so it is never stale.
+   Naming a component that is not in it fails the build.
+3. Pick the canonical concept ids from `reference/glossary.html`. Every id used by
+   a `recall` or `teachback` must also be declared in the envelope's `concepts` —
+   the build enforces this, because the server drops undeclared ids when scoring.
 
 **Every lesson must have, in this order:**
-1. Header with offline banner (hidden by default)
-2. Segmented progress bar
-3. **Analogy** — real-world, personalised to user's context from NOTES.md, before any technical term
-4. Content sections (2–5) — each with: explanation, inline SVG diagram, and a practice interaction. **Vary the interaction type across sections** (see `LESSON-FORMAT.md` § 4c): Type A = written recall (AI-validated textarea, with a 🎤 voice-dictation button and offline multiple-choice fallback); Type B = first-class multiple-choice quiz (always on, no server). Rule: at least one Type A per lesson; quizzes add variety but never replace effortful recall.
-5. **Teach-back** — user explains the full lesson topic out loud or in writing (always Type A, with 🎤); this score drives SM-2
-6. **Immediate review** — inline flash cards (3–5 cards), shown after teach-back
-7. Footer with primary source citation
-8. Server detection script + `LESSON_ID` and `UNLOCK_SEQUENCE` constants
+1. `analogy` — real-world, personalised from `NOTES.md`, **before any technical term**
+2. Two to five `phase` blocks, each with prose, at least one `diagram`, and one
+   practice block. **Vary the practice**: `recall` is free text scored by the
+   model, `quiz` is multiple choice corrected in the page. At least one `recall`
+   per lesson — quizzes add variety but never replace effortful recall, because
+   recognising an answer is easier than producing one.
+3. `teachback` — the reader explains the whole topic back. **This score drives SM-2.**
+4. `flashcards` — three to five
+5. `source` — the primary source the lesson stands on
+
+**Build it before showing it:**
+```sh
+make lesson SRC=lessons/NNNN-name    # must report no errors AND no warnings
+```
+The build refuses to write a page that has any error, because a lesson missing a
+block still looks finished. A warning usually means a typo'd reference that would
+have rendered an empty block.
+
+If a lesson genuinely needs something the vocabulary lacks, write the component
+into `components/local/` rather than working around it — it joins the registry
+and the gallery automatically.
 
 **Lesson scope:** one tightly-scoped concept per lesson. If the topic is too large, split it. Working memory is small — give the user one win per session.
 
-**Open the lesson** after creating it **over the server, not `file://`**:
-`open http://localhost:9990/lessons/NNNN-name.html` (start the server first if needed).
+**Open the lesson** after building it **over the server, not `file://`**:
+`make local`, then `open http://localhost:9990/lessons/NNNN-name.html`.
 The server serves the workspace statically, so lessons load from a secure `localhost`
 context — required for the 🎤 voice dictation (Web Speech API) and for the mic permission
 to be remembered. Opening via `file://` makes the mic prompt repeat and fail to transcribe.
@@ -347,7 +369,7 @@ The user almost never knows the canonical texts of a new field — finding them 
 
 **3. Propose, then confirm.** Present the ranked candidate list and let the user approve before it becomes canon in `RESOURCES.md`. The user owns what counts as a trusted source.
 
-**4. Write it into `RESOURCES.md`** using the tiered format (see `skill/original/RESOURCES-FORMAT.md`): Tier 1 Canonical (grounds lessons) → Tier 2 Orientation → Tier 3 Wisdom/Community.
+**4. Write it into `RESOURCES.md`** using the tiered format (see `original/RESOURCES-FORMAT.md`): Tier 1 Canonical (grounds lessons) → Tier 2 Orientation → Tier 3 Wisdom/Community.
 
 **Grounding rule:** every lesson must be anchored in a Tier 1 source, cited in the footer. Community (Tier 3) is for real-world feeling and trade-off sanity-checks — never the basis of an explanation.
 
