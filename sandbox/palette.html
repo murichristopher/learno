@@ -18,8 +18,8 @@
                       color: var(--lx-text-subtle); flex: 0 0 100%; }
   @media (min-width: 40rem) { .pal-row > strong { flex: 0 0 5rem; } }
   .pal-row.is-na { opacity: .4; }
-  .pal-row.is-na::after { content: "só no tema claro"; font-size: .65rem; font-style: italic;
-                          color: var(--lx-text-subtle); }
+  .pal-row.is-na::after { content: "no escuro o fundo vem do acento"; font-size: .65rem;
+                          font-style: italic; color: var(--lx-text-subtle); }
   .pal-opt { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .7rem;
              border-radius: 99px; border: 1px solid var(--lx-border); background: transparent;
              color: var(--lx-text-2); font-size: .8rem; cursor: pointer; }
@@ -217,21 +217,28 @@
   // of a blue drifts towards cyan, which is the one direction that collides with
   // --lx-good. Each `strong` and `soft` was chosen to stay in the blue lane.
   var ACCENTS = [
+    // darkFrom/darkTo are the deep tones the dark background is built from. They
+    // belong to the accent, not to the background proposals: an indigo accent on
+    // the purple dark shell reads as two products stitched together.
     { id:'purple', name:'Roxo (atual)', accent:'#9333ea', strong:'#7e22ce',
       soft:'rgb(243 232 255 / .6)', ring:'rgb(168 85 247 / .3)',
       softDark:'rgb(168 85 247 / .1)',
+      darkFrom:'rgb(59 7 100 / .95)', darkTo:'rgb(30 27 75 / .95)',
       note:'A referência. Tudo abaixo é comparado com ela.' },
     { id:'indigo', name:'Índigo profundo', accent:'#4338ca', strong:'#3730a3',
       soft:'rgb(224 231 255 / .7)', ring:'rgb(99 102 241 / .3)',
       softDark:'rgb(99 102 241 / .12)',
+      darkFrom:'rgb(30 27 75 / .95)', darkTo:'rgb(23 37 84 / .95)',
       note:'A transição mais curta a partir do roxo — ainda puxa para o violeta, e é o de maior contraste.' },
     { id:'cobalt', name:'Cobalto', accent:'#2563eb', strong:'#1d4ed8',
       soft:'rgb(219 234 254 / .7)', ring:'rgb(59 130 246 / .3)',
       softDark:'rgb(59 130 246 / .12)',
+      darkFrom:'rgb(10 45 110 / .95)', darkTo:'rgb(12 58 120 / .95)',
       note:'O azul canônico. Lê como "azul" sem qualificação, e é o mais neutro dos três.' },
     { id:'azure', name:'Azul claro', accent:'#0284c7', strong:'#0369a1',
       soft:'rgb(224 242 254 / .7)', ring:'rgb(14 165 233 / .3)',
       softDark:'rgb(14 165 233 / .12)',
+      darkFrom:'rgb(8 47 73 / .95)', darkTo:'rgb(12 74 110 / .95)',
       note:'Incluído porque é a direção que costuma ser pedida — e porque reprova nas duas métricas. Vale ver falhando.' }
   ];
 
@@ -289,7 +296,9 @@
     // are light-mode only; in dark the properties are cleared so the stylesheet
     // wins back.
     if (isDark) {
-      ['--lx-shell-from','--lx-shell-via','--lx-shell-to'].forEach(function(k){ r.removeProperty(k); });
+      r.setProperty('--lx-shell-from', a.darkFrom);
+      r.setProperty('--lx-shell-to',   a.darkTo);
+      r.removeProperty('--lx-shell-via');
     } else if (b.id === 'accent-wash') {
       var c = rgb(a.accent).join(' ');
       r.setProperty('--lx-shell-from', 'rgb(' + c + ' / .10)');
@@ -304,7 +313,7 @@
     document.getElementById('bg-row').classList.toggle('is-na', isDark);
 
     document.getElementById('current-label').textContent =
-      a.name + (isDark ? ' · fundo escuro' : ' · ' + b.name);
+      a.name + (isDark ? ' · fundo escuro derivado do acento' : ' · ' + b.name);
 
     // The soft tint is translucent, so measure against what it sits on: a white card.
     var ratio = contrast(a.accent, '#ffffff');
