@@ -11,7 +11,10 @@
 //
 // Element shapes exist because a bare `array` accepts [{label,isCorrect}] just as
 // happily as [{text,correct}], and a wrong guess builds cleanly into a quiz where
-// no option is correct. `svg` additionally rejects hardcoded colour.
+// no option is correct. `svg` additionally rejects hardcoded colour and
+// bounds-checks the geometry — see build/geometry.js.
+
+const { checkGeometry } = require('./geometry');
 
 const COLOUR_IN_SVG = /#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(|\sfill="(?!none")|\sstroke="/;
 
@@ -72,39 +75,45 @@ function describe(v) {
   return typeof v;
 }
 
-// Returns [] when the value fits, or a list of messages describing where it
-// does not. `path` is threaded through so a bad element names its index.
+const error = message => ({ level: 'error', message });
+const warn  = message => ({ level: 'warn',  message });
+
+// Returns [] when the value fits, or a list of {level, message} describing where
+// it does not. `path` is threaded through so a bad element names its index.
 function checkValue(value, type, path) {
   if (value === undefined || value === null) {
-    return type.optional ? [] : [`${path} is required`];
+    return type.optional ? [] : [error(`${path} is required`)];
   }
 
   if (type.kind === 'scalar') {
-    if (!SCALARS[type.name](value)) return [`${path} should be ${type.name}, got ${describe(value)}`];
-    if (type.name === 'svg' && COLOUR_IN_SVG.test(value)) {
+    if (!SCALARS[type.name](value)) return [error(`${path} should be ${type.name}, got ${describe(value)}`)];
+    if (type.name !== 'svg') return [];
+
+    if (COLOUR_IN_SVG.test(value)) {
       const bad = value.match(COLOUR_IN_SVG)[0].trim();
-      return [`${path} carries its own colour (${bad}). Diagrams use the design system classes — ` +
-              `.lx-node, .lx-edge, .lx-label — so they follow the theme. See assets/learno.css.`];
+      return [error(`${path} carries its own colour (${bad}). Diagrams use the design system classes — ` +
+                    `.lx-node, .lx-edge, .lx-label — so they follow the theme. See assets/learno.css.`)];
     }
-    return [];
+    return checkGeometry(value).map(f => ({ level: f.level, message: `${path}: ${f.message}` }));
   }
 
   if (type.kind === 'array') {
-    if (!Array.isArray(value)) return [`${path} should be array, got ${describe(value)}`];
+    if (!Array.isArray(value)) return [error(`${path} should be array, got ${describe(value)}`)];
     if (!type.of) return [];
     return value.flatMap((el, i) => checkValue(el, type.of, `${path}[${i}]`));
   }
 
   // object
-  if (describe(value) !== 'object') return [`${path} should be object, got ${describe(value)}`];
+  if (describe(value) !== 'object') return [error(`${path} should be object, got ${describe(value)}`)];
   if (!type.fields) return [];
 
   const found = [];
   for (const [name, fieldType] of Object.entries(type.fields)) {
     found.push(...checkValue(value[name], fieldType, `${path}.${name}`));
   }
+  // An extra field is a warning: it is usually a typo, but it renders fine.
   for (const name of Object.keys(value)) {
-    if (!(name in type.fields)) found.push(`${path}.${name} is not part of this shape and will be ignored`);
+    if (!(name in type.fields)) found.push(warn(`${path}.${name} is not part of this shape and will be ignored`));
   }
   return found;
 }
@@ -120,19 +129,15 @@ function validateProps(component, props) {
     let type;
     try { type = parseType(raw); }
     catch (err) {
-      found.push({ level: 'error', message: `${component.meta.name}: ${err.message} (in meta.props.${name})` });
+      found.push(error(`${component.meta.name}: ${err.message} (in meta.props.${name})`));
       continue;
     }
-    for (const message of checkValue(props[name], type, `prop "${name}"`)) {
-      // An extra field is a warning: it is usually a typo, but it renders fine.
-      const level = /is not part of this shape/.test(message) ? 'warn' : 'error';
-      found.push({ level, message });
-    }
+    found.push(...checkValue(props[name], type, `prop "${name}"`));
   }
 
   for (const name of Object.keys(props)) {
     if (!(name in spec)) {
-      found.push({ level: 'warn', message: `prop "${name}" is not declared by the "${component.meta.name}" component and will be ignored` });
+      found.push(warn(`prop "${name}" is not declared by the "${component.meta.name}" component and will be ignored`));
     }
   }
 

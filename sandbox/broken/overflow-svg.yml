@@ -1,0 +1,11 @@
+t:
+  title: "SVG com caixa fora do viewBox"
+d:
+  bad: |
+    <svg class="lx-svg" viewBox="0 0 400 90" role="img" aria-label="Cliente para servidor">
+      <rect class="lx-node lx-node--accent" x="8" y="20" width="120" height="48"/>
+      <text class="lx-label" x="68" y="49" text-anchor="middle">Cliente</text>
+      <path class="lx-edge" d="M130 44 H 396"/>
+      <rect class="lx-node" x="398" y="20" width="120" height="48"/>
+      <text class="lx-label" x="458" y="49" text-anchor="middle">Servidor</text>
+    </svg>
