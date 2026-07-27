@@ -157,25 +157,32 @@ img, svg { max-width: 100%; }
 button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ── Layer 1: shell ──────────────────────────────────────────────────────────
-   The gradient is painted by a fixed pseudo-element, and `html` carries a solid
-   colour underneath it.
+   The gradient lives on `html`, and nowhere else.
 
-   Both halves are load-bearing. `background-attachment: fixed` on the body used
-   to do this, and it fails on iOS Safari: the property has been unreliable there
-   for years, and the URL bar resizing changes the viewport underneath a
-   background pinned to it. Worse, a background on <body> only covers the page
-   because it propagates to the canvas, and `fixed` is exactly what disturbs that
-   propagation — when it broke, what showed through was the canvas default, which
-   under `color-scheme: light dark` in dark mode is BLACK. That is the bug: the
-   gradient stopped and the rest of the page went black on scroll.
+   This is the third arrangement and the first that cannot fail, so the reasoning
+   is worth keeping. It was on <body> with `background-attachment: fixed`, which
+   is unreliable on iOS and — worse — broke the propagation that makes a body
+   background cover the canvas at all, so the page ended in the canvas default:
+   black. Moving the gradient to a `position: fixed` pseudo-element fixed the
+   black but not the ending: on iOS the gradient still stopped partway down,
+   most likely because a fixed element at `z-index: -1` is painted behind the
+   canvas background there.
 
-   A fixed pseudo-element gives the same parallax without relying on the broken
-   property, and the colour on `html` means there is no uncovered canvas left to
-   fall through to — including the rubber-band area past the end of an iOS
-   scroll, which no element covers at all. */
+   The root element's background is the one thing that is guaranteed to cover the
+   whole canvas, in every browser, including the rubber-band area past the end of
+   an iOS scroll that no element covers. So it goes there, with no stacking, no
+   fixed positioning and no pseudo-element to get wrong.
+
+   The cost is that the gradient now sizes to the document rather than the
+   viewport, so it stretches on a long page instead of holding still while you
+   scroll. That parallax is worth less than a background that is always there. */
 
 html {
+  min-height: 100%;
   background-color: var(--lx-shell-via);
+  background-image: linear-gradient(to bottom right,
+    var(--lx-shell-from), var(--lx-shell-via), var(--lx-shell-to));
+  background-repeat: no-repeat;
 }
 
 .lx-shell {
@@ -186,16 +193,6 @@ html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-}
-
-.lx-shell::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image: linear-gradient(to bottom right,
-    var(--lx-shell-from), var(--lx-shell-via), var(--lx-shell-to));
 }
 
 /* Layer 2 ─────────────────────────────────────────────────── */
@@ -396,8 +393,7 @@ html {
   }
   .lx-card, .lx-modal { background: Canvas; }
   .lx-overlay, .lx-card::before { display: none; }
-  .lx-shell::before { display: none; }
-  html { background-color: Canvas; }
+  html { background-image: none; background-color: Canvas; }
 }
 
 :root[data-transparency="reduce"] .lx-bar,
@@ -412,8 +408,7 @@ html {
 :root[data-transparency="reduce"] .lx-modal { background: Canvas; }
 :root[data-transparency="reduce"] .lx-overlay,
 :root[data-transparency="reduce"] .lx-card::before { display: none; }
-:root[data-transparency="reduce"] .lx-shell::before { display: none; }
-:root[data-transparency="reduce"] { background-color: Canvas; }
+:root[data-transparency="reduce"] { background-image: none; background-color: Canvas; }
 
 /* ── Motion ──────────────────────────────────────────────────────────────── */
 
