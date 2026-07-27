@@ -156,17 +156,46 @@ ul[class], ol[class] { list-style: none; }
 img, svg { max-width: 100%; }
 button, input, select, textarea { font: inherit; color: inherit; }
 
-/* ── Layer 1: shell ──────────────────────────────────────────────── */
+/* ── Layer 1: shell ──────────────────────────────────────────────────────────
+   The gradient is painted by a fixed pseudo-element, and `html` carries a solid
+   colour underneath it.
+
+   Both halves are load-bearing. `background-attachment: fixed` on the body used
+   to do this, and it fails on iOS Safari: the property has been unreliable there
+   for years, and the URL bar resizing changes the viewport underneath a
+   background pinned to it. Worse, a background on <body> only covers the page
+   because it propagates to the canvas, and `fixed` is exactly what disturbs that
+   propagation — when it broke, what showed through was the canvas default, which
+   under `color-scheme: light dark` in dark mode is BLACK. That is the bug: the
+   gradient stopped and the rest of the page went black on scroll.
+
+   A fixed pseudo-element gives the same parallax without relying on the broken
+   property, and the colour on `html` means there is no uncovered canvas left to
+   fall through to — including the rubber-band area past the end of an iOS
+   scroll, which no element covers at all. */
+
+html {
+  background-color: var(--lx-shell-via);
+}
 
 .lx-shell {
-  min-height: 100vh;
-  background-image: linear-gradient(to bottom right,
-    var(--lx-shell-from), var(--lx-shell-via), var(--lx-shell-to));
-  background-attachment: fixed;
+  min-height: 100vh;   /* fallback */
+  min-height: 100dvh;  /* iOS: 100vh is the LARGE viewport, so the painted box
+                          can be shorter than what actually scrolls */
   color: var(--lx-text-2);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+.lx-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(to bottom right,
+    var(--lx-shell-from), var(--lx-shell-via), var(--lx-shell-to));
 }
 
 /* Layer 2 ─────────────────────────────────────────────────── */
@@ -367,7 +396,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   }
   .lx-card, .lx-modal { background: Canvas; }
   .lx-overlay, .lx-card::before { display: none; }
-  .lx-shell { background-image: none; background-color: Canvas; }
+  .lx-shell::before { display: none; }
+  html { background-color: Canvas; }
 }
 
 :root[data-transparency="reduce"] .lx-bar,
@@ -382,7 +412,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 :root[data-transparency="reduce"] .lx-modal { background: Canvas; }
 :root[data-transparency="reduce"] .lx-overlay,
 :root[data-transparency="reduce"] .lx-card::before { display: none; }
-:root[data-transparency="reduce"] .lx-shell { background-image: none; background-color: Canvas; }
+:root[data-transparency="reduce"] .lx-shell::before { display: none; }
+:root[data-transparency="reduce"] { background-color: Canvas; }
 
 /* ── Motion ──────────────────────────────────────────────────────────────── */
 
