@@ -4,7 +4,8 @@
   "title": "@meta.title",
   "subtitle": "@meta.subtitle",
   "concepts": [
-    "sandbox_widget_sharding"
+    "sandbox_widget_sharding",
+    "sandbox_widget_replication"
   ],
   "blocks": [
     {
@@ -117,6 +118,67 @@
         "title": "@source.title",
         "url": "@source.url",
         "note": "@source.note"
+      }
+    },
+    {
+      "component": "phase",
+      "props": {
+        "id": "1",
+        "title": "@p1.title"
+      },
+      "children": [
+        {
+          "component": "prose",
+          "props": {
+            "text": "@p1.body"
+          }
+        },
+        {
+          "component": "recall",
+          "props": {
+            "conceptId": "sandbox_widget_sharding",
+            "phase": "1",
+            "question": "@p1.question",
+            "summary": "@p1.summary",
+            "fallback": "@p1.fallback"
+          }
+        }
+      ]
+    },
+    {
+      "component": "phase",
+      "props": {
+        "id": "2",
+        "title": "@p2.title"
+      },
+      "children": [
+        {
+          "component": "prose",
+          "props": {
+            "text": "@p2.body"
+          }
+        },
+        {
+          "component": "quiz",
+          "props": {
+            "phase": "2",
+            "question": "@p2.question",
+            "options": "@p2.options",
+            "ok": "@p2.ok",
+            "bad": "@p2.bad"
+          }
+        }
+      ]
+    },
+    {
+      "component": "teachback",
+      "props": {
+        "question": "@teachback.question",
+        "conceptIds": [
+          "sandbox_widget_sharding",
+          "sandbox_widget_replication"
+        ],
+        "hint": "@teachback.hint"
       }
     }
   ]

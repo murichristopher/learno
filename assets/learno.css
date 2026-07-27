@@ -424,3 +424,15 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .lx-wrap { padding: 1.75rem 1rem 3rem; }
   .lx-card { padding: 1.15rem 1rem; }
 }
+
+/* ── Offline banner ──────────────────────────────────────────────────────── */
+
+.lx-offline-banner {
+  border-radius: var(--lx-radius-sm);
+  border: 1px solid rgb(217 119 6 / .35);
+  background: rgb(217 119 6 / .1);
+  color: var(--lx-text-2);
+  font-size: .875rem;
+  padding: .75rem 1rem;
+  margin-bottom: 1.5rem;
+}
