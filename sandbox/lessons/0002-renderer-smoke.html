@@ -67,10 +67,73 @@ funcionam.</p>
 </div>
     <figcaption class="lx-caption">Fluxo de uma requisição até o nó certo</figcaption>
   </figure>
+  <div class="lx-card lx-callout lx-callout--note">
+    <span class="lx-callout-mark" aria-hidden="true">›</span>
+    <div>
+      <p class="lx-callout-title">O JSON não tem uma frase sequer</p>
+      <p class="lx-callout-text">Tudo que você lê nesta página está no .yml. O .json só diz qual componente usar, em que ordem, e qual chave do YAML cada prop referencia.
+</p>
+    </div>
+  </div>
   <div class="lx-prose">
     <p>O diagrama acima e o de baixo <strong>não têm uma cor sequer</strong> no YAML. Se você
 escrever <code class="lx-code">fill=&quot;#9333ea&quot;</code> num deles, o build recusa a lição inteira e diz
 qual diagrama tem o problema.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-compare">
+      <div class="lx-card lx-compare-col">
+        <span class="lx-compare-label">JSON — estrutura</span>
+        <p class="lx-compare-body">Quais componentes, em que ordem, com quais ids. É o que o build valida contra o vocabulário. Pequeno e chato de propósito.
+</p>
+      </div>
+      <div class="lx-card lx-compare-col">
+        <span class="lx-compare-label">YAML — conteúdo</span>
+        <p class="lx-compare-body">Prosa e SVG, endereçados por chave. É onde está tudo que uma pessoa escreveu, e o único arquivo que muda quando o texto muda.
+</p>
+      </div>
+    </div>
+    <figcaption class="lx-caption">As duas metades do formato, e o que cada uma resolve</figcaption>
+  </figure>
+  <div class="lx-card lx-callout lx-callout--warn">
+    <span class="lx-callout-mark" aria-hidden="true">!</span>
+    <div>
+      <p class="lx-callout-title">Componente não decide o próprio espaçamento</p>
+      <p class="lx-callout-text">A distância entre um bloco e o vizinho é do container. Um componente que define a própria margem ganha por especificidade e passa por cima do breakpoint do celular — foi assim que o card do diagrama ficou apertado.
+</p>
+    </div>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-table-wrap lx-scroll">
+      <table class="lx-table">
+        <thead><tr><th scope="col">Camada</th><th scope="col">Antes</th><th scope="col">Agora</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Camada">CSS + JS</td><td data-label="Antes">13.1K</td><td data-label="Agora">linkado</td></tr>
+          <tr><td data-label="Camada">Tags estruturais</td><td data-label="Antes">12.3K</td><td data-label="Agora">gerado</td></tr>
+          <tr><td data-label="Camada">SVG</td><td data-label="Antes">6.6K</td><td data-label="Agora">6.6K</td></tr>
+          <tr><td data-label="Camada">Prosa</td><td data-label="Antes">6.2K</td><td data-label="Agora">6.2K</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figcaption class="lx-caption">O que cada camada custa por lição</figcaption>
+  </figure>
+  <figure class="lx-figure">
+    <div class="lx-card lx-codeblock">
+      <span class="lx-codeblock-lang">json</span>
+      <pre><code>{ &quot;component&quot;: &quot;diagram&quot;,
+  &quot;props&quot;: { &quot;svg&quot;: &quot;@diagrams.flow&quot;,
+             &quot;caption&quot;: &quot;@intro.caption&quot; } }
+</code></pre>
+    </div>
+    <figcaption class="lx-caption">Um bloco do .json — nenhum texto, só estrutura</figcaption>
+  </figure>
+  <div class="lx-card lx-callout lx-callout--danger">
+    <span class="lx-callout-mark" aria-hidden="true">×</span>
+    <div>
+      <p class="lx-callout-title">Build recusa a lição inteira</p>
+      <p class="lx-callout-text">Componente desconhecido, referência quebrada, prop faltando ou SVG com cor própria não geram página parcial. Uma lição meio renderizada parece pronta, e é por isso que a falha é barulhenta.
+</p>
+    </div>
   </div>
   <figure class="lx-figure">
     <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 600 130" role="img"
@@ -96,6 +159,28 @@ qual diagrama tem o problema.</p>
 </div>
     <figcaption class="lx-caption">Variantes de nó e de aresta na mesma figura</figcaption>
   </figure>
+  <section class="lx-flashcards">
+    <p class="lx-flash-title">Revisão rápida</p>
+    <div class="lx-flash-grid">
+      <details class="lx-card lx-flash">
+        <summary>O que o @ faz num valor do JSON?</summary>
+        <p class="lx-flash-back">Marca um caminho dentro do .yml. É resolvido antes do componente ver a prop, então componente só lida com valor real.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Por que o build recusa SVG com cor?</summary>
+        <p class="lx-flash-back">Porque cor vem das classes do design system. Um diagrama que traz a própria cor não acompanha o tema e diverge do resto.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Onde mora o CSS de um componente?</summary>
+        <p class="lx-flash-back">No próprio componente, no campo css. O build concatena tudo em assets/components.css, então um componente local não edita arquivo compartilhado.</p>
+      </details>
+    </div>
+  </section>
+  <div class="lx-card lx-source">
+    <p class="lx-source-label">Fonte primária</p>
+    <p class="lx-source-title"><a class="lx-link" href="https://github.com/murichristopher/learno/blob/master/LESSON-PIPELINE-SPEC.md" rel="noopener noreferrer" target="_blank">LESSON-PIPELINE-SPEC.md</a></p>
+    <p class="lx-source-note">O spec que esta lição existe para provar.</p>
+  </div>
   </div>
 
   <footer class="lx-lesson-foot">
