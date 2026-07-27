@@ -347,7 +347,7 @@ lesson file moved out of the repo renders unstyled — accepted.
 Expected authored size per lesson: **~8.2K, down from 38.2K.**
 Expected built lesson: **~5K**, with the shared assets linked once.
 
-## Locked sections are blurred, not hidden
+## Locked sections are blurred, not hidden — DONE (#13)
 
 A locked `phase` currently hides its body and prints *"Responda a seção anterior
 para abrir esta."* That is the wrong shape. A hidden section is indistinguishable
@@ -669,7 +669,6 @@ Plus the dashboard on the design system — #10.
 
 ## Open
 
-- **Locked sections blurred, not hidden** (above).
 - **The dashboard as a starting point** (above) — needs misconception
   aggregation and a way for the model to publish "what's next".
 - **Reviews through the pipeline.** The declared scope was lessons *and*
