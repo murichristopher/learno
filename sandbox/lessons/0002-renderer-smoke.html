@@ -238,6 +238,8 @@ qual diagrama tem o problema.</p>
 </div>
     <figcaption class="lx-caption">Variantes de nó e de aresta na mesma figura</figcaption>
   </figure>
+<div class="lx-gate lx-gate--locked" data-gate="flashcards">
+      <div class="lx-gate-body" aria-hidden="true">
   <section class="lx-flashcards">
     <p class="lx-flash-title"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
   <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
@@ -257,6 +259,13 @@ qual diagrama tem o problema.</p>
       </details>
     </div>
   </section>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Encerre a lição para abrir a revisão</span>
+      </div>
+    </div>
   <div class="lx-card lx-source">
     <p class="lx-source-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" />
   <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg> Fonte primária</p>
@@ -268,8 +277,8 @@ qual diagrama tem o problema.</p>
       <span class="lx-phase-badge"><span>1</span></span>
       <h2 class="lx-phase-title">Uma seção que destrava a próxima</h2>
     </div>
-    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
-    <div class="lx-phase-body">
+    <div class="lx-gate" data-gate="phase-1">
+      <div class="lx-gate-body">
   <div class="lx-prose">
     <p>A seção 2 está fechada. Responda o bloco abaixo com nota 50 ou mais e ela abre. Como o validador do sandbox é determinístico, comece a resposta com !0 para ver a seção continuar trancada, ou com !p para destravar.</p>
   </div>
@@ -320,6 +329,12 @@ qual diagrama tem o problema.</p>
       <p class="lx-inline-fb"></p>
     </div>
   </div>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Responda a seção anterior para abrir</span>
+      </div>
     </div>
   </section>
   <section class="lx-phase lx-phase--locked" data-phase="2" id="phase-2">
@@ -327,8 +342,8 @@ qual diagrama tem o problema.</p>
       <span class="lx-phase-badge"><span>2</span></span>
       <h2 class="lx-phase-title">Múltipla escolha, corrigida na própria página</h2>
     </div>
-    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
-    <div class="lx-phase-body">
+    <div class="lx-gate lx-gate--locked" data-gate="phase-2">
+      <div class="lx-gate-body" aria-hidden="true">
   <div class="lx-prose">
     <p>Este bloco não precisa de servidor nenhum. É a mesma peça que o recall usa como fallback quando o servidor cai.</p>
   </div>
@@ -347,8 +362,16 @@ qual diagrama tem o problema.</p>
       </label>
     <p class="lx-inline-fb"></p>
   </div>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Responda a seção anterior para abrir</span>
+      </div>
     </div>
   </section>
+<div class="lx-gate lx-gate--locked" data-gate="teachback">
+      <div class="lx-gate-body" aria-hidden="true">
   <div class="lx-card lx-ask lx-teachback" data-concepts="sandbox_widget_sharding,sandbox_widget_replication">
     <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
   <path d="M22 10v6" />
@@ -384,7 +407,13 @@ qual diagrama tem o problema.</p>
       </div>
     </div>
   </div>
-
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Termine as seções acima para abrir</span>
+      </div>
+    </div>
   <div class="lx-done">
     <div class="lx-card lx-next-review">
       <span class="lx-next-review-label">Próxima revisão</span>

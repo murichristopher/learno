@@ -95,8 +95,8 @@ que acontece quando o job explode no meio do caminho.</p>
       <span class="lx-phase-badge"><span>1</span></span>
       <h2 class="lx-phase-title">Por que a tarefa longa não cabe na requisição</h2>
     </div>
-    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
-    <div class="lx-phase-body">
+    <div class="lx-gate" data-gate="phase-1">
+      <div class="lx-gate-body">
   <div class="lx-prose">
     <p>Cenário concreto. Um endpoint <code class="lx-code">POST /relatorios</code> roda uma consulta pesada no
 Postgres, monta um CSV de 400 mil linhas e devolve o arquivo. Leva 90
@@ -217,6 +217,12 @@ thread, e o primeiro já não tem para quem responder.</p>
       <p class="lx-inline-fb"></p>
     </div>
   </div>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Responda a seção anterior para abrir</span>
+      </div>
     </div>
   </section>
   <section class="lx-phase lx-phase--locked" data-phase="2" id="phase-2">
@@ -224,8 +230,8 @@ thread, e o primeiro já não tem para quem responder.</p>
       <span class="lx-phase-badge"><span>2</span></span>
       <h2 class="lx-phase-title">Submit, job id, status: o padrão do worker assíncrono</h2>
     </div>
-    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
-    <div class="lx-phase-body">
+    <div class="lx-gate lx-gate--locked" data-gate="phase-2">
+      <div class="lx-gate-body" aria-hidden="true">
   <div class="lx-prose">
     <p>Você inverte o contrato. O <code class="lx-code">POST /relatorios</code> não devolve mais o relatório:
 devolve <strong>um recibo</strong>. Em HTTP isso é <code class="lx-code">202 Accepted</code> com o id do job e a URL
@@ -339,6 +345,12 @@ inteira de inconsistência que deixa de existir.</p>
       </label>
     <p class="lx-inline-fb"></p>
   </div>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Responda a seção anterior para abrir</span>
+      </div>
     </div>
   </section>
   <section class="lx-phase lx-phase--locked" data-phase="3" id="phase-3">
@@ -346,8 +358,8 @@ inteira de inconsistência que deixa de existir.</p>
       <span class="lx-phase-badge"><span>3</span></span>
       <h2 class="lx-phase-title">Quando o job falha: backoff, dead-letter e idempotência</h2>
     </div>
-    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
-    <div class="lx-phase-body">
+    <div class="lx-gate lx-gate--locked" data-gate="phase-3">
+      <div class="lx-gate-body" aria-hidden="true">
   <div class="lx-prose">
     <p>Job assíncrono falha mais que requisição, e por um motivo bobo: ele vive
 mais tempo. Um job de 4 minutos atravessa deploy, failover do banco, rate
@@ -560,8 +572,16 @@ gateways sérios aceitam a chave direto na API: o <code class="lx-code">Idempote
       <p class="lx-inline-fb"></p>
     </div>
   </div>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Responda a seção anterior para abrir</span>
+      </div>
     </div>
   </section>
+<div class="lx-gate lx-gate--locked" data-gate="teachback">
+      <div class="lx-gate-body" aria-hidden="true">
   <div class="lx-card lx-ask lx-teachback" data-concepts="request_cycle_limit,async_job_status,retry_backoff,dead_letter_queue,job_idempotency">
     <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
   <path d="M22 10v6" />
@@ -599,7 +619,13 @@ gateways sérios aceitam a chave direto na API: o <code class="lx-code">Idempote
       </div>
     </div>
   </div>
-
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Termine as seções acima para abrir</span>
+      </div>
+    </div>
   <div class="lx-done">
     <div class="lx-card lx-next-review">
       <span class="lx-next-review-label">Próxima revisão</span>
@@ -607,6 +633,8 @@ gateways sérios aceitam a chave direto na API: o <code class="lx-code">Idempote
       <span class="lx-next-review-note"></span>
     </div>
   </div>
+<div class="lx-gate lx-gate--locked" data-gate="flashcards">
+      <div class="lx-gate-body" aria-hidden="true">
   <section class="lx-flashcards">
     <p class="lx-flash-title"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
   <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
@@ -634,6 +662,13 @@ gateways sérios aceitam a chave direto na API: o <code class="lx-code">Idempote
       </details>
     </div>
   </section>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-gate-lock-text">Encerre a lição para abrir a revisão</span>
+      </div>
+    </div>
   <div class="lx-card lx-source">
     <p class="lx-source-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" />
   <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg> Fonte primária</p>

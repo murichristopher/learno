@@ -516,3 +516,64 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .lx-title-icon .lx-icon-svg { width: 1.1rem; height: 1.1rem; }
   .lx-topbar-home span { font-size: .9rem; }
 }
+
+/* ── Gated blocks ────────────────────────────────────────────────────────────
+   A gated block is blurred behind a lock, never hidden. Hidden content is
+   indistinguishable from content that does not exist, so the reader loses any
+   sense of how much is left and what it builds towards. Blurred, the gate is
+   exactly as strict and reads as a door instead of an absence. */
+
+.lx-gate { position: relative; }
+
+.lx-gate--locked > .lx-gate-body {
+  /* Heavy on purpose. A light blur is a puzzle, not a gate: legible-if-you-squint
+     text invites squinting, and the block stops being practice. */
+  filter: blur(9px);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Capped so a long block is a glimpse of what waits, not a wall of blur. */
+.lx-gate--locked { max-height: 20rem; overflow: hidden; border-radius: var(--lx-radius); }
+.lx-gate--locked::after {
+  content: "";
+  position: absolute; inset: auto 0 0 0; height: 6rem;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--lx-shell-via));
+}
+
+/* The lock is a SIBLING of the blurred body, never a child — a child of a
+   blurred parent is blurred too, and an unreadable lock defeats the point. */
+.lx-gate-lock { display: none; }
+.lx-gate--locked > .lx-gate-lock {
+  display: flex;
+  position: absolute; inset: 0; z-index: 2;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: .5rem; text-align: center; padding: 1rem;
+}
+.lx-gate-lock-badge {
+  display: flex; align-items: center; justify-content: center;
+  width: 2.75rem; height: 2.75rem;
+  border-radius: 50%;
+  background: var(--lx-card);
+  border: 1px solid var(--lx-card-border);
+  box-shadow: var(--lx-card-shadow);
+  color: var(--lx-accent);
+  backdrop-filter: blur(var(--lx-blur));
+  -webkit-backdrop-filter: blur(var(--lx-blur));
+}
+.lx-gate-lock-badge .lx-icon-svg { width: 1.2rem; height: 1.2rem; }
+.lx-gate-lock-text {
+  color: var(--lx-text);
+  font-size: .85rem; font-weight: 550;
+  background: var(--lx-card);
+  border: 1px solid var(--lx-card-border);
+  border-radius: 99px;
+  padding: .3rem .8rem;
+  backdrop-filter: blur(var(--lx-blur));
+  -webkit-backdrop-filter: blur(var(--lx-blur));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lx-gate-lock-badge, .lx-gate-lock-text { backdrop-filter: none; background: Canvas; }
+}

@@ -4,12 +4,16 @@
 // schedule, because explaining something end to end is the point at which gaps
 // stop being survivable. Its result is what gets POSTed to /api/progress.
 //
+// Gated behind the last phase: the question restates the whole lesson, so a
+// reader who scrolls to it first gets the shape of every answer for free.
+//
 // No offline fallback on purpose. A multiple-choice stand-in for "teach it back"
 // would measure nothing, and recording a fabricated score against the review
 // schedule is worse than recording none — offline, the reader is told to come
 // back rather than handed a fake.
 
 const { icon } = require('../../build/icons');
+const { gate } = require('../../build/gate');
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -53,7 +57,7 @@ module.exports = {
 `,
 
   render({ question, conceptIds, hint }) {
-    return `  <div class="lx-card lx-ask lx-teachback" data-concepts="${esc(conceptIds.join(','))}">
+    const card = `  <div class="lx-card lx-ask lx-teachback" data-concepts="${esc(conceptIds.join(','))}">
     <span class="lx-ask-label">${icon('graduation-cap')} Ensina de volta</span>
     <p class="lx-ask-q">${esc(question)}</p>
     ${hint ? `<p class="lx-teachback-hint">${esc(hint)}</p>` : ''}
@@ -85,14 +89,17 @@ module.exports = {
         <div class="lx-concepts"></div>
       </div>
     </div>
-  </div>
-
-  <div class="lx-done">
+  </div>`;
+    const done = `  <div class="lx-done">
     <div class="lx-card lx-next-review">
       <span class="lx-next-review-label">Próxima revisão</span>
       <span class="lx-next-review-date">—</span>
       <span class="lx-next-review-note"></span>
     </div>
   </div>`;
+    return gate(card, {
+      name: 'teachback',
+      reason: 'Termine as seções acima para abrir'
+    }) + '\n' + done;
   }
 };

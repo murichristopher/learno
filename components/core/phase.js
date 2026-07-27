@@ -8,6 +8,13 @@
 // Rendered locked by default and opened by the runtime, so the wrong failure is
 // impossible: if the script never runs, the reader gets the first section and a
 // clear reason rather than a lesson silently missing its gates.
+//
+// A locked section is blurred, not hidden. Hidden content is indistinguishable
+// from content that does not exist, so the reader loses any sense of how much
+// lesson is left and what it is building towards. Blurred behind a lock, the
+// gate is exactly as strict and reads as a door instead of an absence.
+
+const { gate } = require('../../build/gate');
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -40,17 +47,9 @@ module.exports = {
 .lx-phase--done  .lx-phase-badge span { display: none; }
 .lx-phase-title { color: var(--lx-text); font-size: 1.05rem; font-weight: 650; letter-spacing: -.01em; }
 
-.lx-phase-body { }
-.lx-phase-body > * + * { margin-top: 1.25rem; }
+.lx-gate-body > * + * { margin-top: 1.25rem; }
 
-.lx-phase--locked .lx-phase-body { display: none; }
-.lx-phase-locked-note {
-  display: none;
-  color: var(--lx-text-muted);
-  font-size: .875rem;
-  font-style: italic;
 }
-.lx-phase--locked .lx-phase-locked-note { display: block; }
 
 /* Progress bar — one segment per phase, emitted by the template. */
 .lx-progress { display: flex; gap: .35rem; margin-bottom: 2rem; }
@@ -70,10 +69,11 @@ module.exports = {
       <span class="lx-phase-badge"><span>${esc(id)}</span></span>
       <h2 class="lx-phase-title">${esc(title)}</h2>
     </div>
-    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
-    <div class="lx-phase-body">
-${ctx.children || ''}
-    </div>
+    ${gate(ctx.children || '', {
+      name: `phase-${id}`,
+      reason: 'Responda a seção anterior para abrir',
+      open: unlocked
+    })}
   </section>`;
   }
 };
