@@ -1,0 +1,107 @@
+meta:
+  title: "Revisão R1 — Consistent hashing"
+  subtitle: "Sem reler a lição. Responda primeiro; a correção vem depois."
+
+intro:
+  body: |
+    Três perguntas sobre consistent hashing. Não volte na lição 13 antes de
+    responder — o valor desta revisão está inteiro em tentar lembrar, e olhar a
+    resposta antes de tentar destrói exatamente o que ela mede.
+
+    Errar aqui é informação, não fracasso. Uma resposta fraca move a data da
+    próxima revisão para perto; uma resposta boa afasta.
+
+p1:
+  title: "O problema do módulo"
+  question: >
+    Um cache com 4 nós usa `hash(chave) % 4`. Você sobe o quinto nó e troca para
+    `% 5`. Que fração das chaves muda de destino, e por quê? Não é 1/5 —
+    explique de onde vem o número real.
+  summary: >
+    Uma boa resposta identifica que o hash da chave é estável e independente de N;
+    o que muda é o divisor, então o resto muda para quase toda chave. Deve chegar
+    em aproximadamente (N-1)/N — cerca de 80% indo de 4 para 5 nós — e não em 1/N.
+    Resposta forte também nota que a invalidação em massa chega junto com o pico
+    de carga que motivou subir o nó.
+  fallback:
+    options:
+      - { text: "1/5 — só as chaves do nó novo se movem", correct: false }
+      - { text: "Cerca de 4/5 — o divisor mudou, então o resto muda para quase toda chave", correct: true }
+      - { text: "Nenhuma, se a função de hash for a mesma", correct: false }
+    ok: "Isso. (N-1)/N, não 1/N — e o pior é que isso chega junto com o pico que motivou o nó novo."
+    bad: >
+      A intuição de 1/N é o erro clássico. O hash não mudou; o divisor mudou, e
+      com ele o resto de quase toda chave. A conta real é (N-1)/N.
+
+p2:
+  title: "A regra do anel"
+  caption: "Três nós no anel — para onde vai cada chave?"
+  question: "No anel abaixo, a chave k cai entre o nó C e o nó A. Quem armazena k?"
+  options:
+    - { text: "O nó C, porque a chave passou por ele primeiro", correct: false }
+    - { text: "O nó A, o primeiro encontrado andando no sentido horário", correct: true }
+    - { text: "O nó mais próximo dos dois, medindo a distância no círculo", correct: false }
+  ok: "Isso. É sempre o próximo no sentido horário — nunca o mais próximo, o que torna a regra barata de calcular."
+  bad: >
+    Não é proximidade, é direção. A chave anda no sentido horário e para no
+    primeiro nó que encontra — por isso adicionar um nó só afeta um arco.
+
+p3:
+  title: "Por que o anel sozinho não basta"
+  question: >
+    Um anel tem 3 nós físicos, sem nós virtuais. O nó B cai. Descreva o que
+    acontece com a carga — e explique por que isso é mais perigoso do que a
+    distribuição desigual que os nós virtuais também resolvem.
+  summary: >
+    Uma boa resposta identifica que todo o arco de B vai para um único vizinho, o
+    próximo no sentido horário, que passa a atender a própria fatia mais a de B de
+    uma vez. Deve explicar por que isso é pior que distribuição desigual: se esse
+    vizinho cair sob a carga dobrada, a fatia acumulada passa para o seguinte, e a
+    falha se propaga em cascata. Distribuição desigual é desperdício constante;
+    herança concentrada derruba o sistema.
+  fallback:
+    options:
+      - { text: "A carga de B se divide igualmente entre A e C", correct: false }
+      - { text: "Todo o arco de B vai para um vizinho só, que pode cair em cascata sob a carga dobrada", correct: true }
+      - { text: "As chaves de B são perdidas até ele voltar", correct: false }
+    ok: "Isso. A herança concentrada é o problema grave — distribuição desigual é só desperdício."
+    bad: >
+      Não se divide: o anel manda tudo para o próximo no sentido horário. Um
+      vizinho recebe a fatia inteira de uma vez, e se ele cair a próxima herda as
+      duas.
+
+teachback:
+  question: >
+    Reconstrua o argumento inteiro, do problema à solução: por que `% N` quebra,
+    o que o anel muda, e por que o anel ainda precisa de nós virtuais.
+  hint: >
+    Se você travou em alguma das três perguntas acima, comece por ela — é onde a
+    memória está mais fraca e onde este teach-back vale mais.
+
+source:
+  title: "Dynamo: Amazon's Highly Available Key-value Store (SOSP 2007)"
+  url: "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf"
+  note: "Seção 4.2 — os nós virtuais e as duas razões para eles."
+
+diagrams:
+  ring: |
+    <svg class="lx-svg" viewBox="0 0 560 300" role="img"
+         aria-label="Anel de hash com três nós e uma chave entre C e A">
+      <circle class="lx-edge lx-edge--plain" cx="280" cy="150" r="104"/>
+
+      <rect class="lx-node lx-node--accent" x="238" y="14" width="84" height="34"/>
+      <text class="lx-label" x="280" y="37" text-anchor="middle">nó A</text>
+
+      <rect class="lx-node lx-node--accent" x="344" y="238" width="84" height="34"/>
+      <text class="lx-label" x="386" y="261" text-anchor="middle">nó B</text>
+
+      <rect class="lx-node lx-node--accent" x="132" y="238" width="84" height="34"/>
+      <text class="lx-label" x="174" y="261" text-anchor="middle">nó C</text>
+
+      <circle class="lx-node lx-node--muted" cx="182" cy="88" r="9"/>
+      <text class="lx-label--muted" x="150" y="76" text-anchor="middle">chave k</text>
+
+      <text class="lx-label--muted" x="280" y="140" text-anchor="middle">o círculo anda no</text>
+      <text class="lx-label--muted" x="280" y="160" text-anchor="middle">sentido horário</text>
+      <text class="lx-label--muted" x="280" y="180" text-anchor="middle">A → B → C → A</text>
+    </svg>

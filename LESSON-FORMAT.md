@@ -176,6 +176,17 @@ lesson stops working without it.
 
 ---
 
+## Reviews
+
+A review is the same format in `review/NNNN-concept-rN.json` + `.yml`, built the
+same way. It differs only in what it contains: no `analogy` and no `flashcards`,
+mostly `recall` and `quiz`, and `prose` only where an answer needs correcting.
+
+Keep the `teachback` — it is what records the result, and a review that records
+nothing leaves the concept due on the same date forever.
+
+---
+
 ## Diagrams
 
 Hand-written inline SVG in the `.yml`, using **only** these classes:
