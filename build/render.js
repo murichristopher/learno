@@ -115,6 +115,25 @@ function validateProps(component, props, report, where) {
   }
 }
 
+// Any prop named conceptId or conceptIds is checked against the envelope's
+// vocabulary. The server enforces the same list when scoring, so a concept that
+// is not declared here is silently dropped from the result — the lesson would
+// appear to work and quietly record nothing against that concept.
+function validateConcepts(props, declared, report, where) {
+  const cited = []
+    .concat(props.conceptId ? [props.conceptId] : [])
+    .concat(Array.isArray(props.conceptIds) ? props.conceptIds : []);
+
+  for (const id of cited) {
+    if (!declared.includes(id)) {
+      report.error(where,
+        `concept "${id}" is not in the lesson's "concepts" list\n` +
+        `         declared: ${declared.length ? declared.join(', ') : '(none)'}\n` +
+        `         → add it to "concepts" in the .json, or the server will drop it when scoring`);
+    }
+  }
+}
+
 // ── rendering ─────────────────────────────────────────────────────────────
 
 function renderBlock(block, i, ctx, report, trail) {
@@ -136,6 +155,7 @@ function renderBlock(block, i, ctx, report, trail) {
 
   const props = resolve(block.props || {}, ctx.content, report, `${where}.props`, ctx.seen);
   validateProps(component, props, report, `${where} (${block.component})`);
+  validateConcepts(props, ctx.lesson.concepts || [], report, `${where} (${block.component})`);
 
   const children = Array.isArray(block.children)
     ? block.children.map((c, j) => renderBlock(c, j, ctx, report, `${where}.children`)).join('\n')
@@ -200,15 +220,22 @@ function build(srcBase) {
     content, report, 'envelope', ctx.seen
   );
 
+  // A key counts as used if it was referenced itself, if one of its descendants
+  // was (it is the branch leading there), or if one of its ancestors was — a
+  // reference to an object pulls in everything under it, so its children are
+  // not orphans.
   for (const key of leafKeys(content)) {
-    const referenced = [...ctx.seen].some(s => s === key || s.startsWith(`${key}.`));
+    const referenced = [...ctx.seen].some(s =>
+      s === key || s.startsWith(`${key}.`) || key.startsWith(`${s}.`)
+    );
     if (!referenced) report.warn(name, `"${key}" in the .yml is never referenced by the .json`);
   }
 
   if (!report.ok) return { report, outPath };
 
-  fs.writeFileSync(outPath, page({ ...structure, ...meta, body }));
-  return { report, outPath, bytes: Buffer.byteLength(page({ ...structure, ...meta, body })) };
+  const html = page({ ...structure, ...meta, body });
+  fs.writeFileSync(outPath, html);
+  return { report, outPath, bytes: Buffer.byteLength(html) };
 }
 
 // ── component stylesheet ──────────────────────────────────────────────────

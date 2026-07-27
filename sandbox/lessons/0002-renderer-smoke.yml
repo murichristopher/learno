@@ -156,3 +156,34 @@ code3:
     2026-07-26T19:53:29Z INF Registered tunnel connection
     2026-07-26T19:53:31Z WRN backpressure: queue depth 8412
     2026-07-26T19:53:34Z ERR dropping batch after 3 retries
+
+p1:
+  title: "Uma seção que destrava a próxima"
+  body: >
+    A seção 2 está fechada. Responda o bloco abaixo com nota 50 ou mais e ela
+    abre. Como o validador do sandbox é determinístico, comece a resposta com
+    !0 para ver a seção continuar trancada, ou com !p para destravar.
+  question: "Explique, com suas palavras, por que uma lição que dá para rolar até o fim ensina reconhecimento em vez de recuperação."
+  summary: "Seção sobre travas de progressão e prática de recuperação."
+  fallback:
+    options:
+      - { text: "Porque o texto fica longo demais", correct: false }
+      - { text: "Porque ler a resposta é mais fácil do que produzi-la, e as duas coisas parecem iguais por dentro", correct: true }
+    ok: "Isso. Reconhecer parece aprender, e é justamente o que a trava impede."
+    bad: "Não é o tamanho — é a diferença entre reconhecer e produzir."
+
+p2:
+  title: "Múltipla escolha, corrigida na própria página"
+  body: >
+    Este bloco não precisa de servidor nenhum. É a mesma peça que o recall usa
+    como fallback quando o servidor cai.
+  question: "Por que o fallback de múltipla escolha é renderizado sempre, e só escondido por CSS?"
+  ok: "Isso. Trocar de modo vira um toggle de classe, e não um fetch que precisa dar certo para mostrar a alternativa."
+  bad: "O contrário: se ele fosse buscado na hora, precisaria do servidor justamente quando o servidor caiu."
+  options:
+    - { text: "Para economizar bytes na página", correct: false }
+    - { text: "Porque buscá-lo na hora exigiria o servidor exatamente quando o servidor está fora", correct: true }
+
+teachback:
+  question: "Explique o pipeline inteiro para alguém que só viu lições em HTML escrito à mão: o que é o JSON, o que é o YAML, e o que o build recusa."
+  hint: "Comece pelo problema (84% do que a IA escrevia era máquina), depois a divisão, depois as validações."

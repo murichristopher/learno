@@ -39,6 +39,46 @@ State plainly which scenarios you verified yourself and which only the user can
 close — never present a curl as though it were a browser, and never imply they
 confirmed something they have not yet looked at.
 
+## Everything you write about the code is in English
+
+Pull requests, commit messages, code, comments and documentation: English,
+always, regardless of the language the conversation is happening in.
+
+The one exception is **lesson content** — `MISSION.md`, the `.yml` files, prose,
+questions, feedback. That follows the learner's language, because it is the
+material being studied rather than something written about the code.
+
+## Pull request structure
+
+Every PR uses these sections, in this order:
+
+```markdown
+## Motivation
+Why this exists. The problem, not the solution — and measured wherever a number
+is available.
+
+## Technical details
+- Bullet points. What changed and, where it is not obvious, why that way.
+- Decisions someone might reasonably have made differently belong here, stated
+  as decisions rather than smuggled in as facts.
+
+## Test scenarios
+Numbered, step by step, each one something the reviewer can SEE. Give the exact
+URL, the exact input to type, and the exact thing that should appear on screen.
+
+## Problems this PR may introduce
+Honest risks: what could break, what was not covered, what you could not test.
+"None" is only acceptable when it is true.
+```
+
+**If a change cannot be seen or exercised easily, it is not ready to be a PR.**
+Split it, or add the thing that makes it visible — a fixture, a page, a command
+whose output is the evidence. A reviewer should never have to take your word for
+it.
+
+Say plainly which scenarios you ran yourself and which only the reviewer can
+close. Never present a curl as though it were a browser.
+
 ## Setup (per workspace)
 - Install the agent so it's discoverable: symlink or copy `skill/agents/learno-analyst.md` into `.claude/agents/` (project) or `~/.claude/agents/` (all studies).
 - To inherit this agreement at the workspace root, add `@skill/CLAUDE.md` to the workspace's own `CLAUDE.md`.
