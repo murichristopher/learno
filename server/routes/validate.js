@@ -60,6 +60,15 @@ Return JSON only (no markdown wrapper, no explanation outside the JSON):
       // having a different opinion this run.
       parsed = stubVerdict({ user_answer, concept_id, valid_concept_ids, is_teachback });
     } else {
+      // Checked before the call, because "502" tells the reader nothing about
+      // the one cause they can actually fix.
+      if (!process.env.GEMINI_API_KEY) {
+        return res.status(503).json({
+          error: 'GEMINI_API_KEY is not set — copy .env.example to .env at the repo root and fill it in',
+          setup: true
+        });
+      }
+
       const geminiRes = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,7 +81,16 @@ Return JSON only (no markdown wrapper, no explanation outside the JSON):
       if (!geminiRes.ok) {
         const detail = await geminiRes.text();
         console.error('Gemini error:', geminiRes.status, detail);
-        return res.status(502).json({ error: 'Gemini API error', status: geminiRes.status });
+
+        // A rejected key is a setup problem, not an outage, and saying so is the
+        // difference between a one-line fix and an afternoon of guessing.
+        const badKey = geminiRes.status === 400 && /API key not valid/i.test(detail);
+        return res.status(badKey ? 503 : 502).json({
+          error: badKey
+            ? 'Gemini rejected the API key — check GEMINI_API_KEY in .env at the repo root'
+            : `Gemini API error (${geminiRes.status})`,
+          setup: badKey
+        });
       }
 
       const data  = await geminiRes.json();
