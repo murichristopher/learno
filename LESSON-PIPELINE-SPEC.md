@@ -347,7 +347,128 @@ lesson file moved out of the repo renders unstyled — accepted.
 Expected authored size per lesson: **~8.2K, down from 38.2K.**
 Expected built lesson: **~5K**, with the shared assets linked once.
 
-## Sequence, if approved
+## Locked sections are blurred, not hidden
+
+A locked `phase` currently hides its body and prints *"Responda a seção anterior
+para abrir esta."* That is the wrong shape. A hidden section is indistinguishable
+from a section that does not exist, so the reader loses the sense of how much
+lesson is left and what it is building towards.
+
+The content should stay **visible but blurred**, with a lock icon over it:
+
+```
+┌───────────────────────────────────────┐
+│  ②  Submit, job id, status            │
+│  ░░░░░░░░░░░░  🔒  ░░░░░░░░░░░░░░░░░  │
+│  ░░░░░░░  responda a seção 1  ░░░░░░  │
+│  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  │
+└───────────────────────────────────────┘
+```
+
+The reader sees that there is a diagram and two paragraphs waiting, and that the
+way in is answering the section above. The gate stays exactly as strict; what
+changes is that it now reads as a door rather than as an absence.
+
+Implementation notes: `filter: blur()` plus `user-select: none` and
+`pointer-events: none` on the body, with the lock centred over it. The blur must
+be heavy enough that the text cannot be read — a light blur is a puzzle, not a
+gate — and `aria-hidden` on the blurred content so a screen reader is not read
+the answer.
+
+---
+
+## Next: the dashboard is a report, not a starting point
+
+Shipped, and wrong in a way styling did not fix. It answers *"how am I doing?"*
+and never answers *"what do I do now?"* — which is the question someone actually
+has when they open it. There is no primary action anywhere on the page.
+
+What is wrong, concretely:
+
+- **It optimises for the wrong metric.** "Dominados: 5" is a trophy count. What
+  predicts learning is the opposite: what is decaying, what you keep getting
+  wrong, what you have not touched in weeks. The page shows achievement, not risk.
+- **The largest section is the least useful.** "Conceitos dominados" takes the
+  most vertical space, and a mastered concept needs nothing from you.
+- **It exposes `ease factor 2.60` with a progress bar.** That is SM-2 internal
+  state. Nobody can act on it — it shows the algorithm rather than the learner.
+- **Misconceptions are collected and never shown.** The server records, per
+  section, *what the reader got wrong*. That is the most valuable data in the
+  system, `learno-analyst` reads it, and the dashboard ignores it.
+- **Nothing connects to `MISSION.md`.** The learner wrote down why they are
+  studying. The page never mentions it, and has no notion of progress toward it.
+- **The catalogue is a file browser.** It lists filenames, not a path.
+- **The empty state is the most common state** — every fork starts there — and is
+  the least designed.
+
+The shape it should have instead:
+
+```
+Objetivo: entrevista de system design    ███████░░░  13 de 17
+
+HOJE
+  Revisar "Dedup vs Idempotência"   ⚠ vence hoje
+  [ Começar revisão → ]
+  depois: Lição 14 — Real-time updates
+
+PRECISA DE ATENÇÃO
+  • Idempotência — confundida com retry em 2 respostas
+  • Backoff — 62, abaixo do corte de domínio
+  • CAP — sem revisão há 23 dias
+
+Estudou 4 dos últimos 7 dias   ▪▪·▪▪·▪
+
+▸ 5 conceitos dominados                        (recolhido)
+```
+
+One decision at the top, problems in the middle, trophies collapsed at the
+bottom. The "precisa de atenção" block is the centrepiece: it says *why*
+something needs you — a recurring misconception, a score below the cut, time
+since last touched — rather than printing a date.
+
+**Two things are not styling and need building first:**
+
+1. `/api/progress` does not aggregate misconceptions. They exist in
+   `section_results` but nothing groups them per concept.
+2. "Next lesson" is not derivable. Only the model knows, reading `MISSION.md`
+   and the current state. The dashboard would have to read something the model
+   writes — a `NEXT.md`, or the last recommendation — rather than compute it.
+
+---
+
+## Sequence — done
+
+1. ~~Design system ported to CSS~~ — #2
+2. ~~Renderer with three components~~ — #3
+3. ~~The remaining ten components and the runtime~~ — #4, #5
+4. ~~Registry and gallery generated from the components~~ — #6
+5. ~~Flatten the repo to root layout~~ — #7
+6. ~~A real lesson through the pipeline, measured~~ — #8
+7. ~~SKILL.md authors JSON+YAML~~ — #9
+
+Plus the dashboard on the design system — #10.
+
+## Open
+
+- **Locked sections blurred, not hidden** (above).
+- **The dashboard as a starting point** (above) — needs misconception
+  aggregation and a way for the model to publish "what's next".
+- **Reviews through the pipeline.** The declared scope was lessons *and*
+  reviews. `SKILL.md` still describes `lessons/review-CONCEPT.html` written by
+  hand, and `review/` is empty. Roughly a third of what the model authors is
+  still in the old format and will drift visually from the lessons.
+- **First run without MongoDB.** A fresh fork serves lessons fine but the
+  dashboard needs a database before it shows anything. Provisioning Atlas before
+  you can study one page is a heavy first step for something you are trying out.
+- **Diagram geometry is unchecked.** The build refuses a diagram that carries its
+  own colour, but accepts one whose boxes overlap or whose text runs outside the
+  `viewBox`. A lesson can ship visually broken with a green build.
+- **Projects.** Lessons test whether you can *explain* something. Nothing tests
+  whether you can *do* it under a novel constraint, which is the transfer the
+  mission is usually about. Design pending — see the discussion in the session
+  that added this line.
+
+## Original sequence, for the record
 
 1. Port the design system to CSS; verify both themes and the reduced-transparency
    fallback in the sandbox.
