@@ -1,18 +1,11 @@
-/* ============================================================================
-   learno — lesson runtime
-   Linked once by every lesson; nothing here is generated per page.
-
-   The page ships its configuration as JSON in #lx-config rather than as
-   generated code, so a lesson never contains executable script of its own and
-   the renderer never has to escape anything into a JS context.
-   ========================================================================= */
+/* learno — lesson runtime. Linked once by every lesson; nothing is generated per
+   page. Configuration arrives as JSON in #lx-config, so a lesson never contains
+   script of its own and nothing is escaped into a JS context. */
 
 (function () {
   'use strict';
 
-  // Same origin as the page, so a lesson works on localhost, behind a tunnel,
-  // and on a phone without anything being rebuilt. The fixed localhost is only
-  // the fallback for a page opened over file://, where origin is "null".
+  // The fixed localhost is only the file:// fallback, where origin is "null".
   var SERVER = location.protocol.indexOf('http') === 0
     ? location.origin
     : 'http://localhost:9990';
@@ -27,9 +20,7 @@
   var CONCEPTS = cfg.concepts || [];
   var PHASES   = cfg.phases || [];
 
-  // Below this, a section does not open. Recognising the shape of an answer is
-  // not the same as being able to give one, and letting a 30 through would make
-  // the gate decorative.
+  // Below this a section does not open.
   var PASS = 50;
 
   var $  = function (sel, root) { return (root || document).querySelector(sel); };
@@ -47,8 +38,7 @@
   }
 
   function detectServer() {
-    // A lesson must render before this resolves, so the page starts optimistic
-    // and only degrades — the reverse would flash the fallback on every load.
+    // Starts optimistic and only degrades; the reverse flashes the fallback on load.
     return fetch(SERVER + '/api/health', { signal: AbortSignal.timeout(1500) })
       .then(function (r) { setOffline(!r.ok); })
       .catch(function () { setOffline(true); });
@@ -65,10 +55,8 @@
     return i;
   }
 
-  // Opening a gate is two things, and forgetting the second is the subtle bug:
-  // the class un-blurs it visually, and removing aria-hidden makes it exist for
-  // a screen reader again. Without the attribute the block would open and stay
-  // invisible to assistive tech, which is worse than the gate it replaced.
+  // Both halves matter: the class un-blurs it, and removing aria-hidden makes it
+  // exist for a screen reader again.
   function openGate(name, scroll) {
     var el = $('.lx-gate[data-gate="' + name + '"]');
     if (!el) return null;
@@ -84,10 +72,8 @@
     var i = PHASES.indexOf(String(fromId));
     if (i < 0) return;
 
-    // Last phase answered: the teach-back opens, and nothing else. The
-    // flash cards stay shut until the teach-back is actually submitted — they
-    // carry the answers, so opening them earlier turns the closing exercise
-    // into a reading comprehension test.
+    // Only the teach-back. The flash cards carry the answers and stay shut until
+    // it is submitted.
     if (i + 1 >= PHASES.length) {
       openGate('teachback', true);
       return;
@@ -150,8 +136,7 @@
     box.classList.add('is-shown');
   }
 
-  // The server distinguishes "misconfigured" from "broken", and passing its own
-  // sentence through is worth more than a status code the reader cannot act on.
+  // Pass the server's own sentence through; a status code is not actionable.
   function readVerdict(r) {
     if (r.ok) return r.json();
     return r.json().catch(function () { return {}; }).then(function (body) {
@@ -193,8 +178,8 @@
         if (data.score >= PASS && block.dataset.phase) unlockNext(block.dataset.phase);
       })
       .catch(function (err) {
-        // An error must never look like a bad score — a failed request that
-        // rendered as 0 would tell the reader they were wrong when they were not.
+        // Never render an error as a score: 0 would say they were wrong when
+        // nothing evaluated the answer.
         fail(block, 'Não deu para validar agora (' + err.message + '). Sua resposta continua aí.');
       })
       .finally(function () { busy(btn, false); });
@@ -270,8 +255,7 @@
       date.textContent = saved.next_review;
       note.textContent = saved.concepts_updated + ' conceito(s) agendado(s) pelo SM-2.';
     } else {
-      // Scored but not recorded: say so, rather than showing a date that was
-      // never written.
+      // Scored but not recorded — do not show a date that was never written.
       date.textContent = 'não agendada';
       note.textContent = 'A lição foi avaliada, mas o progresso não pôde ser salvo.';
     }
@@ -319,8 +303,7 @@
         }
       };
       rec.onerror = function (e) {
-        // Some browsers (Arc among them) fail here silently rather than
-        // prompting, so the reason is put on screen instead of the console.
+        // Arc fails silently rather than prompting, so the reason goes on screen.
         hint.textContent = 'microfone falhou (' + e.error + ') — tente Safari ou Chrome';
       };
       rec.onend = function () {
@@ -334,9 +317,8 @@
   }
 
 
-  // ── theme ───────────────────────────────────────────────────────────────
-  // Three states, not two: "auto" has to stay reachable, otherwise the first
-  // click permanently opts the reader out of following their system.
+  // Three states, not two: without "auto" the first click permanently opts the
+  // reader out of following their system.
 
   function applyTheme(choice) {
     if (choice === 'auto') document.documentElement.removeAttribute('data-theme');
@@ -393,9 +375,8 @@
 
     setupTheme();
 
-    // A lesson with no phases has nothing to gate behind, so every gate opens
-    // at once. Otherwise a page without the usual structure — the component
-    // gallery, say — would render permanently locked with no way in.
+    // No phases means nothing to gate behind — otherwise the component gallery
+    // would render permanently locked.
     if (!PHASES.length) $$('.lx-gate').forEach(function (g) { openGate(g.dataset.gate); });
 
     detectServer();

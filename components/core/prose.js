@@ -1,9 +1,3 @@
-// Paragraphs of running text.
-//
-// A deliberately small markdown subset — bold, italic, inline code, links —
-// because a lesson's prose is prose. Anything structural is a component, which
-// is what keeps the vocabulary meaningful instead of markdown-by-the-back-door.
-
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 function inline(text) {

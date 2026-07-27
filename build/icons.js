@@ -1,16 +1,6 @@
-// Icons, inlined at build time from lucide.
-//
-// Lucide draws with `stroke="currentColor"` and no fills, so an icon takes the
-// colour of whatever it sits in — which means icons follow the design system for
-// free, the same way diagrams do, instead of carrying a palette of their own.
-//
-// Inlined rather than referenced from a sprite: `<use href="sprite.svg#id">` is
-// blocked when a page is opened over file://, and a lesson has to keep working
-// when opened straight from disk. An icon is ~300 bytes, so a page with ten of
-// them pays about 3K for never having that problem.
-//
-// The library is a build dependency and is never shipped — of its 2007 icons,
-// only the handful a page actually names reach the output.
+// Inlined rather than referenced from a sprite: <use href="sprite.svg#id"> is
+// blocked over file://, and a lesson has to survive being opened from disk.
+// The library is a build dependency and is never shipped.
 
 const fs   = require('fs');
 const path = require('path');

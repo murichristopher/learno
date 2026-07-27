@@ -1,13 +1,6 @@
-// Wraps a block so it renders blurred behind a lock until the runtime opens it.
-//
-// Shared by every gated component, because the details are easy to get subtly
-// wrong in a way that silently breaks the gate: the lock has to sit outside the
+// Two traps this exists to keep in one place: the lock must sit OUTSIDE the
 // blurred element (a child of a blurred parent is blurred too), and the blurred
-// body has to carry aria-hidden or a screen reader simply reads the answer out.
-//
-// Rendered locked by default and opened by the runtime, so the wrong failure is
-// impossible — if the script never runs the reader is stuck rather than handed
-// the whole lesson.
+// body must carry aria-hidden or a screen reader reads the answer out.
 
 const { icon } = require('./icons');
 

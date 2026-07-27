@@ -1,10 +1,5 @@
-// The page shell every lesson gets.
-//
-// The top bar, header, progress bar, offline banner, the shared arrowhead and
-// the footer are emitted here rather than authored, so the AI only ever writes
-// content blocks. Stylesheets and the runtime are linked rather than inlined: a
-// lesson is only expected to work inside the project, and this way a fix reaches
-// every lesson without re-rendering any.
+// The page shell. Header, progress bar, offline banner and footer are emitted
+// here rather than authored, so a lesson only ever contains content blocks.
 
 const { icon } = require('./icons');
 

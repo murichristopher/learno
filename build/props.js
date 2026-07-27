@@ -9,16 +9,9 @@
 //   {a: T, b: T?}                       object with exactly these fields
 //   T?                                  optional
 //
-// The shapes matter more than they look. A prop typed `array` accepts
-// `[1,2,3]`, `[{label,isCorrect}]` and `[{text,correct}]` alike, so an author
-// guessing the element shape wrong gets a lesson that builds cleanly and is
-// silently broken — a quiz where no option is correct, a flashcard with blank
-// faces. Documentation cannot fix that, because the failure is invisible at the
-// point where documentation is read. `array<{text: string, correct: bool}>`
-// turns the guess into a build error naming the missing field.
-//
-// The `svg` type additionally enforces that a diagram carries no colours of its
-// own, which is what keeps a hand-authored SVG inside the design system.
+// Element shapes exist because a bare `array` accepts [{label,isCorrect}] just as
+// happily as [{text,correct}], and a wrong guess builds cleanly into a quiz where
+// no option is correct. `svg` additionally rejects hardcoded colour.
 
 const COLOUR_IN_SVG = /#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(|\sfill="(?!none")|\sstroke="/;
 

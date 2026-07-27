@@ -1,13 +1,10 @@
 #!/usr/bin/env node
 //
-// Compiles a lesson from JSON (structure) + YAML (content) into a
-// self-contained page.
-//
 //   node build/render.js lessons/0011-consistent-hashing
 //   node build/render.js --all
 //
-// The build refuses to write a partial page. A lesson missing a block still
-// looks finished, which makes a silent failure worse than a loud one.
+// Refuses to write a partial page: a lesson missing a block still looks
+// finished, which makes a silent failure worse than a loud one.
 
 const fs   = require('fs');
 const path = require('path');

@@ -1,9 +1,3 @@
-// Where the lesson's claims come from.
-//
-// Mandatory in LESSON-FORMAT.md §7 and not decoration: a lesson grounded in a
-// Tier 1 source is a different object from one assembled out of recollection,
-// and the reader is entitled to know which one they just read.
-
 const { icon } = require('../../build/icons');
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

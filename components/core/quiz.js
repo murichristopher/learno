@@ -1,10 +1,3 @@
-// Multiple choice, checked in the page.
-//
-// Weaker practice than recall — recognising the right answer is easier than
-// producing it — so it is for checks that are genuinely binary, where a free-text
-// answer would be graded on wording rather than understanding. It needs no
-// server, which is also why recall borrows its shape for the offline fallback.
-
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 module.exports = {

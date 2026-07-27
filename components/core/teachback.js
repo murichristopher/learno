@@ -1,16 +1,5 @@
-// The closing exercise: explain the whole thing back.
-//
-// This is the one that decides the lesson's score and drives the spaced-repetition
-// schedule, because explaining something end to end is the point at which gaps
-// stop being survivable. Its result is what gets POSTed to /api/progress.
-//
-// Gated behind the last phase: the question restates the whole lesson, so a
-// reader who scrolls to it first gets the shape of every answer for free.
-//
-// No offline fallback on purpose. A multiple-choice stand-in for "teach it back"
-// would measure nothing, and recording a fabricated score against the review
-// schedule is worse than recording none — offline, the reader is told to come
-// back rather than handed a fake.
+// No offline fallback on purpose: a multiple-choice stand-in for "explain it back"
+// measures nothing, and a fabricated score corrupts the review schedule.
 
 const { icon } = require('../../build/icons');
 const { gate } = require('../../build/gate');

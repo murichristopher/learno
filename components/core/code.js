@@ -1,13 +1,6 @@
-// A block of code, highlighted at build time.
-//
-// highlight.js runs in the renderer, never in the browser: the page receives
-// plain spans and no script, so highlighting costs nothing at read time, works
-// from disk with no server, and cannot vary between two people opening the same
-// lesson. The library is a build dependency only — it is never shipped.
-//
-// Colours come from the design system rather than from a hljs theme, so code
-// follows light/dark with the rest of the page instead of carrying a second,
-// unrelated palette.
+// highlight.js runs here, never in the browser — the page gets plain spans and no
+// script. Colours come from the design system rather than an hljs theme, so code
+// follows the page theme instead of carrying a second palette.
 
 const hljs = require('highlight.js');
 

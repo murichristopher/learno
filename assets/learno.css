@@ -1,19 +1,5 @@
-/* ============================================================================
-   learno style — the design system
-
-   Every token is named for its role, not its hue, so a rebrand touches only the
-   :root block below. Glass is the baseline: cards, bars and panels are all
-   translucent and blurred by default, and the inner glow is part of a card
-   rather than something a page opts into.
-
-   Theme: follows the OS by default, and `data-theme="light|dark"` on <html>
-   overrides it in both directions so a toggle always wins.
-
-   Transparency: `prefers-reduced-transparency` is honoured, because it is an
-   accessibility setting the reader asked their OS for. It drops the blur and
-   makes surfaces opaque without moving anything. `data-transparency="reduce"`
-   forces the same path for testing.
-   ========================================================================= */
+/* learno style — the design system.
+   Tokens are named for their role, not their hue: a rebrand touches only :root. */
 
 :root {
   color-scheme: light dark;
@@ -156,26 +142,18 @@ ul[class], ol[class] { list-style: none; }
 img, svg { max-width: 100%; }
 button, input, select, textarea { font: inherit; color: inherit; }
 
-/* ── Layer 1: shell ──────────────────────────────────────────────────────────
-   The gradient lives on `html`, and nowhere else.
+/* The gradient lives on `html` and nowhere else.
 
-   This is the third arrangement and the first that cannot fail, so the reasoning
-   is worth keeping. It was on <body> with `background-attachment: fixed`, which
-   is unreliable on iOS and — worse — broke the propagation that makes a body
-   background cover the canvas at all, so the page ended in the canvas default:
-   black. Moving the gradient to a `position: fixed` pseudo-element fixed the
-   black but not the ending: on iOS the gradient still stopped partway down,
-   most likely because a fixed element at `z-index: -1` is painted behind the
-   canvas background there.
+   Two earlier arrangements failed and the next person will reach for them again.
+   On <body> with `background-attachment: fixed` it broke the propagation that
+   makes a body background cover the canvas, so the page ended in the canvas
+   default — black. As a `position: fixed` pseudo-element it still stopped partway
+   down on iOS, most likely painted behind the canvas at `z-index: -1`.
 
-   The root element's background is the one thing that is guaranteed to cover the
-   whole canvas, in every browser, including the rubber-band area past the end of
-   an iOS scroll that no element covers. So it goes there, with no stacking, no
-   fixed positioning and no pseudo-element to get wrong.
-
-   The cost is that the gradient now sizes to the document rather than the
-   viewport, so it stretches on a long page instead of holding still while you
-   scroll. That parallax is worth less than a background that is always there. */
+   The root element's background is the one thing guaranteed to cover the whole
+   canvas everywhere, including the rubber-band area past the end of an iOS scroll
+   that no element covers. The cost is that the gradient sizes to the document,
+   so it stretches instead of holding still while scrolling. */
 
 html {
   min-height: 100%;
@@ -346,15 +324,10 @@ html {
 
 .lx-divider { border: 0; border-top: 1px solid var(--lx-border); }
 
-/* ── Diagram vocabulary ──────────────────────────────────────────────────────
-   Diagrams are hand-authored SVG, but they carry no colours of their own — the
-   classes below own every fill and stroke, so a diagram follows the theme and
-   cannot drift from the design system. The build rejects SVG containing a hex
-   value, an rgb()/hsl() literal, or an inline fill= / stroke= attribute.
-
-   `marker-end` needs a <marker> in the document; the page template emits one
-   shared <svg class="lx-defs"> so individual diagrams never repeat it.
-   ========================================================================= */
+/* Diagrams carry no colour of their own — these classes own every fill and
+   stroke, so a diagram follows the theme. The build rejects SVG containing a hex,
+   an rgb()/hsl() literal, or an inline fill= / stroke=. `marker-end` needs the
+   shared <marker> the page template emits. */
 
 .lx-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 .lx-svg  { display: block; width: 100%; height: auto; color: var(--lx-text-2); }
@@ -379,12 +352,9 @@ html {
 /* Wide diagrams and tables scroll inside their own box — never the page. */
 .lx-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-/* ── Reduced transparency ────────────────────────────────────────────────────
-   Stacked backdrop-filter is the most expensive paint on a mid-range phone,
-   which is where these lessons are read. Both the OS preference and the
-   explicit attribute drop every blur and make the surfaces opaque, so the
-   layout is unchanged and only the cost goes away.
-   ========================================================================= */
+/* Stacked backdrop-filter is the most expensive paint on a phone, which is where
+   these are read. Both the OS preference and the attribute drop every blur
+   without moving anything. */
 
 @media (prefers-reduced-transparency: reduce) {
   .lx-bar, .lx-panel, .lx-card, .lx-modal, .lx-input {
@@ -478,10 +448,8 @@ html {
 }
 
 /* ── Icons ───────────────────────────────────────────────────────────────────
-   Lucide strokes, inlined at build time. They draw with currentColor and no
-   fill, so an icon takes the colour of whatever it sits in — the same trick
-   that keeps diagrams inside the design system. Size follows the surrounding
-   text rather than being pinned in the markup. */
+   Lucide strokes draw with currentColor and no fill, so an icon takes the colour
+   of whatever it sits in. */
 
 .lx-icon-svg { width: 1em; height: 1em; flex-shrink: 0; vertical-align: -.125em; }
 
@@ -544,10 +512,8 @@ html {
 }
 
 /* ── Gated blocks ────────────────────────────────────────────────────────────
-   A gated block is blurred behind a lock, never hidden. Hidden content is
-   indistinguishable from content that does not exist, so the reader loses any
-   sense of how much is left and what it builds towards. Blurred, the gate is
-   exactly as strict and reads as a door instead of an absence. */
+   Blurred, never hidden: hidden content is indistinguishable from content that
+   does not exist, so the reader loses any sense of what is left. */
 
 .lx-gate { position: relative; }
 

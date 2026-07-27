@@ -1,10 +1,3 @@
-// A data table.
-//
-// Wide tables scroll inside their own card rather than pushing the page sideways
-// — horizontal scroll on the body is the most common way a lesson breaks on a
-// phone. Below the phone breakpoint the header row is repeated as a label on
-// each cell, because a four-column table at 375px is unreadable otherwise.
-
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 module.exports = {
