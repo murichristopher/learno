@@ -583,6 +583,78 @@ step that will not happen.
 
 ---
 
+## Bug: the background ends and turns black on a phone
+
+Reported from a real device: scrolling down a long page, the gradient stops and
+everything below it is black.
+
+Two causes, compounding:
+
+1. **The gradient is on `<body>` and `<html>` has no background at all.** Normally
+   the body's background propagates to the canvas and covers everything, but that
+   propagation is exactly what `background-attachment: fixed` disturbs. When it
+   fails, what shows through is the canvas default — and under
+   `color-scheme: light dark` in dark mode, that default is **black**.
+2. **`background-attachment: fixed` is unreliable on iOS Safari.** It has been
+   effectively broken there for years, and the URL bar growing and shrinking
+   changes the viewport underneath a background that is pinned to it.
+
+`min-height: 100vh` makes it worse: on iOS `100vh` is the *large* viewport, so the
+painted box can be shorter than what is actually scrollable.
+
+The fix:
+
+- Put the gradient on `html`, not only on `body`, so there is no uncovered canvas
+  to fall through to.
+- Set a solid `background-color` alongside it, matching a gradient stop, so any
+  area the image does not cover is still the right colour rather than black.
+- Drop `background-attachment: fixed`. If the parallax effect is wanted, use a
+  `position: fixed` pseudo-element instead — that behaves on iOS, the property
+  does not.
+- Use `min-height: 100dvh` with a `100vh` fallback.
+
+This is small, and it is the kind of bug that only ever shows up on a device —
+which is why it survived every check run from a terminal.
+
+---
+
+## Next: blue, and a lighter light mode
+
+The palette came from orbita and is purple. It should be **blue**, and the light
+mode background should change.
+
+Neither is a decision to make in a commit message. The deliverable is **a gallery
+that shows the alternatives side by side**, on real components rather than on
+swatches — a palette looks entirely different on a score bar, a locked gate and a
+diagram than it does on a rectangle.
+
+What the gallery must show:
+
+- **Three proposals for the primary colour**, purple → blue. They should differ in
+  more than hue: a deep indigo, a mid cobalt and a brighter azure behave very
+  differently against the glass and against `--lx-good` / `--lx-warn` / `--lx-bad`,
+  which do not move.
+- **Three proposals for the light-mode background.** The current one is a
+  purple-to-indigo wash. The alternatives should span the range from near-white to
+  clearly tinted, because that choice decides how much the glass cards read as
+  cards at all — on a white background, `rgb(255 255 255 / .6)` is nearly invisible.
+
+Each proposal rendered with the same set of components: a card, a callout of each
+variant, a diagram, a code block, a score bar and a locked gate. The point is to
+judge them where they will actually be seen.
+
+Two things to check while choosing, since they are what usually breaks a
+recolour:
+
+- **Contrast on the accent-on-glass combination.** `--lx-accent` is used for text
+  on `--lx-accent-soft`; a lighter blue can fail there while looking fine as a
+  button.
+- **The diagram classes.** `.lx-node--accent` fills with the accent at 12%; if the
+  new blue sits close to `--lx-good`, an accented node and a success state stop
+  being distinguishable at a glance.
+
+---
+
 ## Sequence — done
 
 1. ~~Design system ported to CSS~~ — #2
@@ -610,6 +682,10 @@ Plus the dashboard on the design system — #10.
 - **Diagram geometry is unchecked.** The build refuses a diagram that carries its
   own colour, but accepts one whose boxes overlap or whose text runs outside the
   `viewBox`. A lesson can ship visually broken with a green build.
+- **Background ends and turns black on a phone** (above). Small, and only visible
+  on a device.
+- **Blue palette and a lighter light mode** (above). Needs a comparison gallery
+  before anything is changed.
 - **SKILL.md as an operating procedure** (above). Designed, not written.
 - **Projects.** Designed above; not built. Needs a `projects/` directory, a
   `SKILL.md` section, and confirmation that the existing components cover a
