@@ -514,6 +514,75 @@ fails, not on the assumption that a new artifact needs new parts.
 
 ---
 
+## The skill is an operating procedure, not a reference
+
+`SKILL.md` today is organised as a reference document: sections on philosophy,
+analogies, diagrams, SM-2, glossary. Everything needed is in there, but it
+describes the system rather than telling the model what to do next.
+
+It has to be the other way round. **The skill gives the instructions for how
+Claude acts**, in order, at each point in the cycle. Reference material stays,
+below the procedure.
+
+The cycle has four moments, and each needs to be written as steps rather than
+as background.
+
+### 1. First run — a fresh fork
+
+Detected by: a scaffold `MISSION.md`, no lessons, an empty database.
+
+In order, and **no lesson is generated before all four exist**:
+
+1. **Interview for the mission.** Not "what do you want to learn" but why, what
+   changes when they have it, what the deadline is. Vague answers get pushed back
+   on — a vague mission produces lessons about trivia.
+2. **Build the profile** into `NOTES.md`: how they learn, time per week, the
+   language lessons should be written in, their stack, and what has failed for
+   them before.
+3. **Source discovery** into `RESOURCES.md`. The learner rarely knows the canon
+   of a field; finding it is the model's job, and lessons are grounded in Tier 1
+   or they are grounded in nothing.
+4. **Sketch the curriculum as patterns** — the coherent chunks that lead to the
+   mission, not a flat list of lessons. This is what later makes "the pattern
+   closed" a detectable event, which is what triggers a project.
+
+### 2. Opening a session
+
+Read the workspace, query MongoDB, then **open by saying where the learner
+stands** — what is due, what is shaky, what comes next — in a few lines, from the
+data. Never a generic greeting. The session starts from the gaps, not from a
+blank page.
+
+### 3. Closing a lesson — the part that is missing today
+
+When a lesson is finished, the model currently does nothing. It should:
+
+1. **Read the per-section results** from `section_results`, not just the final
+   score. Which sections were weak, and which misconceptions were recorded.
+2. **Ask the learner for their own feedback** — what was confusing, what was too
+   easy, where they felt lost.
+3. **Compare the two.** The interesting signal is where self-report and data
+   disagree: a section they found easy and scored 55 on is worth more attention
+   than either fact alone.
+4. **Write the learning record**, including what was *not* demonstrated.
+5. **Update `NOTES.md`** if the feedback revealed something durable about how
+   they learn.
+6. **Say what the next session starts with**, so the thread is already picked up.
+
+### 4. Closing a pattern
+
+When every concept in a pattern is mastered, propose the project for that
+pattern. This is the only trigger — see the Projects section for the rest.
+
+### Why this shape
+
+The learner should never have to know how the system works to use it. They say
+what they want to learn and the model runs the loop: interview, teach, measure,
+close out, adjust, apply. Anything the learner has to remember to ask for is a
+step that will not happen.
+
+---
+
 ## Sequence — done
 
 1. ~~Design system ported to CSS~~ — #2
@@ -541,6 +610,7 @@ Plus the dashboard on the design system — #10.
 - **Diagram geometry is unchecked.** The build refuses a diagram that carries its
   own colour, but accepts one whose boxes overlap or whose text runs outside the
   `viewBox`. A lesson can ship visually broken with a green build.
+- **SKILL.md as an operating procedure** (above). Designed, not written.
 - **Projects.** Designed above; not built. Needs a `projects/` directory, a
   `SKILL.md` section, and confirmation that the existing components cover a
   project page.
