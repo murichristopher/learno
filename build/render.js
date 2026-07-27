@@ -197,7 +197,16 @@ function build(srcBase) {
 
   if (!report.ok) return { report, outPath };
 
-  const html = page({ ...structure, ...meta, body });
+  // The template can fail too — an unknown icon, for instance — and a stack
+  // trace is not a build error a lesson author can act on.
+  let html;
+  try {
+    html = page({ ...structure, ...meta, body });
+  } catch (err) {
+    report.error(name, `page template failed: ${err.message}`);
+    return { report, outPath };
+  }
+
   fs.writeFileSync(outPath, html);
   return { report, outPath, bytes: Buffer.byteLength(html) };
 }

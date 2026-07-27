@@ -1,0 +1,13 @@
+{
+  "id": "bad-icon",
+  "icon": "unicornio",
+  "title": "@t.title",
+  "blocks": [
+    {
+      "component": "prose",
+      "props": {
+        "text": "@t.b"
+      }
+    }
+  ]
+}

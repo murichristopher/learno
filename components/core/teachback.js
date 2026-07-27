@@ -9,6 +9,8 @@
 // schedule is worse than recording none — offline, the reader is told to come
 // back rather than handed a fake.
 
+const { icon } = require('../../build/icons');
+
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 module.exports = {
@@ -48,7 +50,7 @@ module.exports = {
 
   render({ question, conceptIds, hint }) {
     return `  <div class="lx-card lx-ask lx-teachback" data-concepts="${esc(conceptIds.join(','))}">
-    <span class="lx-ask-label">Ensina de volta</span>
+    <span class="lx-ask-label">${icon('graduation-cap')} Ensina de volta</span>
     <p class="lx-ask-q">${esc(question)}</p>
     ${hint ? `<p class="lx-teachback-hint">${esc(hint)}</p>` : ''}
 

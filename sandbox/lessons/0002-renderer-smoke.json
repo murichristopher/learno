@@ -1,6 +1,7 @@
 {
   "id": "0002-renderer-smoke",
   "tag": "Sandbox",
+  "icon": "network",
   "title": "@meta.title",
   "subtitle": "@meta.subtitle",
   "concepts": [

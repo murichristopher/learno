@@ -4,6 +4,8 @@
 // the bridge line is where the image is handed over to the vocabulary, which is
 // why it is a separate prop rather than another paragraph.
 
+const { icon } = require('../../build/icons');
+
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 module.exports = {
@@ -21,7 +23,7 @@ module.exports = {
   css: `
 .lx-analogy { border-left: 3px solid var(--lx-accent); }
 .lx-analogy-label {
-  display: block;
+  display: flex; align-items: center; gap: .35rem;
   font-size: .7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -41,7 +43,7 @@ module.exports = {
 
   render({ label, text, bridge }) {
     return `  <div class="lx-card lx-analogy">
-    <span class="lx-analogy-label">${esc(label)}</span>
+    <span class="lx-analogy-label">${icon('lightbulb')} ${esc(label)}</span>
     <p class="lx-analogy-text">${esc(text)}</p>
     <p class="lx-analogy-bridge">${esc(bridge)}</p>
   </div>`;

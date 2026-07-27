@@ -4,6 +4,8 @@
 // Tier 1 source is a different object from one assembled out of recollection,
 // and the reader is entitled to know which one they just read.
 
+const { icon } = require('../../build/icons');
+
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // Only http(s). An authored link is content, and content should never be able to
@@ -24,6 +26,7 @@ module.exports = {
 
   css: `
 .lx-source-label {
+  display: flex; align-items: center; gap: .35rem;
   color: var(--lx-text-subtle);
   font-size: .7rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: .08em;
@@ -37,7 +40,7 @@ module.exports = {
     const href = url ? safeHref(url) : null;
     const name = esc(title);
     return `  <div class="lx-card lx-source">
-    <p class="lx-source-label">Fonte primária</p>
+    <p class="lx-source-label">${icon('book-open')} Fonte primária</p>
     <p class="lx-source-title">${href ? `<a class="lx-link" href="${esc(href)}" rel="noopener noreferrer" target="_blank">${name}</a>` : name}</p>
     ${note ? `<p class="lx-source-note">${esc(note)}</p>` : ''}
   </div>`;
