@@ -7,17 +7,17 @@
 const fs   = require('fs');
 const path = require('path');
 
-// The default assumes the deployed layout <workspace>/skill/server, where two
-// levels up is the workspace root. That is wrong in the engine repo itself
-// (server/ sits at the root, so it would resolve to the parent of the repo and
-// expose unrelated directories) — hence LEARNO_WORKSPACE, which the sandbox and
-// any non-standard layout must set.
+// The repo IS the workspace: a learner forks it and studies inside the fork, so
+// lessons/, review/ and reference/ sit beside server/ at the root. There is no
+// skill/ subdirectory and nothing is vendored.
 //
-// It has to come from the real environment rather than .env, since .env is
-// itself looked up inside the workspace.
+// LEARNO_WORKSPACE overrides that, and exists for exactly one caller: the
+// engine's own sandbox, which serves fixtures from sandbox/ instead of the
+// learner's real content. It has to come from the real environment rather than
+// .env, since .env is itself looked up inside the workspace.
 const WORKSPACE = process.env.LEARNO_WORKSPACE
   ? path.resolve(process.env.LEARNO_WORKSPACE)
-  : path.join(__dirname, '..', '..');
+  : path.join(__dirname, '..');
 
 // A <title> is markup, so entities in it have to be decoded before the title is
 // handed on as text — otherwise "Cache &amp; CDN" reaches the dashboard (and any

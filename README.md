@@ -36,51 +36,42 @@ lives **outside** this folder, in the study workspace that wraps it.
 
 ## How it's meant to be used
 
-This skill is designed to live as the **`skill/` subdirectory of a study workspace**:
+**Fork this repo. The fork is your study workspace.** Your lessons, notes and
+progress live at the root beside the engine — there is no `skill/` subdirectory,
+nothing is vendored, and no submodule to initialise.
 
 ```
-my-study/                     ← the study workspace (one git repo PER subject, or just a folder)
-├── .env                      ← secrets (Gemini key + MongoDB URI)   ← NOT committed
-├── MISSION.md                ← why the user is learning this
+learno/                       ← your fork
+│
+│  yours ─────────────────────────────────────────
+├── .env                      ← Gemini key + MongoDB URI   (never committed)
+├── MISSION.md                ← why you are learning this
 ├── NOTES.md                  ← preferences, stack, teaching style
 ├── RESOURCES.md              ← trusted sources
-├── lessons/                  ← generated lesson HTML (starts empty)
-├── learning-records/         ← human-readable progress notes (starts empty)
+├── lessons/                  ← 0011-name.json + .yml + .html
+├── review/                   ← spaced-repetition revisions
+├── learning-records/         ← human-readable progress notes
 ├── reference/
-│   ├── glossary.html         ← canonical vocabulary (grows with the subject)
-│   └── my-learning.html      ← mastery dashboard (generic, reusable as-is)
-└── skill/                    ← THIS REPO  ── the engine, identical for every subject
-    ├── SKILL.md              ← the brain: session loop, philosophy, mastery rules
-    ├── CLAUDE.md             ← working agreement: always ground answers in real data
-    ├── PLAN.md               ← curriculum scaffolding
-    ├── LESSON-FORMAT.md      ← mandatory HTML template + design-system classes
-    ├── agents/
-    │   └── learno-analyst.md ← read-only progress analyst (install into .claude/agents/)
-    ├── .env.example          ← copy to <workspace-root>/.env
-    ├── original/             ← format templates for the workspace files
-    │   ├── SKILL.md               (the canonical/original skill spec)
-    │   ├── MISSION-FORMAT.md
-    │   ├── RESOURCES-FORMAT.md
-    │   ├── GLOSSARY-FORMAT.md
-    │   └── LEARNING-RECORD-FORMAT.md
-    ├── templates/            ← generic, subject-agnostic starting files
-    │   └── reference/
-    │       ├── glossary.html      ← empty glossary scaffold ([SUBJECT] + example term)
-    │       └── my-learning.html   ← mastery dashboard (server-driven, [SUBJECT] placeholders)
-    └── server/               ← local Express server (Gemini proxy + MongoDB bridge)
-        ├── index.js
-        ├── routes/{validate,progress}.js
-        └── package.json
+│   ├── glossary.html         ← canonical vocabulary
+│   └── my-learning.html      ← mastery dashboard
+│
+│  engine ────────────────────────────────────────
+├── SKILL.md                  ← the brain: session loop, philosophy, mastery rules
+├── CLAUDE.md                 ← working agreement
+├── COMPONENTS.md             ← the component vocabulary  (generated)
+├── LESSON-FORMAT.md          ← authoring contract
+├── components/core/          ← upstream's components
+├── components/local/         ← yours; wins on a name collision
+├── build/                    ← the renderer
+├── assets/                   ← design system + lesson runtime
+├── sandbox/                  ← fixtures for working on the engine itself
+├── agents/learno-analyst.md  ← read-only progress analyst
+└── server/                   ← Express: Gemini proxy + MongoDB bridge
 ```
 
-> The engine assumes it sits one level under the workspace:
-> - `skill/server/index.js` loads env from `../../.env` (i.e. the **workspace root**, two levels up).
-> - `SKILL.md` reads `../MISSION.md`, `../NOTES.md`, `../lessons/`, `../reference/glossary.html`, etc.
-> - Lessons derive the API base from the page's own origin, so they work on any
->   port and through a tunnel; `http://localhost:9990` is only the `file://` fallback.
->
-> So consume this repo as a subfolder named `skill/` (copy it in, or add it as a **git submodule**).
-> If you clone it as a standalone repo root, those relative paths break.
+Upstream ships `lessons/`, `review/`, `learning-records/` and `reference/`
+empty, so `git pull upstream main` never touches your content. What your Claude
+invents under `components/local/` stays in your fork.
 
 ---
 
@@ -88,7 +79,7 @@ my-study/                     ← the study workspace (one git repo PER subject,
 
 | Requirement | Why |
 |---|---|
-| **Node.js ≥ 18** | runs `skill/server` (Express + native `fetch`) |
+| **Node.js ≥ 18** | runs the server and the lesson renderer |
 | **MongoDB** (Atlas or local) | persists mastery, lessons, SM-2 schedule, conversation events |
 | **`mongosh`** on PATH | `SKILL.md`'s "before every session" step queries Mongo directly |
 | **Gemini API key** | server proxies Gemini 2.5-flash to score free-text answers |
@@ -98,57 +89,61 @@ my-study/                     ← the study workspace (one git repo PER subject,
 
 ## Bootstrap a new study (start here)
 
-1. **Create the workspace and drop this engine in as `skill/`:**
+1. **Fork this repo and clone your fork.**
    ```bash
-   mkdir my-study && cd my-study
-   git submodule add <THIS_REPO_URL> skill      # or: cp -r /path/to/skill ./skill
+   gh repo fork murichristopher/learno --clone
+   cd learno
    ```
+   Forking rather than cloning matters: your lessons get committed to a remote
+   you own, and `upstream` stays a separate remote you pull engine fixes from.
 
-2. **Create the secrets file at the workspace root** — copy `skill/.env.example`
-   to `my-study/.env` and fill it in:
+2. **Create `.env` at the root:**
    ```bash
-   cp skill/.env.example .env
+   cp .env.example .env
    # then edit: GEMINI_API_KEY, MONGODB_URI, and set MONGODB_DB per study.
    # PORT is free to change — lessons read the API base from their own origin.
    ```
 
-3. **Install and start the server** (from the workspace root):
+3. **Start it.**
    ```bash
-   cd skill/server && npm install && npm start
-   # → listening on :9990, Gemini + MongoDB wired up
+   make local     # http://localhost:9990 — installs dependencies on first run
+   ```
+   Or `make start` to also open a Cloudflare tunnel, which makes lessons
+   readable on your phone. Read the warning in the Makefile first: that URL is
+   public and unauthenticated.
+
+4. **Install the progress analyst** (once — it then works for every study):
+   ```bash
+   ln -s "$(pwd)/agents/learno-analyst.md" ~/.claude/agents/learno-analyst.md
    ```
 
-4. **Seed the workspace from the generic templates:**
-   ```bash
-   mkdir -p lessons learning-records reference
-   cp skill/templates/reference/*.html reference/
-   # then replace the [SUBJECT] placeholders in reference/glossary.html and
-   # reference/my-learning.html with this study's name.
-   ```
-   Scaffold `MISSION.md` / `NOTES.md` / `RESOURCES.md` using the formats in
-   `skill/original/`. *You don't have to write `MISSION.md` by hand — if it's
-   missing or vague, the skill runs its "grill-me" interview to build it with you.*
-   *And you don't need to know the field's key books — once the mission is set, the
-   skill runs **Source Discovery**: it researches the canonical sources (textbooks,
-   papers, primary docs), asks if you already own any, and (after you approve) writes
-   them into a tiered `RESOURCES.md`. Lessons are then grounded in those Tier 1 sources.*
+5. **Start learning.** In Claude Code, from the repo root, invoke the skill
+   (`/learno` or "teach me X"). It reads `SKILL.md`, checks the server, queries
+   Mongo for what is due, and picks the next lesson in your zone of proximal
+   development.
 
-5. **Install the progress analyst** (once — works for every study afterwards):
-   ```bash
-   ln -s "$(pwd)/skill/agents/learno-analyst.md" ~/.claude/agents/learno-analyst.md
-   # and inherit the working agreement at the workspace root:
-   echo '@skill/CLAUDE.md' >> CLAUDE.md
-   ```
+   *You do not have to write `MISSION.md` by hand — if it is missing or vague,
+   the skill interviews you and writes it with you. And you do not need to know
+   the field's key books: once the mission is set, it researches the canonical
+   sources, asks which you already own, and writes a tiered `RESOURCES.md`.*
 
-6. **Start learning.** In Claude Code, from the workspace root, invoke the skill
-   (`/learno` or "teach me X"). It reads `SKILL.md`, checks the server health, queries
-   Mongo for what's due, and picks the next lesson in your zone of proximal development.
+### Keeping up with upstream
+
+```bash
+git remote add upstream https://github.com/murichristopher/learno.git
+git pull upstream main
+```
+
+Upstream never writes to `lessons/`, `review/`, `learning-records/` or
+`reference/`, so your content is not in the way. If your Claude has edited
+engine files, expect to resolve those — that is the cost of the engine being
+editable in place, and it was chosen deliberately.
 
 ---
 
 ## Progress analyst (`learno-analyst`)
 
-A read-only Claude Code subagent (`skill/agents/learno-analyst.md`) that grounds every
+A read-only Claude Code subagent (`agents/learno-analyst.md`) that grounds every
 answer about your learning in **real data** instead of assumptions. It knows the MongoDB
 schema (`lessons`, `concepts`, `section_results`, `conversations`) and the workspace layout,
 and is **subject-agnostic** — install it once and it works for every learno study.
@@ -157,14 +152,14 @@ Ask things like *"valida minhas respostas da lição X"*, *"como estou no geral?
 vence pra revisar?"*, *"onde estou patinando?"*. It returns a verdict + a table of real
 scores/dates + 1–3 insights (recurring misconceptions, stagnation, what's due).
 
-`skill/CLAUDE.md` instructs the main agent to consult it before any progress/validation/
+`CLAUDE.md` instructs the main agent to consult it before any progress/validation/
 recommendation answer — so the tutor never invents how you're doing.
 
 ---
 
 ## Environment variables
 
-Read from `<workspace-root>/.env` (path is `../../.env` relative to `skill/server/index.js`).
+Read from `.env` at the repo root.
 
 | Var | Required | Default | Used for |
 |---|---|---|---|
@@ -176,7 +171,7 @@ Read from `<workspace-root>/.env` (path is `../../.env` relative to `skill/serve
 
 ---
 
-## The server (`skill/server`)
+## The server (`server/`)
 
 Local Express app: Gemini proxy + MongoDB bridge. Routes used by the lessons/dashboard:
 
@@ -199,9 +194,9 @@ Local Express app: Gemini proxy + MongoDB bridge. Routes used by the lessons/das
 
 The server statically serves the study workspace, so lessons open over
 `http://localhost` (a secure context — the mic needs one) instead of `file://`.
-It infers the workspace root from its own location, assuming `<workspace>/skill/server`.
-Set **`LEARNO_WORKSPACE`** to override that for any other layout; the sandbox
-below relies on it.
+The workspace is the repo root. **`LEARNO_WORKSPACE`** overrides that and exists
+for exactly one caller — the engine's own sandbox, which serves fixtures instead
+of your real content.
 
 ---
 
