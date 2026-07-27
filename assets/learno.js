@@ -72,6 +72,13 @@
     var next = $('.lx-phase[data-phase="' + PHASES[i + 1] + '"]');
     if (!next) return;
     next.classList.remove('lx-phase--locked');
+
+    // The body carries aria-hidden while blurred, so a screen reader is not
+    // handed the answer. Removing the class un-blurs it visually; without this
+    // line the section would stay invisible to assistive tech after opening.
+    var body = $('.lx-phase-body', next);
+    if (body) body.removeAttribute('aria-hidden');
+
     next.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 

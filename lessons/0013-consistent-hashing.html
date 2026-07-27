@@ -94,8 +94,8 @@ a intuição diz, e qual é a estrutura que troca &quot;quase tudo se move&quot;
       <span class="lx-phase-badge"><span>1</span></span>
       <h2 class="lx-phase-title">Por que `% N` quebra quando N muda</h2>
     </div>
-    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
-    <div class="lx-phase-body">
+    <div class="lx-phase-locked-wrap">
+      <div class="lx-phase-body">
   <div class="lx-prose">
     <p><code class="lx-code">hash(&quot;user:42&quot;) % 3</code> devolve um número entre 0 e 2. Estável, barato,
 distribui bem. O problema não está no hash — ele nem sabe quantos nós
@@ -213,6 +213,12 @@ para procurá-la, enquanto o nó novo responde miss e vai ao banco.</p>
       <p class="lx-inline-fb"></p>
     </div>
   </div>
+      </div>
+      <div class="lx-phase-lock">
+        <span class="lx-phase-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-phase-lock-text">Responda a seção anterior para abrir</span>
+      </div>
     </div>
   </section>
   <section class="lx-phase lx-phase--locked" data-phase="2" id="phase-2">
@@ -220,8 +226,8 @@ para procurá-la, enquanto o nó novo responde miss e vai ao banco.</p>
       <span class="lx-phase-badge"><span>2</span></span>
       <h2 class="lx-phase-title">O anel: chaves e nós no mesmo espaço</h2>
     </div>
-    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
-    <div class="lx-phase-body">
+    <div class="lx-phase-locked-wrap">
+      <div class="lx-phase-body" aria-hidden="true">
   <div class="lx-prose">
     <p>A virada é parar de mapear chave → índice de nó, e passar a mapear <strong>as duas
 coisas no mesmo espaço</strong>. Pegue a saída do hash e imagine-a como um círculo,
@@ -289,6 +295,12 @@ você passa para aproximadamente <code class="lx-code">1/N</code>.</p>
       </label>
     <p class="lx-inline-fb"></p>
   </div>
+      </div>
+      <div class="lx-phase-lock">
+        <span class="lx-phase-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-phase-lock-text">Responda a seção anterior para abrir</span>
+      </div>
     </div>
   </section>
   <section class="lx-phase lx-phase--locked" data-phase="3" id="phase-3">
@@ -296,8 +308,8 @@ você passa para aproximadamente <code class="lx-code">1/N</code>.</p>
       <span class="lx-phase-badge"><span>3</span></span>
       <h2 class="lx-phase-title">Nós virtuais: por que o anel sozinho não basta</h2>
     </div>
-    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
-    <div class="lx-phase-body">
+    <div class="lx-phase-locked-wrap">
+      <div class="lx-phase-body" aria-hidden="true">
   <div class="lx-prose">
     <p>O anel resolve o remapeamento e cria dois problemas novos, ambos pela mesma
 causa: <strong>três pontos aleatórios num círculo não o dividem em três partes
@@ -420,6 +432,12 @@ carga, a fatia dobrada passa para o seguinte.</p>
       <p class="lx-inline-fb"></p>
     </div>
   </div>
+      </div>
+      <div class="lx-phase-lock">
+        <span class="lx-phase-lock-badge"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="lx-phase-lock-text">Responda a seção anterior para abrir</span>
+      </div>
     </div>
   </section>
   <figure class="lx-figure">
