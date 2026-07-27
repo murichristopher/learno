@@ -10,7 +10,10 @@ module.exports = {
   meta: {
     name: 'compare',
     purpose: 'duas ou três opções lado a lado',
-    props: { columns: 'array', caption: 'string?' },
+    props: {
+      columns: 'array<{label: string, body: string}>',
+      caption: 'string?'
+    },
     demo: {
       caption: 'Onde cada uma quebra',
       columns: [

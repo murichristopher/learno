@@ -22,7 +22,9 @@ module.exports = {
       question:  'string',
       summary:   'string',
       phase:     'string?',
-      fallback:  'object?'
+      // Required, not optional: this is what the reader gets when the server is
+      // unreachable, and a recall without it dead-ends the lesson offline.
+      fallback:  '{options: array<{text: string, correct: bool}>, ok: string, bad: string}'
     },
     demo: {
       conceptId: 'sandbox_widget_sharding',

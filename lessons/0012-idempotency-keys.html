@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chaves de idempotência</title>
+<link rel="stylesheet" href="../assets/learno.css" />
+<link rel="stylesheet" href="../assets/components.css" />
+<script>(function(){try{var t=localStorage.getItem('lx-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
+</head>
+<body class="lx-shell" data-lesson="0012-idempotency-keys">
+
+<div class="lx-overlay"></div>
+
+<!-- Shared arrowhead. Authored diagrams reference #lx-arrow and never carry
+     their own marker definition. -->
+<svg class="lx-defs" aria-hidden="true">
+  <defs>
+    <marker id="lx-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="lx-arrowhead" d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+  </defs>
+</svg>
+
+  <nav class="lx-topbar">
+    <a class="lx-topbar-home" href="../" title="Ir para o painel">
+      <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+  <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+      <span>learno</span>
+    </a>
+    <div class="lx-topbar-actions">
+      <button type="button" class="lx-theme-btn" data-theme-set="light" title="Tema claro" aria-label="Tema claro">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" /></svg>
+      </button>
+      <button type="button" class="lx-theme-btn" data-theme-set="auto" title="Seguir o sistema" aria-label="Seguir o sistema">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2" />
+  <line x1="8" x2="16" y1="21" y2="21" />
+  <line x1="12" x2="12" y1="17" y2="21" /></svg>
+      </button>
+      <button type="button" class="lx-theme-btn" data-theme-set="dark" title="Tema escuro" aria-label="Tema escuro">
+        <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></svg>
+      </button>
+    </div>
+  </nav>
+
+<div class="lx-content lx-wrap">
+  <header class="lx-lesson-head">
+    <span class="lx-badge">Lição 12 · System Design</span>
+    <h1 class="lx-title"><span class="lx-title-icon"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4" />
+  <path d="m21 2-9.6 9.6" />
+  <circle cx="7.5" cy="15.5" r="5.5" /></svg></span><span>Chaves de idempotência</span></h1>
+    <p class="lx-subtitle">Como repetir a requisição sem repetir a cobrança.</p>
+  </header>
+
+  <div class="lx-offline-banner" id="lx-banner" hidden>
+    Servidor fora do ar. As seções continuam abrindo por múltipla escolha, mas a
+    validação por IA e o registro do progresso ficam indisponíveis.
+  </div>
+
+  <div class="lx-progress" role="presentation">
+    <span class="lx-progress-seg" data-seg="1"></span>
+    <span class="lx-progress-seg" data-seg="2"></span>
+  </div>
+
+  <div class="lx-blocks">
+  <div class="lx-card lx-analogy">
+    <span class="lx-analogy-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+  <path d="M9 18h6" />
+  <path d="M10 22h4" /></svg> Pense na senha numerada da padaria</span>
+    <p class="lx-analogy-text">Você pega a senha 47, pede um bolo e paga. A fila trava, você não tem certeza
+se o pedido entrou, e volta ao balcão com a mesma senha 47 na mão. O atendente
+olha o número, encontra o pedido já registrado e te entrega o bolo que já
+estava embalado. Ele não assa outro. Se você tivesse pegado uma senha nova
+antes de voltar, aí sim sairiam dois bolos.
+</p>
+    <p class="lx-analogy-bridge">A senha 47 é a chave de idempotência: ela identifica o *pedido*, não a *ida ao balcão*.</p>
+  </div>
+  <section class="lx-phase" data-phase="1" id="phase-1">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>1</span></span>
+      <h2 class="lx-phase-title">A chave que transforma retry em repetição segura</h2>
+    </div>
+    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
+    <div class="lx-phase-body">
+  <div class="lx-prose">
+    <p>Um <code class="lx-code">POST /cobrancas</code> que estoura o timeout não te diz nada sobre o que
+aconteceu do outro lado. A cobrança pode ter sido criada e só a resposta ter
+se perdido. Se você repetir, arrisca cobrar duas vezes; se não repetir,
+arrisca não cobrar nenhuma. Nenhum código de erro resolve isso, porque a
+informação que falta nunca chegou até você.</p>
+    <p>A chave de idempotência inverte quem decide. <strong>O cliente</strong> gera um
+identificador único para a <em>intenção</em> — um UUID v4 serve — e manda esse valor
+no header <code class="lx-code">Idempotency-Key</code> em <strong>todas</strong> as tentativas daquele mesmo pedido.
+O servidor grava a chave junto com o resultado. Quando a mesma chave chega de
+novo, ele não executa nada: devolve a resposta que já tinha guardado, com o
+mesmo status e o mesmo corpo.</p>
+    <p>Repare no detalhe que quebra implementações reais: a chave precisa nascer
+<strong>antes</strong> da primeira tentativa e ser reaproveitada no retry. Se você gerar um
+UUID novo dentro do laço de retry, cada tentativa vira um pedido diferente aos
+olhos do servidor — você não tem idempotência, tem só um header bonito.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 620 170" role="img" aria-label="Duas tentativas do cliente com a mesma chave resultam em uma única cobrança">
+  <rect class="lx-node lx-node--accent" x="8" y="46" width="140" height="70"/>
+  <text class="lx-label" x="78" y="76" text-anchor="middle">Cliente</text>
+  <text class="lx-label lx-label--muted" x="78" y="96" text-anchor="middle">Idempotency-Key</text>
+  <path class="lx-edge lx-edge--accent" d="M150 66 H 254"/>
+  <text class="lx-label lx-label--muted" x="202" y="56" text-anchor="middle">1ª tentativa</text>
+  <path class="lx-edge lx-edge--dashed" d="M150 104 H 254"/>
+  <text class="lx-label lx-label--muted" x="202" y="126" text-anchor="middle">retry, mesma chave</text>
+  <rect class="lx-node" x="256" y="46" width="152" height="70"/>
+  <text class="lx-label" x="332" y="76" text-anchor="middle">API</text>
+  <text class="lx-label lx-label--muted" x="332" y="96" text-anchor="middle">chave já existe?</text>
+  <path class="lx-edge" d="M410 81 H 468"/>
+  <rect class="lx-node lx-node--muted" x="470" y="46" width="142" height="70"/>
+  <text class="lx-label" x="541" y="76" text-anchor="middle">1 cobrança</text>
+  <text class="lx-label lx-label--muted" x="541" y="96" text-anchor="middle">resposta repetida</text>
+</svg>
+</div>
+    <figcaption class="lx-caption">A mesma chave em duas tentativas produz uma cobrança só</figcaption>
+  </figure>
+  <div class="lx-card lx-ask lx-recall"
+       data-concept-id="idempotency_key"
+       data-phase="1"
+       data-summary="Seção sobre a chave pertencer à intenção do cliente e não à tentativa HTTP, e sobre o servidor devolver a resposta guardada."
+       data-ok="Isso. A chave só significa alguma coisa se ela sobreviver ao retry."
+       data-bad="O servidor está certo — ele compara chaves. Chaves diferentes são, por definição, pedidos diferentes.">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
+  <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
+  <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
+    <p class="lx-ask-q">Explique com suas palavras por que gerar a chave de idempotência dentro da
+rotina de retry destrói a garantia, mesmo que o servidor esteja implementado
+corretamente.
+</p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="validate">Validar</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+      </div>
+    </div>
+
+    <div class="lx-fallback">
+      <p class="lx-fallback-note">Servidor fora do ar — respondendo por múltipla escolha.</p>
+      
+        <label class="lx-choice">
+          <input type="radio" name="fb-idempotency_key" value="0" data-correct="0" />
+          <span>Porque o servidor não consegue validar UUIDs gerados no cliente</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-idempotency_key" value="1" data-correct="1" />
+          <span>Porque cada tentativa passa a ter uma chave diferente, e o servidor não tem como saber que é o mesmo pedido</span>
+        </label>
+        <label class="lx-choice">
+          <input type="radio" name="fb-idempotency_key" value="2" data-correct="0" />
+          <span>Porque o header só pode ser enviado uma vez por conexão</span>
+        </label>
+      <p class="lx-inline-fb"></p>
+    </div>
+  </div>
+    </div>
+  </section>
+  <section class="lx-phase lx-phase--locked" data-phase="2" id="phase-2">
+    <div class="lx-phase-head">
+      <span class="lx-phase-badge"><span>2</span></span>
+      <h2 class="lx-phase-title">Onde a chave mora, quanto tempo vive, e por que não é deduplicação</h2>
+    </div>
+    <p class="lx-phase-locked-note">Responda a seção anterior para abrir esta.</p>
+    <div class="lx-phase-body">
+  <div class="lx-prose">
+    <p>O registro da chave precisa ser tão durável quanto o efeito que ele protege.
+Na prática: uma tabela com índice único em <code class="lx-code">(consumer_id, idempotency_key)</code>,
+gravada <strong>na mesma transação</strong> que cria a cobrança. É o índice único que
+ganha a corrida quando dois retries chegam ao mesmo tempo — o segundo toma
+violação de constraint e cai no caminho de &quot;já existe&quot;. Redis funciona se você
+aceitar perder chaves num failover; para dinheiro, geralmente não aceita.</p>
+    <p>Guarde três coisas junto da chave: o <strong>estado</strong> (<code class="lx-code">in_flight</code> ou <code class="lx-code">done</code>), a
+<strong>resposta</strong> completa a ser reenviada, e o <strong>hash do corpo</strong> da requisição.
+O hash é o que te protege do cliente com bug: mesma chave com corpo diferente
+é erro (<code class="lx-code">422</code>), não é retry. Sem isso, um bug de reuso de chave silenciosamente
+engole cobranças legítimas.</p>
+    <p>O <strong>TTL</strong> é uma decisão de negócio, não de infraestrutura. Ele precisa cobrir
+a janela em que alguém ainda pode reenviar aquele pedido: o retry automático
+(segundos), o retry manual do usuário (minutos), o reprocessamento de uma fila
+parada (horas). <strong>24 horas</strong> é o padrão da indústria e o que a Stripe usa;
+operações financeiras que passam por conciliação costumam ir a 7 dias. Curto
+demais e o retry atrasado executa de novo — o pior dos mundos, porque parece
+que funciona. Longo demais e você criou uma tabela de auditoria que ninguém
+pediu e que só cresce.</p>
+    <p>E isso é diferente de <strong>deduplicação a posteriori</strong>. Deduplicar é olhar os
+efeitos depois — duas cobranças do mesmo valor, do mesmo cliente, com 3
+segundos de diferença — e adivinhar qual sobra. É heurística: você não
+consegue distinguir a duplicata do cliente que realmente quis comprar duas
+vezes. A chave elimina a adivinhação, porque é o próprio cliente declarando
+&quot;isto é o mesmo pedido&quot;. Com idempotência a duplicata nunca vira efeito; com
+deduplicação ela vira efeito e você tenta desfazer.</p>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-card lx-scroll"><svg class="lx-svg" viewBox="0 0 620 200" role="img" aria-label="Registro da chave passando de in flight para done e expirando pelo TTL">
+  <rect class="lx-node lx-node--accent" x="8" y="24" width="184" height="60"/>
+  <text class="lx-label" x="100" y="50" text-anchor="middle">chave + consumidor</text>
+  <text class="lx-label lx-label--muted" x="100" y="70" text-anchor="middle">índice único</text>
+  <path class="lx-edge" d="M194 54 H 260"/>
+  <rect class="lx-node" x="262" y="24" width="184" height="60"/>
+  <text class="lx-label" x="354" y="50" text-anchor="middle">in_flight</text>
+  <text class="lx-label lx-label--muted" x="354" y="70" text-anchor="middle">1ª escrita ganha a corrida</text>
+  <path class="lx-edge lx-edge--accent" d="M354 86 V 122"/>
+  <rect class="lx-node" x="262" y="124" width="184" height="60"/>
+  <text class="lx-label" x="354" y="150" text-anchor="middle">done + resposta</text>
+  <text class="lx-label lx-label--muted" x="354" y="170" text-anchor="middle">reenviada no retry</text>
+  <path class="lx-edge lx-edge--dashed" d="M448 154 H 506"/>
+  <rect class="lx-node lx-node--muted" x="508" y="124" width="104" height="60"/>
+  <text class="lx-label" x="560" y="150" text-anchor="middle">TTL 24h</text>
+  <text class="lx-label lx-label--muted" x="560" y="170" text-anchor="middle">expira</text>
+</svg>
+</div>
+    <figcaption class="lx-caption">O registro da chave: lock na primeira escrita, resposta guardada, expiração</figcaption>
+  </figure>
+  <div class="lx-card lx-quiz" data-phase="2"
+       data-ok="Exato. TTL expirado é indistinguível de chave nunca vista — e é o modo de falha mais traiçoeiro, porque só aparece no dia do incidente." data-bad="Depois do TTL não sobra registro nenhum para comparar. Para o servidor, é um pedido novo em folha.">
+    <span class="lx-quiz-label">Escolha uma</span>
+    <p class="lx-ask-q">Você guarda as chaves com TTL de 60 segundos. O que acontece quando uma fila de retries fica parada 20 minutos e depois é reprocessada?</p>
+    
+      <label class="lx-choice">
+        <input type="radio" name="quiz-1896530153" value="0" data-correct="0" />
+        <span>As requisições são rejeitadas com 409, porque a chave expirou</span>
+      </label>
+      <label class="lx-choice">
+        <input type="radio" name="quiz-1896530153" value="1" data-correct="1" />
+        <span>As chaves já expiraram, então cada requisição é tratada como nova e os efeitos são duplicados</span>
+      </label>
+      <label class="lx-choice">
+        <input type="radio" name="quiz-1896530153" value="2" data-correct="0" />
+        <span>Nada muda — o índice único continua bloqueando duplicatas para sempre</span>
+      </label>
+      <label class="lx-choice">
+        <input type="radio" name="quiz-1896530153" value="3" data-correct="0" />
+        <span>O servidor recalcula o hash do corpo e reconhece o pedido mesmo sem a chave</span>
+      </label>
+    <p class="lx-inline-fb"></p>
+  </div>
+    </div>
+  </section>
+  <div class="lx-card lx-ask lx-teachback" data-concepts="idempotency_key,idempotency_window">
+    <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
+  <path d="M22 10v6" />
+  <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg> Ensina de volta</span>
+    <p class="lx-ask-q">Explique, do começo ao fim, como uma chave de idempotência torna um retry
+seguro: quem gera a chave e quando, o que o servidor grava junto dela, quanto
+tempo esse registro precisa viver, e por que isso é diferente de deduplicar
+os efeitos depois.
+</p>
+    <p class="lx-teachback-hint">Cite o índice único, o hash do corpo e pelo menos um número concreto de TTL.</p>
+
+    <p class="lx-teachback-offline">
+      Esta parte precisa do servidor. Sem ele não dá para registrar a lição —
+      e um score inventado estragaria o agendamento da revisão.
+    </p>
+
+    <div class="lx-ask-online">
+      <textarea class="lx-answer lx-answer--large" placeholder="Explique o conceito inteiro, com suas palavras…"></textarea>
+      <div class="lx-ask-tools">
+        <button type="button" class="lx-btn lx-btn--primary" data-action="teachback">Encerrar a lição</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <select class="lx-lang" data-role="lang" hidden>
+          <option value="pt-BR">Português</option>
+          <option value="en-US">English</option>
+        </select>
+        <span class="lx-mic-hint"></span>
+      </div>
+      <div class="lx-verdict">
+        <div class="lx-score">
+          <span class="lx-score-num">—</span><span class="lx-score-of">/100</span>
+          <span class="lx-score-word"></span>
+        </div>
+        <div class="lx-bar"><div class="lx-bar-fill"></div></div>
+        <p class="lx-feedback"></p>
+        <ul class="lx-misses"></ul>
+        <div class="lx-concepts"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lx-done">
+    <div class="lx-card lx-next-review">
+      <span class="lx-next-review-label">Próxima revisão</span>
+      <span class="lx-next-review-date">—</span>
+      <span class="lx-next-review-note"></span>
+    </div>
+  </div>
+  <section class="lx-flashcards">
+    <p class="lx-flash-title"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></svg> Revisão rápida</p>
+    <div class="lx-flash-grid">
+      <details class="lx-card lx-flash">
+        <summary>Quem gera a chave de idempotência?</summary>
+        <p class="lx-flash-back">O cliente, antes da primeira tentativa. Ela identifica a intenção, e é reenviada igual em todos os retries.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>O que o servidor guarda junto da chave?</summary>
+        <p class="lx-flash-back">Estado (in_flight/done), a resposta completa para reenviar, e o hash do corpo da requisição.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>O que o hash do corpo protege?</summary>
+        <p class="lx-flash-back">Contra reuso indevido de chave: mesma chave com corpo diferente é 422, não é retry.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Qual TTL usar?</summary>
+        <p class="lx-flash-back">24h é o padrão (Stripe). Precisa cobrir retry automático, retry manual e reprocessamento de fila parada. Financeiro com conciliação: até 7 dias.</p>
+      </details>
+      <details class="lx-card lx-flash">
+        <summary>Idempotência x deduplicação</summary>
+        <p class="lx-flash-back">Idempotência age antes: a duplicata nunca vira efeito, porque o cliente declarou que é o mesmo pedido. Deduplicação age depois, por heurística, e tenta desfazer o efeito.</p>
+      </details>
+    </div>
+  </section>
+  <div class="lx-card lx-source">
+    <p class="lx-source-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" />
+  <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg> Fonte primária</p>
+    <p class="lx-source-title"><a class="lx-link" href="https://docs.stripe.com/api/idempotent_requests" rel="noopener noreferrer" target="_blank">Stripe API Reference — Idempotent requests</a></p>
+    <p class="lx-source-note">Documentação da própria API: header Idempotency-Key, resposta guardada e expiração em 24 horas.</p>
+  </div>
+  </div>
+
+  <footer class="lx-lesson-foot">
+    <a class="lx-btn lx-btn--outline" href="../reference/my-learning.html">Painel</a>
+    <a class="lx-btn lx-btn--outline" href="../reference/glossary.html">Glossário</a>
+  </footer>
+</div>
+
+<script type="application/json" id="lx-config">{"lesson":"0012-idempotency-keys","concepts":["idempotency_key","idempotency_window"],"phases":["1","2"]}</script>
+<script src="../assets/learno.js" defer></script>
+</body>
+</html>

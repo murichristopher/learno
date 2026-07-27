@@ -11,7 +11,13 @@ module.exports = {
   meta: {
     name: 'quiz',
     purpose: 'múltipla escolha, corrigida na própria página',
-    props: { question: 'string', options: 'array', ok: 'string', bad: 'string', phase: 'string?' },
+    props: {
+      question: 'string',
+      options:  'array<{text: string, correct: bool}>',
+      ok:       'string',
+      bad:      'string',
+      phase:    'string?'
+    },
     demo: {
       question: 'Qual destes NÃO é resolvido por um cache?',
       options: [

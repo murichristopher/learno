@@ -1,0 +1,10 @@
+t:
+  title: "Formas de array adivinhadas errado"
+  q: "Uma pergunta"
+  ok: "certo"
+  bad: "errado"
+  options:
+    - { label: "usei label em vez de text", isCorrect: false }
+    - { label: "e isCorrect em vez de correct", isCorrect: true }
+  cards:
+    - { pergunta: "usei pergunta", resposta: "em vez de front/back" }

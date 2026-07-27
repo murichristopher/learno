@@ -11,7 +11,11 @@ module.exports = {
   meta: {
     name: 'table',
     purpose: 'tabela de dados, com cabeçalho e legenda',
-    props: { headers: 'array', rows: 'array', caption: 'string?' },
+    props: {
+      headers: 'array<string>',
+      rows:    'array<array<string>>',
+      caption: 'string?'
+    },
     demo: {
       caption: 'Custo de cada estratégia',
       headers: ['Estratégia', 'Leitura', 'Escrita'],

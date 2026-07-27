@@ -116,7 +116,7 @@ check: deps
 # half-way still looks finished. Each of these must fail, so the target inverts
 # the exit code and complains if one of them ever succeeds.
 check-errors: deps
-	@for f in unknown-component dangling-ref coloured-svg missing-prop bad-lang bad-icon; do \
+	@for f in unknown-component dangling-ref coloured-svg missing-prop bad-lang bad-icon wrong-shape; do \
 	  echo "──────── $$f ────────"; \
 	  out=$$(node build/render.js sandbox/broken/$$f 2>&1); rc=$$?; \
 	  echo "$$out" | grep -v 'assets/components.css'; \

@@ -26,6 +26,11 @@ sentences live here. Any string starting with `@` is a path into the `.yml`.
 **`.yml` — content.** Prose and hand-drawn SVG, addressed by key. This is the
 only file that changes when the wording changes.
 
+An `@` reference may resolve to **any YAML value** — a string, a list, a nested
+object — not only a string. `"options": "@p2.options"` pulling a whole list out
+of the `.yml` is normal and expected. Accented characters and markup inside a
+value survive untouched; nothing is re-escaped on the way in.
+
 ```json
 {
   "id": "0011-async-jobs",
@@ -94,8 +99,23 @@ derived from the `phase` blocks — never restate them.
 ## Components
 
 `COMPONENTS.md` is generated from the components themselves and is the only
-authoritative list. **Naming anything not in it fails the build.** Open
+authoritative list — of both **names and prop shapes**. Naming a component that
+is not in it fails the build, and so does passing a prop the wrong shape. Open
 `sandbox/components.html` (`make sandbox`) to see every one rendered.
+
+Read the prop types literally:
+
+| Type | Means |
+|---|---|
+| `string` · `number` · `bool` | scalars |
+| `svg` | a string, additionally checked for hardcoded colour |
+| `array<{text: string, correct: bool}>` | a list whose every element has exactly those fields |
+| `{options: …, ok: string, bad: string}` | an object with exactly those fields |
+| `string?` | optional — everything else is required |
+
+A field named wrong is a build error naming the element index, not a lesson that
+renders empty. `{label, isCorrect}` where `{text, correct}` was wanted fails
+loudly rather than producing a quiz in which nothing is correct.
 
 If a lesson genuinely needs something the vocabulary lacks, write a new
 component in `components/local/` — it needs `meta.name`, `meta.purpose`,
@@ -124,13 +144,29 @@ lesson stops working without it.
    - `quiz` — multiple choice, corrected in the page. Cheaper and offline-proof,
      but recognising the right answer is easier than producing it.
 
-   Quizzes add variety; they never replace recall. Every `recall` needs a
-   `fallback` — that is what the reader gets when the server is unreachable.
+   Quizzes add variety; they never replace recall. `fallback` is **required** on
+   every `recall` — it is what the reader gets when the server is unreachable, and
+   a recall without one dead-ends the lesson offline.
+
+   `summary` is **not shown to the reader**. It is sent to the model as scoring
+   context, so write what a good answer would have to contain — the rubric, not a
+   label for the section.
 
 4. **`teachback` at the end.** The reader explains the whole topic back. **This
    score drives the SM-2 schedule**, so it is the one that decides when the
    concept comes back. It has no offline fallback on purpose: a multiple-choice
    stand-in for "explain it back" would record a number that means nothing.
+
+   ```json
+   { "component": "teachback",
+     "props": { "question": "@teachback.question",
+                "conceptIds": ["request_cycle_limit", "job_idempotency"],
+                "hint": "@teachback.hint" } }
+   ```
+
+   Concept ids are written literally in the `.json`, never through `@` — ids are
+   structure, prose is content. Every one must also appear in the envelope's
+   `concepts`.
 
 5. **`flashcards`** — three to five, right after the teach-back.
 
@@ -167,8 +203,16 @@ diagrams:
 otherwise. Colour comes from the classes, which is what makes a diagram follow
 light and dark mode instead of drifting from the design system.
 
-Always give a `viewBox` and an `aria-label`. Arrowheads come free — the shared
-`#lx-arrow` marker is in the page template.
+Always give a `viewBox` and an `aria-label`. Accents and UTF-8 inside `<text>`
+pass through untouched — never strip them.
+
+**Arrowheads are applied by the `lx-edge` class**, via `marker-end` in the
+stylesheet. Never write `marker-end="url(#lx-arrow)"` yourself. Use
+`lx-edge--plain` for a line with no arrowhead.
+
+There is no fixed canvas size. A `viewBox` around 600 wide with nodes of roughly
+120×48 reads well at both desktop and phone widths; the SVG scales to its
+container either way.
 
 ---
 
@@ -183,7 +227,7 @@ Each of these stops the build and names the file and block:
 - a concept cited by `recall` or `teachback` but absent from `concepts` — the
   server enforces the same vocabulary when scoring, so it would otherwise be
   dropped silently
-- an unknown `icon` or `lang`
+- an unknown `icon` on the envelope, or an unknown `lang` on a `code` block
 
 Warnings do not stop the build but should be zero: an unreferenced `.yml` key
 usually means a typo'd reference that would have rendered an empty block.
