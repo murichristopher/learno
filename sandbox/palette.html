@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>learno — paleta</title>
+<link rel="stylesheet" href="/assets/learno.css" />
+<link rel="stylesheet" href="/assets/components.css" />
+<script>(function(){try{var t=localStorage.getItem('lx-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
+<style>
+  .pal-bar { position: sticky; top: 0; z-index: 30; padding: .8rem clamp(1rem,4vw,1.5rem); }
+  .pal-row { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+  .pal-row + .pal-row { margin-top: .5rem; }
+  .pal-row > strong { font-size: .7rem; text-transform: uppercase; letter-spacing: .07em;
+                      color: var(--lx-text-subtle); min-width: 5.5rem; }
+  .pal-opt { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .7rem;
+             border-radius: 99px; border: 1px solid var(--lx-border); background: transparent;
+             color: var(--lx-text-2); font-size: .8rem; cursor: pointer; }
+  .pal-opt:hover { background: var(--lx-input); }
+  .pal-opt.is-active { border-color: var(--lx-accent); color: var(--lx-text); background: var(--lx-accent-soft); }
+  .pal-dot { width: .8rem; height: .8rem; border-radius: 50%; flex-shrink: 0; }
+
+  .pal-metrics { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%,16rem),1fr)); }
+  .pal-metric-num { font-size: 1.5rem; font-weight: 700; line-height: 1; }
+  .pal-ok   { color: var(--lx-good); }
+  .pal-fail { color: var(--lx-bad); }
+  .pal-verdict { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+
+  .pal-swatches { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .6rem; }
+  .pal-swatch { text-align: center; font-size: .62rem; color: var(--lx-text-subtle); }
+  .pal-swatch i { display: block; width: 3.2rem; height: 2.2rem; border-radius: .4rem;
+                  border: 1px solid var(--lx-border); margin-bottom: .2rem; }
+
+  .pal-section { margin-top: 2.5rem; }
+  .pal-h { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+           color: var(--lx-text-subtle); margin-bottom: .8rem; }
+  .pal-note { font-size: .8rem; color: var(--lx-text-muted); margin-top: .5rem; }
+  .pal-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%,17rem),1fr)); }
+  .pal-side { display: flex; gap: .75rem; align-items: center; }
+  .pal-side > div { flex: 1; text-align: center; padding: .8rem .4rem; border-radius: var(--lx-radius-sm); font-size: .75rem; }
+</style>
+</head>
+<body class="lx-shell">
+
+<div class="lx-overlay"></div>
+
+<svg class="lx-defs" aria-hidden="true">
+  <defs>
+    <marker id="lx-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="lx-arrowhead" d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+  </defs>
+</svg>
+
+<nav class="lx-topbar pal-bar">
+  <div style="flex:1">
+    <div class="pal-row" id="accent-row"><strong>Acento</strong></div>
+    <div class="pal-row" id="bg-row"><strong>Fundo claro</strong></div>
+  </div>
+  <div class="lx-topbar-actions">
+    <button type="button" class="lx-theme-btn" data-theme-set="light" title="Claro" aria-label="Claro">☀</button>
+    <button type="button" class="lx-theme-btn" data-theme-set="auto" title="Auto" aria-label="Auto">◐</button>
+    <button type="button" class="lx-theme-btn" data-theme-set="dark" title="Escuro" aria-label="Escuro">☾</button>
+  </div>
+</nav>
+
+<div class="lx-content lx-wrap">
+
+  <header class="lx-lesson-head">
+    <span class="lx-badge" id="current-label">—</span>
+    <h1 class="lx-title"><span>Paleta</span></h1>
+    <p class="lx-subtitle">
+      Nada aqui altera o produto. É a página onde a escolha é feita — troque acento
+      e fundo acima e veja como cada combinação se comporta em componentes reais.
+    </p>
+  </header>
+
+  <!-- ── métricas ───────────────────────────────────────────────────── -->
+  <section class="pal-section">
+    <h2 class="pal-h">O que costuma quebrar numa troca de paleta</h2>
+    <div class="pal-metrics">
+      <div class="lx-card">
+        <div class="lx-muted">Acento como texto sobre vidro</div>
+        <div style="display:flex;align-items:baseline;gap:.5rem;margin-top:.3rem">
+          <span class="pal-metric-num" id="m-contrast">—</span>
+          <span class="lx-subtle">mínimo 4.5:1</span>
+          <span class="pal-verdict" id="m-contrast-v" style="margin-left:auto"></span>
+        </div>
+        <div class="pal-note">
+          <code>--lx-accent</code> é usado como <strong>texto</strong> sobre
+          <code>--lx-accent-soft</code>, não só como fundo de botão. Um azul mais
+          claro reprova aqui parecendo ótimo num botão.
+        </div>
+        <p style="margin-top:.6rem"><span class="lx-badge" id="m-badge-demo">assim fica o badge</span></p>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-muted">Acento contra o verde de sucesso</div>
+        <div style="display:flex;align-items:baseline;gap:.5rem;margin-top:.3rem">
+          <span class="pal-metric-num" id="m-dist">—</span>
+          <span class="lx-subtle">mínimo ~120</span>
+          <span class="pal-verdict" id="m-dist-v" style="margin-left:auto"></span>
+        </div>
+        <div class="pal-note">
+          <code>.lx-node--accent</code> preenche com o acento. Se o azul chegar perto
+          de <code>--lx-good</code>, um nó destacado e um estado de sucesso deixam de
+          se distinguir de relance.
+        </div>
+        <div class="pal-side" style="margin-top:.6rem">
+          <div id="m-side-accent">nó destaque</div>
+          <div id="m-side-good">sucesso</div>
+        </div>
+      </div>
+    </div>
+    <div class="pal-swatches" id="swatches"></div>
+  </section>
+
+  <!-- ── componentes ────────────────────────────────────────────────── -->
+  <section class="pal-section">
+    <h2 class="pal-h">Diagrama</h2>
+    <figure class="lx-figure">
+      <div class="lx-card lx-scroll">
+        <svg class="lx-svg" viewBox="0 0 560 130" role="img" aria-label="Exemplo com nó padrão, destacado e apagado">
+          <rect class="lx-node" x="10" y="18" width="120" height="44"/>
+          <text class="lx-label" x="70" y="45" text-anchor="middle">padrão</text>
+          <rect class="lx-node lx-node--accent" x="10" y="72" width="120" height="44"/>
+          <text class="lx-label" x="70" y="99" text-anchor="middle">destaque</text>
+          <rect class="lx-node lx-node--muted" x="210" y="18" width="130" height="44"/>
+          <text class="lx-label--muted" x="275" y="45" text-anchor="middle">apagado</text>
+          <path class="lx-edge" d="M360 40 H 545"/>
+          <text class="lx-label--muted" x="452" y="32" text-anchor="middle">aresta</text>
+          <path class="lx-edge lx-edge--accent" d="M360 94 H 545"/>
+          <text class="lx-label--muted" x="452" y="86" text-anchor="middle">aresta destaque</text>
+        </svg>
+      </div>
+      <figcaption class="lx-caption">Cores vêm das classes — o SVG não tem uma cor própria</figcaption>
+    </figure>
+  </section>
+
+  <section class="pal-section">
+    <h2 class="pal-h">Callouts, código e controles</h2>
+    <div class="lx-stack">
+      <div class="lx-card lx-callout lx-callout--note">
+        <span class="lx-callout-mark">i</span>
+        <div><p class="lx-callout-title">Nota</p><p class="lx-callout-text">Usa o acento — muda com a proposta escolhida.</p></div>
+      </div>
+      <div class="lx-card lx-callout lx-callout--warn">
+        <span class="lx-callout-mark">!</span>
+        <div><p class="lx-callout-title">Atenção</p><p class="lx-callout-text">Âmbar fixo, não acompanha o acento.</p></div>
+      </div>
+      <div class="lx-card lx-callout lx-callout--danger">
+        <span class="lx-callout-mark">×</span>
+        <div><p class="lx-callout-title">Cuidado</p><p class="lx-callout-text">Vermelho fixo, não acompanha o acento.</p></div>
+      </div>
+
+      <figure class="lx-figure">
+        <div class="lx-card lx-codeblock">
+          <span class="lx-codeblock-lang">json</span>
+          <pre><code class="hljs">{ <span class="hljs-attr">"component"</span>: <span class="hljs-string">"diagram"</span>,
+  <span class="hljs-attr">"props"</span>: { <span class="hljs-attr">"svg"</span>: <span class="hljs-string">"@diagrams.ring"</span> } }</code></pre>
+        </div>
+        <figcaption class="lx-caption">A sintaxe tem paleta própria e não acompanha o acento</figcaption>
+      </figure>
+
+      <div class="lx-card">
+        <div class="pal-row" style="gap:.5rem">
+          <button class="lx-btn lx-btn--primary">Primário</button>
+          <button class="lx-btn lx-btn--secondary">Secundário</button>
+          <button class="lx-btn lx-btn--outline">Outline</button>
+          <span class="lx-badge">badge</span>
+          <span class="lx-icon">◆</span>
+        </div>
+        <input class="lx-input" style="margin-top:.75rem" placeholder="Foque aqui para ver o anel de foco" />
+      </div>
+    </div>
+  </section>
+
+  <section class="pal-section">
+    <h2 class="pal-h">Barras de score — as quatro faixas</h2>
+    <div class="lx-card lx-stack" id="score-bars"></div>
+    <p class="pal-note">
+      As cores de veredito não mudam com o acento. O que muda é se elas continuam
+      distinguíveis dele.
+    </p>
+  </section>
+
+  <section class="pal-section">
+    <h2 class="pal-h">Bloco travado</h2>
+    <div class="lx-gate lx-gate--locked">
+      <div class="lx-gate-body" aria-hidden="true">
+        <div class="lx-card">
+          <p class="lx-text">Conteúdo borrado atrás do cadeado. O cadeado usa o acento,
+          e o desfoque precisa continuar ilegível em qualquer proposta.</p>
+        </div>
+      </div>
+      <div class="lx-gate-lock">
+        <span class="lx-gate-lock-badge">🔒</span>
+        <span class="lx-gate-lock-text">Responda a seção anterior para abrir</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="/assets/learno.js" defer></script>
+<script>
+  // Accent families are hand-picked rather than derived: a mechanical lighten/darken
+  // of a blue drifts towards cyan, which is the one direction that collides with
+  // --lx-good. Each `strong` and `soft` was chosen to stay in the blue lane.
+  var ACCENTS = [
+    { id:'purple', name:'Roxo (atual)', accent:'#9333ea', strong:'#7e22ce',
+      soft:'rgb(243 232 255 / .6)', ring:'rgb(168 85 247 / .3)',
+      softDark:'rgb(168 85 247 / .1)',
+      note:'A referência. Tudo abaixo é comparado com ela.' },
+    { id:'indigo', name:'Índigo profundo', accent:'#4338ca', strong:'#3730a3',
+      soft:'rgb(224 231 255 / .7)', ring:'rgb(99 102 241 / .3)',
+      softDark:'rgb(99 102 241 / .12)',
+      note:'A transição mais curta a partir do roxo — ainda puxa para o violeta, e é o de maior contraste.' },
+    { id:'cobalt', name:'Cobalto', accent:'#2563eb', strong:'#1d4ed8',
+      soft:'rgb(219 234 254 / .7)', ring:'rgb(59 130 246 / .3)',
+      softDark:'rgb(59 130 246 / .12)',
+      note:'O azul canônico. Lê como "azul" sem qualificação, e é o mais neutro dos três.' },
+    { id:'azure', name:'Azul claro', accent:'#0284c7', strong:'#0369a1',
+      soft:'rgb(224 242 254 / .7)', ring:'rgb(14 165 233 / .3)',
+      softDark:'rgb(14 165 233 / .12)',
+      note:'Incluído porque é a direção que costuma ser pedida — e porque reprova nas duas métricas. Vale ver falhando.' }
+  ];
+
+  var BACKGROUNDS = [
+    { id:'current', name:'Atual (lavagem roxa)',
+      from:'rgb(243 232 255 / .8)', via:'#ffffff', to:'rgb(224 231 255 / .8)',
+      note:'Tingido de roxo. Os cards de vidro se destacam bem.' },
+    { id:'near-white', name:'Quase branco',
+      from:'#fdfdfe', via:'#ffffff', to:'#f8fafc',
+      note:'Limpo, mas o vidro quase desaparece: rgb(255 255 255 / .6) sobre branco é branco.' },
+    { id:'cool-tint', name:'Cinza-azulado',
+      from:'#f1f5f9', via:'#f8fafc', to:'#e8eef6',
+      note:'Neutro e frio. Dá contorno ao vidro sem tingir a página de uma cor.' },
+    { id:'accent-wash', name:'Lavagem do acento',
+      from:null, via:'#ffffff', to:null,
+      note:'Deriva do acento escolhido — a página inteira acompanha a cor primária.' }
+  ];
+
+  var state = { accent: ACCENTS[0], bg: BACKGROUNDS[0] };
+
+  // ── colour maths, so the risks are measured rather than eyeballed ──
+  function rgb(hex) {
+    hex = hex.replace('#','');
+    return [0,2,4].map(function(i){ return parseInt(hex.slice(i,i+2),16); });
+  }
+  function luminance(hex) {
+    return rgb(hex).map(function(c){
+      c /= 255;
+      return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
+    }).reduce(function(a,v,i){ return a + [0.2126,0.7152,0.0722][i]*v; }, 0);
+  }
+  function contrast(a, b) {
+    var la = luminance(a), lb = luminance(b);
+    return (Math.max(la,lb) + 0.05) / (Math.min(la,lb) + 0.05);
+  }
+  function distance(a, b) {
+    var x = rgb(a), y = rgb(b);
+    return Math.sqrt(x.reduce(function(s,v,i){ return s + Math.pow(v-y[i],2); }, 0));
+  }
+
+  function apply() {
+    var a = state.accent, b = state.bg;
+    var r = document.documentElement.style;
+
+    r.setProperty('--lx-accent', a.accent);
+    r.setProperty('--lx-accent-strong', a.strong);
+    r.setProperty('--lx-accent-ring', a.ring);
+    var dark = matchMedia('(prefers-color-scheme: dark)').matches;
+    var forced = document.documentElement.getAttribute('data-theme');
+    var isDark = forced === 'dark' || (forced !== 'light' && dark);
+    r.setProperty('--lx-accent-soft', isDark ? a.softDark : a.soft);
+
+    if (b.id === 'accent-wash') {
+      var c = rgb(a.accent).join(' ');
+      r.setProperty('--lx-shell-from', 'rgb(' + c + ' / .10)');
+      r.setProperty('--lx-shell-to',   'rgb(' + c + ' / .06)');
+      r.setProperty('--lx-shell-via',  b.via);
+    } else {
+      r.setProperty('--lx-shell-from', b.from);
+      r.setProperty('--lx-shell-via',  b.via);
+      r.setProperty('--lx-shell-to',   b.to);
+    }
+
+    document.getElementById('current-label').textContent = a.name + ' · ' + b.name;
+
+    // The soft tint is translucent, so measure against what it sits on: a white card.
+    var ratio = contrast(a.accent, '#ffffff');
+    var dist  = distance(a.accent, '#059669');
+    var okC = ratio >= 4.5, okD = dist >= 120;
+
+    var el = document.getElementById('m-contrast');
+    el.textContent = ratio.toFixed(2) + ':1';
+    el.className = 'pal-metric-num ' + (okC ? 'pal-ok' : 'pal-fail');
+    var v = document.getElementById('m-contrast-v');
+    v.textContent = okC ? 'passa' : 'reprova';
+    v.className = 'pal-verdict ' + (okC ? 'pal-ok' : 'pal-fail');
+
+    el = document.getElementById('m-dist');
+    el.textContent = Math.round(dist);
+    el.className = 'pal-metric-num ' + (okD ? 'pal-ok' : 'pal-fail');
+    v = document.getElementById('m-dist-v');
+    v.textContent = okD ? 'distinguível' : 'perto demais';
+    v.className = 'pal-verdict ' + (okD ? 'pal-ok' : 'pal-fail');
+
+    var sa = document.getElementById('m-side-accent');
+    sa.style.background = 'color-mix(in srgb, ' + a.accent + ' 14%, transparent)';
+    sa.style.border = '1px solid ' + a.accent;
+    sa.style.color = a.accent;
+    var sg = document.getElementById('m-side-good');
+    sg.style.background = 'color-mix(in srgb, var(--lx-good) 14%, transparent)';
+    sg.style.border = '1px solid var(--lx-good)';
+    sg.style.color = 'var(--lx-good)';
+
+    document.getElementById('swatches').innerHTML =
+      [['accent','--lx-accent'],['strong','--lx-accent-strong'],['soft','--lx-accent-soft'],
+       ['shell-from','--lx-shell-from'],['shell-to','--lx-shell-to'],
+       ['good','--lx-good'],['warn','--lx-warn'],['bad','--lx-bad']]
+      .map(function(p){
+        return '<span class="pal-swatch"><i style="background:var(' + p[1] + ')"></i>' + p[0] + '</span>';
+      }).join('');
+
+    document.querySelectorAll('#accent-row .pal-opt').forEach(function(btn){
+      btn.classList.toggle('is-active', btn.dataset.id === a.id);
+    });
+    document.querySelectorAll('#bg-row .pal-opt').forEach(function(btn){
+      btn.classList.toggle('is-active', btn.dataset.id === b.id);
+    });
+
+    var note = document.querySelector('#current-note');
+    if (note) note.textContent = a.note + ' — ' + b.note;
+  }
+
+  function buildRow(rowId, items, key) {
+    var row = document.getElementById(rowId);
+    items.forEach(function(it){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pal-opt';
+      b.dataset.id = it.id;
+      b.title = it.note;
+      var swatch = it.accent || (it.id === 'accent-wash' ? 'currentColor' : it.from || it.via);
+      b.innerHTML = '<span class="pal-dot" style="background:' + swatch + '"></span>' + it.name;
+      b.addEventListener('click', function(){ state[key] = it; apply(); });
+      row.appendChild(b);
+    });
+  }
+
+  buildRow('accent-row', ACCENTS, 'accent');
+  buildRow('bg-row', BACKGROUNDS, 'bg');
+
+  document.getElementById('score-bars').innerHTML =
+    [[95,'good','domínio'],[82,'good','sólido'],[61,'warn','parcial'],[22,'bad','não compreendido']]
+    .map(function(s){
+      return '<div><div class="lx-score"><span class="lx-score-num">' + s[0] + '</span>' +
+        '<span class="lx-score-of">/100</span><span class="lx-score-word s-' + s[1] + '" ' +
+        'style="margin-left:auto;font-size:.7rem;font-weight:700;text-transform:uppercase">' + s[2] + '</span></div>' +
+        '<div class="lx-bar"><div class="lx-bar-fill" style="width:' + s[0] + '%"></div></div></div>';
+    }).join('');
+
+  // The soft tint differs per theme, so recompute when the theme changes.
+  new MutationObserver(apply).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', apply);
+
+  apply();
+</script>
+</body>
+</html>
