@@ -320,25 +320,32 @@
   // Three states, not two: without "auto" the first click permanently opts the
   // reader out of following their system.
 
-  function applyTheme(choice) {
-    if (choice === 'auto') document.documentElement.removeAttribute('data-theme');
-    else document.documentElement.setAttribute('data-theme', choice);
+  // "auto" and "azul" are the absence of an attribute, not a value — the
+  // stylesheet's defaults are already those, so setting them would be a second
+  // place for the same fact to live.
+  function applyPref(kind, choice, dflt) {
+    var attr = 'data-' + kind, root = document.documentElement;
+    if (choice === dflt) root.removeAttribute(attr);
+    else root.setAttribute(attr, choice);
 
-    $$('.lx-theme-btn').forEach(function (b) {
-      b.classList.toggle('is-active', b.dataset.themeSet === choice);
-      b.setAttribute('aria-pressed', String(b.dataset.themeSet === choice));
+    $$('[data-' + kind + '-set]').forEach(function (b) {
+      var on = b.dataset[kind + 'Set'] === choice;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', String(on));
     });
 
-    try { localStorage.setItem('lx-theme', choice); } catch (e) { /* private mode */ }
+    try { localStorage.setItem('lx-' + kind, choice); } catch (e) { /* private mode */ }
   }
 
-  function setupTheme() {
-    var stored = 'auto';
-    try { stored = localStorage.getItem('lx-theme') || 'auto'; } catch (e) { /* private mode */ }
-    applyTheme(stored);
+  function setupPrefs() {
+    [['theme', 'auto'], ['accent', 'azul']].forEach(function (pair) {
+      var kind = pair[0], dflt = pair[1], stored = dflt;
+      try { stored = localStorage.getItem('lx-' + kind) || dflt; } catch (e) { /* private mode */ }
+      applyPref(kind, stored, dflt);
 
-    $$('.lx-theme-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () { applyTheme(btn.dataset.themeSet); });
+      $$('[data-' + kind + '-set]').forEach(function (btn) {
+        btn.addEventListener('click', function () { applyPref(kind, btn.dataset[kind + 'Set'], dflt); });
+      });
     });
   }
 
@@ -373,7 +380,7 @@
       setupMic(block);
     });
 
-    setupTheme();
+    setupPrefs();
 
     // No phases means nothing to gate behind — otherwise the component gallery
     // would render permanently locked.

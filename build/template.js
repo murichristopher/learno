@@ -27,8 +27,10 @@ function hasComponent(blocks, name) {
 // show one frame of the wrong theme on every load, which is far more noticeable
 // than the four lines it takes to avoid. Emitted identically into every lesson —
 // it is engine code that happens to live in the page, not authored script.
-const THEME_BOOT = `<script>(function(){try{var t=localStorage.getItem('lx-theme');` +
-  `if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>`;
+const THEME_BOOT = `<script>(function(){try{var d=document.documentElement,` +
+  `t=localStorage.getItem('lx-theme'),a=localStorage.getItem('lx-accent');` +
+  `if(t&&t!=='auto')d.setAttribute('data-theme',t);` +
+  `if(a&&a!=='azul')d.setAttribute('data-accent',a)}catch(e){}})()</script>`;
 
 function topBar(a) {
   return `  <nav class="lx-topbar">
@@ -36,18 +38,36 @@ function topBar(a) {
       ${icon('house', { className: 'lx-topbar-icon' })}
       <span>learno</span>
     </a>
-    <div class="lx-topbar-actions">
-      <button type="button" class="lx-theme-btn" data-theme-set="light" title="Tema claro" aria-label="Tema claro">
-        ${icon('sun', { className: 'lx-topbar-icon' })}
-      </button>
-      <button type="button" class="lx-theme-btn" data-theme-set="auto" title="Seguir o sistema" aria-label="Seguir o sistema">
-        ${icon('monitor', { className: 'lx-topbar-icon' })}
-      </button>
-      <button type="button" class="lx-theme-btn" data-theme-set="dark" title="Tema escuro" aria-label="Tema escuro">
-        ${icon('moon', { className: 'lx-topbar-icon' })}
-      </button>
-    </div>
+    ${settings()}
   </nav>`;
+}
+
+// <details> rather than a button plus JS: click-outside, Escape and focus are
+// all handled by the browser, and it still opens if the runtime never loads.
+function settings() {
+  return `<details class="lx-settings">
+      <summary class="lx-settings-btn" title="Configurações" aria-label="Configurações" role="button">
+        ${icon('settings')}
+      </summary>
+      <div class="lx-settings-panel">
+        <div class="lx-settings-group">
+          <p class="lx-settings-label">Tema</p>
+          <div class="lx-settings-row">
+            <button type="button" class="lx-settings-opt" data-theme-set="light" title="Claro">${icon('sun')}</button>
+            <button type="button" class="lx-settings-opt" data-theme-set="auto" title="Seguir o sistema">${icon('monitor')}</button>
+            <button type="button" class="lx-settings-opt" data-theme-set="dark" title="Escuro">${icon('moon')}</button>
+          </div>
+        </div>
+        <div class="lx-settings-group">
+          <p class="lx-settings-label">Cor principal</p>
+          <div class="lx-settings-row">
+            <button type="button" class="lx-settings-opt" data-accent-set="azul" title="Azul"><span class="lx-settings-dot lx-settings-dot--azul"></span>Azul</button>
+            <button type="button" class="lx-settings-opt" data-accent-set="roxo" title="Roxo"><span class="lx-settings-dot lx-settings-dot--roxo"></span>Roxo</button>
+            <button type="button" class="lx-settings-opt" data-accent-set="rosa" title="Rosa"><span class="lx-settings-dot lx-settings-dot--rosa"></span>Rosa</button>
+          </div>
+        </div>
+      </div>
+    </details>`;
 }
 
 function page({ id, title, subtitle, tag, icon: lessonIcon, blocks, concepts = [], body, depth = 1 }) {

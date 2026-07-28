@@ -6,6 +6,7 @@
 
   /* Accent */
   --lx-accent:        #2563eb;
+  --lx-accent-solid:  #2563eb;
   --lx-accent-strong: #1d4ed8;
   --lx-accent-soft:   rgb(219 234 254 / .7);
   --lx-accent-ring:   rgb(59 130 246 / .3);
@@ -14,7 +15,10 @@
   --lx-text:        #111827;
   --lx-text-2:      #374151;
   --lx-text-muted:  #6b7280;
-  --lx-text-subtle: #9ca3af;
+  --lx-text-subtle: #7c828e;
+
+  /* Opaque surface for floating UI — menus, popovers */
+  --lx-surface: #ffffff;
 
   /* Glass card */
   --lx-card:        rgb(255 255 255 / .6);
@@ -34,7 +38,7 @@
   /* Inputs */
   --lx-input:        rgb(239 246 255 / .6);
   --lx-input-border: rgb(191 219 254 / .4);
-  --lx-placeholder:  #9ca3af;
+  --lx-placeholder:  #6b7280;
 
   /* Shell gradient — the accent washed over white */
   --lx-shell-from: rgb(37 99 235 / .09);
@@ -73,31 +77,43 @@
     --lx-text-muted:  rgb(255 255 255 / .6);
     --lx-text-subtle: rgb(255 255 255 / .4);
 
+    --lx-surface:     #131a2b;
     --lx-card:        rgb(0 0 0 / .4);
-    --lx-card-border: rgb(255 255 255 / .2);
+    --lx-card-border: rgb(147 197 253 / .16);
     --lx-card-shadow: 0 4px 24px -4px rgb(0 0 0 / .4);
 
     --lx-panel:        rgb(0 0 0 / .2);
-    --lx-panel-border: rgb(255 255 255 / .1);
+    --lx-panel-border: rgb(147 197 253 / .10);
 
     --lx-bar:        rgb(0 0 0 / .3);
-    --lx-bar-border: rgb(255 255 255 / .1);
+    --lx-bar-border: rgb(147 197 253 / .12);
 
-    --lx-border: rgb(255 255 255 / .1);
+    --lx-border: rgb(147 197 253 / .14);
 
     --lx-input:        rgb(255 255 255 / .05);
-    --lx-input-border: rgb(255 255 255 / .1);
-    --lx-placeholder:  rgb(255 255 255 / .4);
+    --lx-input-border: rgb(147 197 253 / .14);
+    --lx-placeholder:  rgb(255 255 255 / .58);
 
     --lx-good: #34d399;
     --lx-warn: #fbbf24;
     --lx-bad:  #f87171;
-    --lx-accent-soft: rgb(59 130 246 / .12);
-    --lx-shell-from:  rgb(10 45 110 / .95);
-    --lx-shell-via:   #111827;
-    --lx-shell-to:    rgb(12 58 120 / .95);
-    --lx-wash-from:   rgb(59 130 246 / .06);
-    --lx-wash-to:     rgb(56 189 248 / .05);
+    --lx-accent:        #60a5fa;
+    --lx-accent-strong: #93c5fd;
+  --lx-accent-solid:  #2563eb;
+    --lx-input:         rgb(147 197 253 / .07);
+    --lx-input-border:  rgb(147 197 253 / .14);
+    --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
+    --lx-accent-soft:   rgb(59 130 246 / .16);
+    --lx-card-border:   rgb(147 197 253 / .16);
+    --lx-panel-border:  rgb(147 197 253 / .10);
+    --lx-bar-border:    rgb(147 197 253 / .12);
+    --lx-border:        rgb(147 197 253 / .14);
+    --lx-shell-from:    rgb(10 45 110 / .95);
+    --lx-shell-via:     #111827;
+    --lx-shell-to:      rgb(12 58 120 / .95);
+    --lx-wash-from:     rgb(59 130 246 / .06);
+    --lx-wash-to:       rgb(56 189 248 / .05);
   }
 }
 
@@ -107,31 +123,167 @@
   --lx-text-muted:  rgb(255 255 255 / .6);
   --lx-text-subtle: rgb(255 255 255 / .4);
 
+  --lx-surface:     #131a2b;
   --lx-card:        rgb(0 0 0 / .4);
-  --lx-card-border: rgb(255 255 255 / .2);
+  --lx-card-border: rgb(147 197 253 / .16);
   --lx-card-shadow: 0 4px 24px -4px rgb(0 0 0 / .4);
 
   --lx-panel:        rgb(0 0 0 / .2);
-  --lx-panel-border: rgb(255 255 255 / .1);
+  --lx-panel-border: rgb(147 197 253 / .10);
 
   --lx-bar:        rgb(0 0 0 / .3);
-  --lx-bar-border: rgb(255 255 255 / .1);
+  --lx-bar-border: rgb(147 197 253 / .12);
 
-  --lx-border: rgb(255 255 255 / .1);
+  --lx-border: rgb(147 197 253 / .14);
 
   --lx-input:        rgb(255 255 255 / .05);
-  --lx-input-border: rgb(255 255 255 / .1);
-  --lx-placeholder:  rgb(255 255 255 / .4);
+  --lx-input-border: rgb(147 197 253 / .14);
+  --lx-placeholder:  rgb(255 255 255 / .58);
 
   --lx-good: #34d399;
   --lx-warn: #fbbf24;
   --lx-bad:  #f87171;
-  --lx-accent-soft: rgb(59 130 246 / .12);
+  --lx-accent:        #60a5fa;
+  --lx-accent-strong: #93c5fd;
+  --lx-accent-solid:  #2563eb;
+  --lx-input:         rgb(147 197 253 / .07);
+  --lx-input-border:  rgb(147 197 253 / .14);
+  --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
+  --lx-accent-soft: rgb(59 130 246 / .16);
   --lx-shell-from:  rgb(10 45 110 / .95);
   --lx-shell-via:   #111827;
   --lx-shell-to:    rgb(12 58 120 / .95);
   --lx-wash-from:   rgb(59 130 246 / .06);
   --lx-wash-to:     rgb(56 189 248 / .05);
+}
+
+/* Accent families. Set as an attribute rather than inline custom properties: an
+   inline style on :root outranks [data-theme="dark"], so a light value would win
+   in dark mode. An attribute composes with the theme selectors instead.
+
+   Nothing here is derived — lightening a blue drifts it towards cyan, which is
+   where it collides with --lx-good. Each family, including its deep shell pair,
+   is hand-picked and contrast-checked. */
+
+:root[data-accent="roxo"] {
+  --lx-surface:       #ffffff;
+  --lx-accent:        #9333ea;
+  --lx-accent-solid:  #9333ea;
+  --lx-accent-strong: #7e22ce;
+  --lx-accent-soft:   rgb(243 232 255 / .6);
+  --lx-accent-ring:   rgb(168 85 247 / .3);
+  --lx-card-border:   rgb(233 213 255 / .35);
+  --lx-panel-border:  rgb(233 213 255 / .22);
+  --lx-bar-border:    rgb(233 213 255 / .4);
+  --lx-border:        rgb(233 213 255 / .35);
+  --lx-input:         rgb(250 245 255 / .55);
+  --lx-input-border:  rgb(233 213 255 / .35);
+  --lx-card-shadow:   0 4px 24px -4px rgb(147 51 234 / .08);
+  --lx-shell-from:    rgb(147 51 234 / .09);
+  --lx-shell-to:      rgb(147 51 234 / .06);
+  --lx-wash-from:     rgb(168 85 247 / .10);
+  --lx-wash-to:       rgb(147 197 253 / .08);
+}
+
+:root[data-accent="rosa"] {
+  --lx-surface:       #ffffff;
+  --lx-accent:        #be185d;
+  --lx-accent-solid:  #be185d;
+  --lx-accent-strong: #9d174d;
+  --lx-accent-soft:   rgb(252 231 243 / .7);
+  --lx-accent-ring:   rgb(219 39 119 / .3);
+  --lx-card-border:   rgb(251 207 232 / .45);
+  --lx-panel-border:  rgb(251 207 232 / .28);
+  --lx-bar-border:    rgb(251 207 232 / .5);
+  --lx-border:        rgb(251 207 232 / .45);
+  --lx-input:         rgb(253 242 248 / .6);
+  --lx-input-border:  rgb(251 207 232 / .45);
+  --lx-card-shadow:   0 4px 24px -4px rgb(190 24 93 / .08);
+  --lx-shell-from:    rgb(190 24 93 / .09);
+  --lx-shell-to:      rgb(190 24 93 / .06);
+  --lx-wash-from:     rgb(219 39 119 / .09);
+  --lx-wash-to:       rgb(168 85 247 / .07);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-accent="roxo"] {
+    --lx-surface:       #1c1430;
+    --lx-accent:        #c084fc;
+    --lx-accent-strong: #d8b4fe;
+  --lx-accent-solid:  #9333ea;
+    --lx-input:         rgb(216 180 254 / .07);
+    --lx-input-border:  rgb(216 180 254 / .14);
+    --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
+    --lx-accent-soft:   rgb(168 85 247 / .16);
+    --lx-card-border:   rgb(216 180 254 / .16);
+    --lx-panel-border:  rgb(216 180 254 / .10);
+    --lx-bar-border:    rgb(216 180 254 / .12);
+    --lx-border:        rgb(216 180 254 / .14);
+    --lx-shell-from:    rgb(59 7 100 / .95);
+    --lx-shell-to:      rgb(30 27 75 / .95);
+    --lx-wash-from:     rgb(168 85 247 / .06);
+    --lx-wash-to:       rgb(59 130 246 / .05);
+  }
+  :root:not([data-theme="light"])[data-accent="rosa"] {
+    --lx-surface:       #26101c;
+    --lx-accent:        #f472b6;
+    --lx-accent-strong: #f9a8d4;
+  --lx-accent-solid:  #be185d;
+    --lx-input:         rgb(249 168 212 / .07);
+    --lx-input-border:  rgb(249 168 212 / .14);
+    --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
+    --lx-accent-soft:   rgb(219 39 119 / .18);
+    --lx-card-border:   rgb(249 168 212 / .16);
+    --lx-panel-border:  rgb(249 168 212 / .10);
+    --lx-bar-border:    rgb(249 168 212 / .12);
+    --lx-border:        rgb(249 168 212 / .14);
+    --lx-shell-from:    rgb(80 7 36 / .95);
+    --lx-shell-to:      rgb(59 7 60 / .95);
+    --lx-wash-from:     rgb(219 39 119 / .06);
+    --lx-wash-to:       rgb(168 85 247 / .05);
+  }
+}
+
+:root[data-theme="dark"][data-accent="roxo"] {
+  --lx-surface:       #1c1430;
+  --lx-accent:        #c084fc;
+  --lx-accent-strong: #d8b4fe;
+  --lx-accent-solid:  #9333ea;
+  --lx-input:         rgb(216 180 254 / .07);
+  --lx-input-border:  rgb(216 180 254 / .14);
+  --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
+  --lx-card-border:   rgb(216 180 254 / .16);
+  --lx-panel-border:  rgb(216 180 254 / .10);
+  --lx-bar-border:    rgb(216 180 254 / .12);
+  --lx-border:        rgb(216 180 254 / .14);
+  --lx-accent-soft: rgb(168 85 247 / .16);
+  --lx-shell-from:  rgb(59 7 100 / .95);
+  --lx-shell-to:    rgb(30 27 75 / .95);
+  --lx-wash-from:   rgb(168 85 247 / .06);
+  --lx-wash-to:     rgb(59 130 246 / .05);
+}
+:root[data-theme="dark"][data-accent="rosa"] {
+  --lx-surface:       #26101c;
+  --lx-accent:        #f472b6;
+  --lx-accent-strong: #f9a8d4;
+  --lx-accent-solid:  #be185d;
+  --lx-input:         rgb(249 168 212 / .07);
+  --lx-input-border:  rgb(249 168 212 / .14);
+  --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
+  --lx-card-border:   rgb(249 168 212 / .16);
+  --lx-panel-border:  rgb(249 168 212 / .10);
+  --lx-bar-border:    rgb(249 168 212 / .12);
+  --lx-border:        rgb(249 168 212 / .14);
+  --lx-accent-soft: rgb(219 39 119 / .18);
+  --lx-shell-from:  rgb(80 7 36 / .95);
+  --lx-shell-to:    rgb(59 7 60 / .95);
+  --lx-wash-from:   rgb(219 39 119 / .06);
+  --lx-wash-to:     rgb(168 85 247 / .05);
 }
 
 /* ── Reset ───────────────────────────────────────────────────────────────── */
@@ -260,7 +412,7 @@ html {
   cursor: pointer;
   transition: background-color .15s, border-color .15s, color .15s;
 }
-.lx-btn--primary   { background: var(--lx-accent); color: #fff; border: 1px solid var(--lx-accent); }
+.lx-btn--primary   { background: var(--lx-accent-solid); color: #fff; border: 1px solid var(--lx-accent-solid); }
 .lx-btn--primary:hover  { background: var(--lx-accent-strong); border-color: var(--lx-accent-strong); }
 .lx-btn--secondary { background: var(--lx-input); color: var(--lx-text-2); border: 1px solid var(--lx-border); }
 .lx-btn--secondary:hover { color: var(--lx-text); }
@@ -278,7 +430,8 @@ html {
   backdrop-filter: blur(var(--lx-blur-sm));
   -webkit-backdrop-filter: blur(var(--lx-blur-sm));
 }
-.lx-input::placeholder { color: var(--lx-placeholder); }
+.lx-input::placeholder,
+.lx-answer::placeholder { color: var(--lx-placeholder); }
 .lx-input:focus {
   outline: none;
   border-color: var(--lx-accent);
@@ -568,4 +721,66 @@ html {
 
 @media (prefers-reduced-transparency: reduce) {
   .lx-gate-lock-badge, .lx-gate-lock-text { backdrop-filter: none; background: Canvas; }
+}
+
+/* ── Settings panel ──────────────────────────────────────────────────────── */
+
+.lx-settings { position: relative; }
+.lx-settings-btn {
+  list-style: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem;
+  border: 0; border-radius: 99px;
+  background: transparent; color: var(--lx-text-muted);
+  cursor: pointer; transition: background-color .15s, color .15s;
+}
+.lx-settings-btn::-webkit-details-marker { display: none; }
+.lx-settings-btn::marker { content: ""; }
+.lx-settings-btn:hover { color: var(--lx-text); background: var(--lx-input); }
+.lx-settings-btn .lx-icon-svg { width: 1rem; height: 1rem; }
+.lx-settings-btn:focus-visible { outline: 2px solid var(--lx-accent); outline-offset: 2px; }
+.lx-settings[open] .lx-settings-btn { color: var(--lx-accent); background: var(--lx-input); }
+
+.lx-settings-panel {
+  position: absolute; top: calc(100% + .6rem); right: 0; z-index: 40;
+  min-width: 15rem;
+  padding: .9rem;
+  border-radius: var(--lx-radius);
+  border: 1px solid var(--lx-card-border);
+  background: var(--lx-surface);
+  box-shadow: 0 16px 48px -12px rgb(0 0 0 / .45);
+}
+.lx-settings:not([open]) .lx-settings-panel { display: none; }
+
+.lx-settings-label {
+  font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--lx-text-subtle); margin-bottom: .4rem;
+}
+.lx-settings-group + .lx-settings-group { margin-top: .9rem; }
+.lx-settings-row { display: flex; gap: .3rem; }
+
+.lx-settings-opt {
+  flex: 1;
+  display: inline-flex; align-items: center; justify-content: center; gap: .3rem;
+  padding: .4rem .5rem;
+  border-radius: var(--lx-radius-sm);
+  border: 1px solid var(--lx-border);
+  background: transparent; color: var(--lx-text-2);
+  font-size: .75rem; cursor: pointer;
+}
+.lx-settings-opt:hover { background: var(--lx-input); }
+.lx-settings-opt.is-active { border-color: var(--lx-accent); color: var(--lx-text); background: var(--lx-accent-soft); }
+.lx-settings-opt .lx-icon-svg { width: .9rem; height: .9rem; }
+.lx-settings-opt:focus-visible { outline: 2px solid var(--lx-accent); outline-offset: 1px; }
+
+/* Each swatch shows its own colour, not the active one — the whole point is
+   comparing them before choosing. */
+.lx-settings-dot { width: 1rem; height: 1rem; border-radius: 50%; flex-shrink: 0; }
+.lx-settings-dot--azul { background: #2563eb; }
+.lx-settings-dot--roxo { background: #9333ea; }
+.lx-settings-dot--rosa { background: #be185d; }
+
+
+@media (max-width: 480px) {
+  .lx-settings-panel { position: fixed; top: auto; right: .75rem; left: .75rem; min-width: 0; }
 }
