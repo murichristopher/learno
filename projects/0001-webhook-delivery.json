@@ -20,8 +20,8 @@
     { "component": "callout",
       "props": { "variant": "warn", "title": "@constraints.title", "text": "@constraints.body" } },
 
-    { "component": "table",
-      "props": { "caption": "@rubric.caption", "headers": "@rubric.headers", "rows": "@rubric.rows" } },
+    { "component": "rubric",
+      "props": { "caption": "@rubric.caption", "criteria": "@rubric.criteria" } },
 
     { "component": "prose", "props": { "text": "@evaluation.body" } },
 

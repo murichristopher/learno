@@ -101,13 +101,21 @@ não tem como saber se ele processou ou só respondeu 200 e caiu em seguida.</p>
   <path d="M12 8h.01" /></svg></span>
     <div>
       <p class="lx-callout-title">O que entregar</p>
-      <p class="lx-callout-text">Um documento curto — uma a duas páginas, ou um diagrama com legendas — que
-descreva o mecanismo de entrega: o que acontece entre o evento nascer no seu
-sistema e o cliente processar. Inclua o formato do que você envia, a política
-de repetição, o que acontece com o que nunca entra, e o que o cliente precisa
-fazer do lado dele.
+      <p class="lx-callout-text">**Código que roda.** Não um documento descrevendo o mecanismo — descrever é o
+que a lição já cobrou de você. Aqui o entregável é um serviço de entrega que
+executa: qualquer linguagem, sem framework obrigatório, e um receptor de
+mentira serve como cliente.
 
-Traga no chat. Não existe página para submeter — a conversa é a avaliação.
+Ele precisa ser exercitável nos três casos que aparecem no ticket:
+
+- o mesmo evento entregue duas vezes, e o receptor conseguindo perceber;
+- um cliente fora do ar por um tempo longo, e os eventos daquele período;
+- um evento que esgota as tentativas e não pode sumir.
+
+Escreva no **seu** ambiente — seu repositório, sua máquina. O learno não
+guarda entrega e não tem upload. Quando estiver rodando, aponte para ele no
+chat: o caminho da pasta, ou o código colado. Eu leio, rodo o que der para
+rodar, e avalio contra a rubrica abaixo.
 </p>
     </div>
   </div>
@@ -133,26 +141,87 @@ JSON, e é isso.
     </div>
   </div>
   <figure class="lx-figure">
-    <div class="lx-card lx-table-wrap lx-scroll">
-      <table class="lx-table">
-        <thead><tr><th scope="col">Critério</th><th scope="col">Suficiente</th><th scope="col">Insuficiente</th></tr></thead>
-        <tbody>
-          <tr><td data-label="Critério">Identidade do evento</td><td data-label="Suficiente">Cada evento carrega um id estável que não muda entre tentativas, e você diz explicitamente que o cliente deve usá-lo para deduplicar.</td><td data-label="Insuficiente">Um id gerado por tentativa, ou nenhum — o cliente não tem como saber que é repetição.</td></tr>
-          <tr><td data-label="Critério">Política de repetição</td><td data-label="Suficiente">Backoff exponencial com jitter, teto declarado, número máximo de tentativas declarado.</td><td data-label="Insuficiente">Intervalo fixo, ou &quot;tenta de novo até dar certo&quot; sem limite.</td></tr>
-          <tr><td data-label="Critério">O que nunca entra</td><td data-label="Suficiente">Existe um destino para o que esgotou as tentativas, e alguém consegue ver e reprocessar.</td><td data-label="Insuficiente">O evento some, ou fica preso na fila para sempre.</td></tr>
-          <tr><td data-label="Critério">Isolamento do cliente lento</td><td data-label="Suficiente">Timeout por requisição, e um cliente lento ou fora do ar não atrasa a entrega dos outros.</td><td data-label="Insuficiente">Uma fila única onde o cliente mais lento define a latência de todo mundo.</td></tr>
-          <tr><td data-label="Critério">O contrato com o receptor</td><td data-label="Suficiente">Você escreve o que o cliente precisa garantir do lado dele, e por quê.</td><td data-label="Insuficiente">A idempotência é tratada como problema exclusivamente seu.</td></tr>
-          <tr><td data-label="Critério">Honestidade sobre a garantia</td><td data-label="Suficiente">Você nomeia a garantia que oferece (at-least-once) e o que ela implica.</td><td data-label="Insuficiente">A palavra &quot;exactly-once&quot; aparece sem qualificação.</td></tr>
-        </tbody>
-      </table>
+    <div class="lx-rubric">
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">Roda</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>Existe um comando que sobe o serviço e outro que dispara um evento, e você já executou os três casos do ticket.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>Pseudocódigo, ou código que nunca foi executado — &quot;deveria funcionar&quot; não é uma entrega.</span>
+        </p>
+      </div>
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">Identidade do evento</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>Cada evento carrega um id estável que não muda entre tentativas, e o receptor consegue rejeitar a segunda entrega usando esse id.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>Um id gerado por tentativa, ou nenhum — o receptor não tem como saber que é repetição.</span>
+        </p>
+      </div>
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">Política de repetição</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>Backoff exponencial com jitter, teto declarado, número máximo de tentativas declarado — e dá para ver os intervalos crescendo quando você roda.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>Intervalo fixo, ou &quot;tenta de novo até dar certo&quot; sem limite.</span>
+        </p>
+      </div>
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">O que nunca entra</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>O que esgotou as tentativas vai para algum lugar que você consegue abrir e reprocessar.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>O evento some, ou fica preso na fila para sempre.</span>
+        </p>
+      </div>
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">Isolamento do cliente lento</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>Timeout por requisição, e um cliente lento ou fora do ar não atrasa a entrega dos outros — demonstrável com dois receptores, um deles travado.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>Uma fila única onde o cliente mais lento define a latência de todo mundo.</span>
+        </p>
+      </div>
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">O contrato com o receptor</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>Você escreve o que o cliente precisa garantir do lado dele, nomeia a garantia que oferece (at-least-once) e o que ela implica.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>A idempotência é tratada como problema exclusivamente seu, ou &quot;exactly-once&quot; aparece sem qualificação.</span>
+        </p>
+      </div>
     </div>
     <figcaption class="lx-caption">A rubrica está aqui antes de você começar, de propósito: é o que &quot;bom&quot; significa neste projeto.</figcaption>
   </figure>
   <div class="lx-prose">
-    <p><strong>Como isto é avaliado.</strong> Você traz a entrega no chat e eu leio contra a
-rubrica acima, critério por critério, dizendo onde está suficiente e onde
-não. Não há nota na página, e o ciclo esperado é entregar, receber crítica e
-revisar — a revisão é o ponto.</p>
+    <p><strong>Como isto é avaliado.</strong> Você aponta para o código no chat e eu avalio
+critério por critério: leio, rodo o que der para rodar, e digo onde está
+suficiente e onde não. Não há nota nesta página nem botão de enviar. O ciclo
+esperado é entregar, receber crítica e revisar — a revisão é o ponto.</p>
     <p>Passar aqui empurra a revisão espaçada dos conceitos envolvidos mais longe do
 que uma lição empurraria: aplicar sob restrição nova é evidência mais forte
 do que explicar. Uma entrega fraca me diz para voltar a um conceito

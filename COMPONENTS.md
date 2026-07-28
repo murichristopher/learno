@@ -19,11 +19,12 @@ build, which is what keeps the vocabulary meaningful rather than a suggestion.
 | `prose` | parágrafos de texto corrido | `text: string` | core |
 | `quiz` | múltipla escolha, corrigida na própria página | `question: string, options: array<{text: string, correct: bool}>, ok: string, bad: string, phase: string?` | core |
 | `recall` | resposta livre validada pela IA, com fallback de múltipla escolha offline | `conceptId: string, question: string, summary: string, phase: string?, fallback: {options: array<{text: string, correct: bool}>, ok: string, bad: string}` | core |
+| `rubric` | critérios de avaliação de um projeto — o que é suficiente e o que não é | `criteria: array<{title: string, ok: string, bad: string}>, caption: string?` | core |
 | `source` | fonte primária em que a lição se apoia | `title: string, url: string?, note: string?` | core |
 | `table` | tabela de dados, com cabeçalho e legenda | `headers: array<string>, rows: array<array<string>>, caption: string?` | core |
 | `teachback` | explicação final que fecha a lição e alimenta a revisão espaçada | `question: string, conceptIds: array<string>, hint: string?` | core |
 
-**13 components** — 13 core, 0 local.
+**14 components** — 14 core, 0 local.
 
 `core/` is upstream's. `local/` belongs to this fork and wins on a name
 collision, so a component can be overridden without editing an upstream file.

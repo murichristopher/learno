@@ -238,15 +238,35 @@ still collapse the first time it has to be used.
 A project closes a pattern. Same pipeline as a lesson: `projects/NNNN-name.json`
 + `.yml`, built with `make lesson SRC=projects/NNNN-name`.
 
-**What you decide, per subject.** There is no project template and there should
-not be. Philosophy wants an argument to defend, mathematics a proof or a
-counterexample, programming a working thing, design a critique. A generic
-"deliverable" shell would force every subject into the shape of whichever one
-was designed first.
+**The delivery is an artifact in the medium of the subject — never a description
+of one.** This is the rule the whole thing stands on. A document explaining how
+you would build the thing tests explaining, which the teach-back already tested;
+ask for that and you have written a long teach-back and called it a project.
 
-**The brief needs no component the vocabulary lacks** — briefing is `prose`,
-constraints a `callout`, the rubric a `table`, the grounding a `source`. If you
-reach for something else, ask whether the project is really a lesson.
+| Subject | The delivery is | Not |
+|---|---|---|
+| Programming | code that runs, exercised on the cases in the brief | a design doc for the system |
+| Mathematics | a proof, or a counterexample that kills a claim | an explanation of the technique |
+| A language | something spoken or written *in* the language | a summary of the grammar rule |
+| Architecture, design | the drawing, the plan, the critique of a real artifact | a description of what you would draw |
+| Philosophy | an argument defended against the strongest objection | a summary of the position |
+
+There is no project template and there should not be — a generic "deliverable"
+shell would force every subject into the shape of whichever one was designed
+first. What does not vary is that the user has to *make the thing*.
+
+**The artifact lives in the user's own environment.** Their repository, their
+recording, their notebook. learno stores no deliveries and has no upload: the
+brief says what to make, and the user points at it in the chat — a path, a repo,
+pasted code, a transcript. Ask for it in a form you can actually inspect, and
+say so in the brief.
+
+**You are the validator.** Read it, run what can be run, and judge it against
+the rubric criterion by criterion. Nothing on the page scores anything.
+
+**Components:** briefing is `prose`, constraints a `callout`, the criteria a
+`rubric`, the grounding a `source`. If you reach for something else, ask whether
+the project is really a lesson.
 
 The shape follows from what a project is for:
 
@@ -255,6 +275,9 @@ The shape follows from what a project is for:
 - **State the constraint that makes it new.** If the deliverable can be produced
   by repeating what the lesson said, it is a quiz with extra steps. Name what the
   user does not control this time.
+- **Name the cases the artifact has to survive.** Not "build a delivery system"
+  but the three situations it must handle, so "done" is something the user can
+  check before bringing it — and so the rubric has something to point at.
 - **The rubric goes in the brief, before the attempt, and they can read it.**
   Four to six criteria, each with what is sufficient and what is not, from a
   Tier 1 source where one exists. Written first so the goalposts cannot move

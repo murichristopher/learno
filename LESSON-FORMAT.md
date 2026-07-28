@@ -191,7 +191,11 @@ nothing leaves the concept due on the same date forever.
 
 A project is the same format in `projects/NNNN-name.json` + `.yml`, built the
 same way. It is a brief, not a lesson: briefing in `prose`, constraints in a
-`callout`, the rubric in a `table`, grounding in `source`.
+`callout`, the criteria in a `rubric`, grounding in `source`.
+
+What it asks for is an artifact in the medium of the subject — code that runs, a
+proof, something spoken, a drawing — never a document describing one. It lives
+in the user's own environment; there is no upload.
 
 It has no `phase`, no `recall` and no `teachback` — nothing on the page is
 scored, so the page carries no progress bar and no JavaScript. The work is

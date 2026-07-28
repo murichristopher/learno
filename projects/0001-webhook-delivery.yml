@@ -21,13 +21,21 @@ brief:
 deliverable:
   title: "O que entregar"
   body: |
-    Um documento curto — uma a duas páginas, ou um diagrama com legendas — que
-    descreva o mecanismo de entrega: o que acontece entre o evento nascer no seu
-    sistema e o cliente processar. Inclua o formato do que você envia, a política
-    de repetição, o que acontece com o que nunca entra, e o que o cliente precisa
-    fazer do lado dele.
+    **Código que roda.** Não um documento descrevendo o mecanismo — descrever é o
+    que a lição já cobrou de você. Aqui o entregável é um serviço de entrega que
+    executa: qualquer linguagem, sem framework obrigatório, e um receptor de
+    mentira serve como cliente.
 
-    Traga no chat. Não existe página para submeter — a conversa é a avaliação.
+    Ele precisa ser exercitável nos três casos que aparecem no ticket:
+
+    - o mesmo evento entregue duas vezes, e o receptor conseguindo perceber;
+    - um cliente fora do ar por um tempo longo, e os eventos daquele período;
+    - um evento que esgota as tentativas e não pode sumir.
+
+    Escreva no **seu** ambiente — seu repositório, sua máquina. O learno não
+    guarda entrega e não tem upload. Quando estiver rodando, aponte para ele no
+    chat: o caminho da pasta, ou o código colado. Eu leio, rodo o que der para
+    rodar, e avalio contra a rubrica abaixo.
 
 constraints:
   title: "As restrições que fazem disto um problema novo"
@@ -47,33 +55,32 @@ constraints:
 
 rubric:
   caption: "A rubrica está aqui antes de você começar, de propósito: é o que \"bom\" significa neste projeto."
-  headers: ["Critério", "Suficiente", "Insuficiente"]
-  rows:
-    - - "Identidade do evento"
-      - "Cada evento carrega um id estável que não muda entre tentativas, e você diz explicitamente que o cliente deve usá-lo para deduplicar."
-      - "Um id gerado por tentativa, ou nenhum — o cliente não tem como saber que é repetição."
-    - - "Política de repetição"
-      - "Backoff exponencial com jitter, teto declarado, número máximo de tentativas declarado."
-      - "Intervalo fixo, ou \"tenta de novo até dar certo\" sem limite."
-    - - "O que nunca entra"
-      - "Existe um destino para o que esgotou as tentativas, e alguém consegue ver e reprocessar."
-      - "O evento some, ou fica preso na fila para sempre."
-    - - "Isolamento do cliente lento"
-      - "Timeout por requisição, e um cliente lento ou fora do ar não atrasa a entrega dos outros."
-      - "Uma fila única onde o cliente mais lento define a latência de todo mundo."
-    - - "O contrato com o receptor"
-      - "Você escreve o que o cliente precisa garantir do lado dele, e por quê."
-      - "A idempotência é tratada como problema exclusivamente seu."
-    - - "Honestidade sobre a garantia"
-      - "Você nomeia a garantia que oferece (at-least-once) e o que ela implica."
-      - "A palavra \"exactly-once\" aparece sem qualificação."
+  criteria:
+    - title: "Roda"
+      ok: "Existe um comando que sobe o serviço e outro que dispara um evento, e você já executou os três casos do ticket."
+      bad: "Pseudocódigo, ou código que nunca foi executado — \"deveria funcionar\" não é uma entrega."
+    - title: "Identidade do evento"
+      ok: "Cada evento carrega um id estável que não muda entre tentativas, e o receptor consegue rejeitar a segunda entrega usando esse id."
+      bad: "Um id gerado por tentativa, ou nenhum — o receptor não tem como saber que é repetição."
+    - title: "Política de repetição"
+      ok: "Backoff exponencial com jitter, teto declarado, número máximo de tentativas declarado — e dá para ver os intervalos crescendo quando você roda."
+      bad: "Intervalo fixo, ou \"tenta de novo até dar certo\" sem limite."
+    - title: "O que nunca entra"
+      ok: "O que esgotou as tentativas vai para algum lugar que você consegue abrir e reprocessar."
+      bad: "O evento some, ou fica preso na fila para sempre."
+    - title: "Isolamento do cliente lento"
+      ok: "Timeout por requisição, e um cliente lento ou fora do ar não atrasa a entrega dos outros — demonstrável com dois receptores, um deles travado."
+      bad: "Uma fila única onde o cliente mais lento define a latência de todo mundo."
+    - title: "O contrato com o receptor"
+      ok: "Você escreve o que o cliente precisa garantir do lado dele, nomeia a garantia que oferece (at-least-once) e o que ela implica."
+      bad: "A idempotência é tratada como problema exclusivamente seu, ou \"exactly-once\" aparece sem qualificação."
 
 evaluation:
   body: |
-    **Como isto é avaliado.** Você traz a entrega no chat e eu leio contra a
-    rubrica acima, critério por critério, dizendo onde está suficiente e onde
-    não. Não há nota na página, e o ciclo esperado é entregar, receber crítica e
-    revisar — a revisão é o ponto.
+    **Como isto é avaliado.** Você aponta para o código no chat e eu avalio
+    critério por critério: leio, rodo o que der para rodar, e digo onde está
+    suficiente e onde não. Não há nota nesta página nem botão de enviar. O ciclo
+    esperado é entregar, receber crítica e revisar — a revisão é o ponto.
 
     Passar aqui empurra a revisão espaçada dos conceitos envolvidos mais longe do
     que uma lição empurraria: aplicar sob restrição nova é evidência mais forte
