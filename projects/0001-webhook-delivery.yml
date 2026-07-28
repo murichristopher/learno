@@ -1,0 +1,90 @@
+meta:
+  title: "Entrega de webhooks"
+  subtitle: "Você já sabe repetir uma tarefa com segurança. Agora o retry acontece contra um servidor que não é seu."
+
+brief:
+  body: |
+    Sua API precisa avisar os clientes quando um pagamento muda de estado. Cada
+    cliente cadastra uma URL e você faz um `POST` nela a cada evento.
+
+    Nas primeiras semanas funciona. Depois chega o primeiro ticket: um cliente
+    diz que recebeu a confirmação do mesmo pagamento **quatro vezes** e emitiu
+    quatro notas fiscais. Outro ficou seis horas fora do ar e quer os eventos
+    daquele período. Um terceiro responde em 30 segundos e está segurando seus
+    workers.
+
+    Tudo isso você já viu nas lições — retry com backoff, dead-letter, chave de
+    idempotência. O que muda aqui é de quem é o outro lado: **o receptor não é
+    seu**. Você não controla o código dele, não pode consultar a tabela dele, e
+    não tem como saber se ele processou ou só respondeu 200 e caiu em seguida.
+
+deliverable:
+  artifact: "Um serviço de entrega de webhooks que roda"
+  detail: |
+    Código, não um documento descrevendo o mecanismo — descrever é o que a lição
+    já cobrou de você. Qualquer linguagem, sem framework obrigatório, e um
+    receptor de mentira serve como cliente.
+  must:
+    - "O mesmo evento entregue duas vezes, e o receptor conseguindo perceber que é repetição"
+    - "Um cliente fora do ar por horas, e os eventos daquele período chegando quando ele volta"
+    - "Um evento que esgota as tentativas e não pode simplesmente sumir"
+  handoff: |
+    Escreva no **seu** ambiente — seu repositório, sua máquina. O learno não guarda
+    entrega e não tem upload. Quando estiver rodando, aponte no chat: o caminho da
+    pasta, ou o código colado.
+
+constraints:
+  title: "As restrições que fazem disto um problema novo"
+  body: |
+    **Você não pode deduplicar pelo cliente.** Ele pode ter processado e caído
+    antes de responder. Qualquer resposta que não chegue é indistinguível de um
+    evento que não foi processado.
+
+    **A ordem não é garantida.** Duas tentativas do mesmo evento podem chegar
+    fora de ordem, e dois eventos diferentes do mesmo pagamento também.
+
+    **O cliente pode ficar horas fora.** A solução não pode ocupar um worker
+    esperando, nem descartar o evento na primeira falha.
+
+    **Você não pode pedir para o cliente mudar de protocolo.** É `POST` HTTP com
+    JSON, e é isso.
+
+rubric:
+  caption: "A rubrica está aqui antes de você começar, de propósito: é o que \"bom\" significa neste projeto."
+  criteria:
+    - title: "Roda"
+      ok: "Existe um comando que sobe o serviço e outro que dispara um evento, e você já executou os três casos do ticket."
+      bad: "Pseudocódigo, ou código que nunca foi executado — \"deveria funcionar\" não é uma entrega."
+    - title: "Identidade do evento"
+      ok: "Cada evento carrega um id estável que não muda entre tentativas, e o receptor consegue rejeitar a segunda entrega usando esse id."
+      bad: "Um id gerado por tentativa, ou nenhum — o receptor não tem como saber que é repetição."
+    - title: "Política de repetição"
+      ok: "Backoff exponencial com jitter, teto declarado, número máximo de tentativas declarado — e dá para ver os intervalos crescendo quando você roda."
+      bad: "Intervalo fixo, ou \"tenta de novo até dar certo\" sem limite."
+    - title: "O que nunca entra"
+      ok: "O que esgotou as tentativas vai para algum lugar que você consegue abrir e reprocessar."
+      bad: "O evento some, ou fica preso na fila para sempre."
+    - title: "Isolamento do cliente lento"
+      ok: "Timeout por requisição, e um cliente lento ou fora do ar não atrasa a entrega dos outros — demonstrável com dois receptores, um deles travado."
+      bad: "Uma fila única onde o cliente mais lento define a latência de todo mundo."
+    - title: "O contrato com o receptor"
+      ok: "Você escreve o que o cliente precisa garantir do lado dele, nomeia a garantia que oferece (at-least-once) e o que ela implica."
+      bad: "A idempotência é tratada como problema exclusivamente seu, ou \"exactly-once\" aparece sem qualificação."
+
+evaluation:
+  body: |
+    **Como isto é avaliado.** Você aponta para o código no chat e eu avalio
+    critério por critério: leio, rodo o que der para rodar, e digo onde está
+    suficiente e onde não. Não há nota nesta página nem botão de enviar. O ciclo
+    esperado é entregar, receber crítica e revisar — a revisão é o ponto.
+
+    Passar aqui empurra a revisão espaçada dos conceitos envolvidos mais longe do
+    que uma lição empurraria: aplicar sob restrição nova é evidência mais forte
+    do que explicar. Uma entrega fraca me diz para voltar a um conceito
+    específico — não derruba todos os que o projeto tocou, porque o documento não
+    diz qual deles quebrou.
+
+source:
+  title: "Stripe Docs — Webhooks: best practices"
+  url: "https://docs.stripe.com/webhooks"
+  note: "As seções de duplicatas, ordem de entrega e resposta rápida descrevem exatamente as restrições deste projeto, do lado de quem envia."

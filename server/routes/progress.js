@@ -4,15 +4,22 @@ const router = require('express').Router();
 const { getDb } = require('../db');
 
 // ── SM-2 algorithm ───────────────────────────────────────────
-function sm2(score, current) {
+// A project is not a longer lesson. It asks the concept to be used under a
+// constraint it was never taught under, which makes its evidence asymmetric:
+// passing says more than a teach-back at the same score, so the interval goes
+// further. Failing says less — see the loop below.
+const PROJECT_BOOST = 1.5;
+
+function sm2(score, current, { project = false } = {}) {
   let interval_days = current?.interval_days ?? 1;
   let ease_factor   = current?.ease_factor   ?? 2.5;
+  const boost = project ? PROJECT_BOOST : 1;
 
   if (score >= 90) {
-    interval_days = Math.round(interval_days * ease_factor);
-    ease_factor   = Math.min(ease_factor + 0.1, 4.0);
+    interval_days = Math.round(interval_days * ease_factor * boost);
+    ease_factor   = Math.min(ease_factor + (project ? 0.15 : 0.1), 4.0);
   } else if (score >= 75) {
-    interval_days = Math.round(interval_days * ease_factor);
+    interval_days = Math.round(interval_days * ease_factor * boost);
     // ease_factor unchanged
   } else if (score >= 41) {
     interval_days = 1;
@@ -35,12 +42,17 @@ router.post('/', async (req, res) => {
     lesson_id,
     final_score,
     concepts_demonstrated = [],
-    sections = []
+    concepts_missed = [],
+    sections = [],
+    kind = 'lesson'
   } = req.body;
 
   if (!lesson_id || final_score === undefined) {
     return res.status(400).json({ error: 'lesson_id and final_score are required' });
   }
+
+  const isProject = kind === 'project';
+  const missed    = new Set(concepts_missed);
 
   try {
     const db = await getDb();
@@ -59,6 +71,7 @@ router.post('/', async (req, res) => {
       {
         $set: {
           lesson_id,
+          kind,
           completed_at: new Date(),
           final_score,
           sections: allSections
@@ -68,10 +81,25 @@ router.post('/', async (req, res) => {
     );
 
     // Update SM-2 for each demonstrated concept
+    const source  = isProject ? 'project' : 'ai_validation';
     const updates = [];
     for (const concept_id of concepts_demonstrated) {
       const existing = await db.collection('concepts').findOne({ concept_id });
-      const { interval_days, ease_factor, next_review } = sm2(final_score, existing);
+
+      // A weak project only demotes the concepts it can name. The deliverable
+      // touched several at once and does not say which one broke, so resetting
+      // all of them would throw away weeks of evidence on a guess. The score is
+      // still recorded — the history shows the dip, the schedule does not move.
+      if (isProject && final_score < 75 && !missed.has(concept_id)) {
+        await db.collection('concepts').updateOne(
+          { concept_id },
+          { $push: { history: { date: new Date(), score: final_score, source } } }
+        );
+        continue;
+      }
+
+      const { interval_days, ease_factor, next_review } =
+        sm2(final_score, existing, { project: isProject });
 
       await db.collection('concepts').updateOne(
         { concept_id },
@@ -83,14 +111,14 @@ router.post('/', async (req, res) => {
             interval_days,
             ease_factor,
             mastered:       final_score >= 75,
-            mastery_source: 'ai_validation',
+            mastery_source: source,
             ...(existing ? {} : { first_seen: new Date() })
           },
           $push: {
             history: {
               date:   new Date(),
               score:  final_score,
-              source: 'ai_validation'
+              source
             }
           }
         },

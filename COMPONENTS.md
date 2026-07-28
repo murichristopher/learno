@@ -13,17 +13,19 @@ build, which is what keeps the vocabulary meaningful rather than a suggestion.
 | `callout` | aparte — nota, atenção ou armadilha (variant: note \| warn \| danger) | `variant: string, text: string, title: string?` | core |
 | `code` | bloco de código, com destaque de sintaxe feito no build | `source: string, lang: string?, caption: string?` | core |
 | `compare` | duas ou três opções lado a lado | `columns: array<{label: string, body: string}>, caption: string?` | core |
+| `deliverable` | o que o usuário tem de entregar num projeto — artefato, casos que ele precisa aguentar, e como entregar | `artifact: string, detail: string?, must: array<string>, handoff: string` | core |
 | `diagram` | diagrama SVG inline, desenhado com as classes do design system | `svg: svg, caption: string?` | core |
 | `flashcards` | cartões de revisão imediata — frente visível, verso escondido | `cards: array<{front: string, back: string}>, title: string?` | core |
 | `phase` | seção de conteúdo, destravada pela resposta da anterior | `id: string, title: string, open: bool?` | core |
 | `prose` | parágrafos de texto corrido | `text: string` | core |
 | `quiz` | múltipla escolha, corrigida na própria página | `question: string, options: array<{text: string, correct: bool}>, ok: string, bad: string, phase: string?` | core |
 | `recall` | resposta livre validada pela IA, com fallback de múltipla escolha offline | `conceptId: string, question: string, summary: string, phase: string?, fallback: {options: array<{text: string, correct: bool}>, ok: string, bad: string}` | core |
+| `rubric` | critérios de avaliação de um projeto — o que é suficiente e o que não é | `criteria: array<{title: string, ok: string, bad: string}>, caption: string?` | core |
 | `source` | fonte primária em que a lição se apoia | `title: string, url: string?, note: string?` | core |
 | `table` | tabela de dados, com cabeçalho e legenda | `headers: array<string>, rows: array<array<string>>, caption: string?` | core |
 | `teachback` | explicação final que fecha a lição e alimenta a revisão espaçada | `question: string, conceptIds: array<string>, hint: string?` | core |
 
-**13 components** — 13 core, 0 local.
+**15 components** — 15 core, 0 local.
 
 `core/` is upstream's. `local/` belongs to this fork and wins on a name
 collision, so a component can be overridden without editing an upstream file.

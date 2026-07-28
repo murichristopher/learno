@@ -1,4 +1,4 @@
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const { esc, inline } = require('../../build/text');
 
 module.exports = {
   meta: {
@@ -37,13 +37,13 @@ module.exports = {
     const opts = options.map((o, i) => `
       <label class="lx-choice">
         <input type="radio" name="${name}" value="${i}" data-correct="${o && o.correct ? '1' : '0'}" />
-        <span>${esc(o && o.text)}</span>
+        <span>${inline(o && o.text)}</span>
       </label>`).join('');
 
     return `  <div class="lx-card lx-quiz" data-phase="${esc(phase || '')}"
        data-ok="${esc(ok)}" data-bad="${esc(bad)}">
     <span class="lx-quiz-label">Escolha uma</span>
-    <p class="lx-ask-q">${esc(question)}</p>
+    <p class="lx-ask-q">${inline(question)}</p>
     ${opts}
     <p class="lx-inline-fb"></p>
   </div>`;

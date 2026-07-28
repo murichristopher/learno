@@ -1,4 +1,4 @@
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const { esc, inline } = require('../../build/text');
 
 module.exports = {
   meta: {
@@ -55,7 +55,7 @@ module.exports = {
     const head = headers.map(h => `<th scope="col">${esc(h)}</th>`).join('');
     const body = rows.map(row =>
       `<tr>${row.map((cell, i) =>
-        `<td data-label="${esc(headers[i] ?? '')}">${esc(cell)}</td>`).join('')}</tr>`
+        `<td data-label="${esc(headers[i] ?? '')}">${inline(cell)}</td>`).join('')}</tr>`
     ).join('\n          ');
 
     return `  <figure class="lx-figure">
@@ -67,7 +67,7 @@ module.exports = {
         </tbody>
       </table>
     </div>
-    ${caption ? `<figcaption class="lx-caption">${esc(caption)}</figcaption>` : ''}
+    ${caption ? `<figcaption class="lx-caption">${inline(caption)}</figcaption>` : ''}
   </figure>`;
   }
 };

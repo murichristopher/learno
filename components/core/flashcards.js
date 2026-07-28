@@ -4,7 +4,7 @@
 const { icon } = require('../../build/icons');
 const { gate } = require('../../build/gate');
 
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const { esc, inline } = require('../../build/text');
 
 module.exports = {
   meta: {
@@ -68,8 +68,8 @@ module.exports = {
   render({ cards, title }) {
     const items = cards.map(c => `
       <details class="lx-card lx-flash">
-        <summary>${esc(c && c.front)}</summary>
-        <p class="lx-flash-back">${esc(c && c.back)}</p>
+        <summary>${inline(c && c.front)}</summary>
+        <p class="lx-flash-back">${inline(c && c.back)}</p>
       </details>`).join('');
 
     return gate(`  <section class="lx-flashcards">

@@ -62,7 +62,11 @@ function listDir(rel) {
 }
 
 function listWorkspace() {
-  return { lessons: listDir('lessons'), reviews: listDir('review') };
+  return {
+    lessons:  listDir('lessons'),
+    reviews:  listDir('review'),
+    projects: listDir('projects')
+  };
 }
 
 const DASHBOARD_PATH = 'reference/my-learning.html';

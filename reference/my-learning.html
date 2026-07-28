@@ -254,6 +254,9 @@
   }
 
   // ── render reviews ────────────────────────────────────────────────
+  const SOURCE_TAG = { conversation: 'conversa', project: 'projeto', ai_validation: 'IA' };
+  const sourceTag = c => SOURCE_TAG[c.mastery_source] || 'IA';
+
   function renderReviews(concepts) {
     const sorted = [...concepts].sort((a, b) => new Date(a.next_review) - new Date(b.next_review));
 
@@ -267,7 +270,7 @@
       const days  = daysFromNow(c.next_review);
       const cls   = days <= 0 ? 'today' : days <= 3 ? 'soon' : '';
       const label = days <= 0 ? 'Hoje' : days === 1 ? 'Amanhã' : `+${days}d`;
-      const tag   = c.mastery_source === 'conversation' ? 'conversa' : 'IA';
+      const tag   = sourceTag(c);
       return `
         <div class="dash-review">
           <span class="dash-days ${cls}">${label}</span>
@@ -286,7 +289,7 @@
     }
 
     const cards = concepts.map(c => {
-      const tag  = c.mastery_source === 'conversation' ? 'via conversa' : 'via IA';
+      const tag  = `via ${sourceTag(c)}`;
       const last = c.history?.length ? c.history[c.history.length - 1].score : '—';
       const ease = Math.min(((c.ease_factor - 1.3) / (4.0 - 1.3)) * 100, 100).toFixed(0);
       return `
@@ -320,7 +323,7 @@
       const cls = scoreClass(l.final_score);
       return `
         <div class="dash-review">
-          <span class="dash-concept">${esc(l.lesson_id)}</span>
+          <span class="dash-concept">${esc(l.lesson_id)}${l.kind === 'project' ? '<span class="lx-badge">projeto</span>' : ''}</span>
           <span class="dash-meta">${formatDate(l.completed_at)}</span>
           <span class="dash-score" style="flex:0 0 7rem">
             <span class="dash-bar-wrap"><span class="dash-bar b-${cls}" style="display:block;width:${l.final_score}%"></span></span>
@@ -369,7 +372,9 @@
     try {
       const res  = await fetch(`${SERVER}/api/catalog`, { signal: AbortSignal.timeout(3000) });
       const data = await res.json();
-      const html = group(data.lessons || [], 'Lições') + group(data.reviews || [], 'Revisões');
+      const html = group(data.lessons || [], 'Lições')
+                 + group(data.reviews  || [], 'Revisões')
+                 + group(data.projects || [], 'Projetos');
       document.getElementById('catalog-content').innerHTML =
         html || '<span class="dash-empty">Nenhuma lição no disco ainda. Peça uma ao Claude para começar.</span>';
     } catch {

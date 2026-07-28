@@ -3,7 +3,7 @@
 
 const { icon } = require('../../build/icons');
 
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const { esc, inline } = require('../../build/text');
 
 module.exports = {
   meta: {
@@ -111,7 +111,7 @@ module.exports = {
       .map((o, i) => `
         <label class="lx-choice">
           <input type="radio" name="fb-${esc(conceptId)}" value="${i}" data-correct="${o && o.correct ? '1' : '0'}" />
-          <span>${esc(o && o.text)}</span>
+          <span>${inline(o && o.text)}</span>
         </label>`).join('');
 
     return `  <div class="lx-card lx-ask lx-recall"
@@ -121,7 +121,7 @@ module.exports = {
        data-ok="${esc((fallback && fallback.ok) || 'Correto.')}"
        data-bad="${esc((fallback && fallback.bad) || 'Não é essa.')}">
     <span class="lx-ask-label">${icon('message-square-quote')} Explique com suas palavras</span>
-    <p class="lx-ask-q">${esc(question)}</p>
+    <p class="lx-ask-q">${inline(question)}</p>
 
     <div class="lx-ask-online">
       <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>

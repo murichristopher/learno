@@ -187,6 +187,30 @@ nothing leaves the concept due on the same date forever.
 
 ---
 
+## Projects
+
+A project is the same format in `projects/NNNN-name.json` + `.yml`, built the
+same way. It is a brief, not a lesson: briefing in `prose`, the delivery in a
+`deliverable`, constraints in a `callout`, the criteria in a `rubric`, grounding
+in `source`.
+
+What it asks for is an artifact in the medium of the subject — code that runs, a
+proof, something spoken, a drawing — never a document describing one. It lives
+in the user's own environment; there is no upload.
+
+Authored text is formatted the same way everywhere: `**bold**`, `*italic*`,
+`` `code` ``, `[link](url)`, blank-line paragraphs and `- ` lists. That applies
+to every component's text props, not only `prose`.
+
+It has no `phase`, no `recall` and no `teachback` — nothing on the page is
+scored, so the page carries no progress bar and no JavaScript. The work is
+delivered and evaluated in the conversation, and the page should say so.
+
+The rubric belongs in the brief, before the attempt. See **Projects** in
+`SKILL.md` for what goes in one and how the result is recorded.
+
+---
+
 ## Diagrams
 
 Hand-written inline SVG in the `.yml`, using **only** these classes:

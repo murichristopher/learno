@@ -168,8 +168,7 @@ para procurá-la, enquanto o nó novo responde miss e vai ao banco.</p>
   <path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z" /></svg></span>
     <div>
       <p class="lx-callout-title">A fração que se move não é 1/N</p>
-      <p class="lx-callout-text">A intuição diz &quot;adicionei 1 de 4 nós, então uns 25% se movem&quot;. A conta real é o oposto: com módulo, o esperado é que cerca de (N-1)/N das chaves mudem de destino. Indo de 3 para 4 nós, aproximadamente 75% do cache é invalidado de uma vez — no exato momento em que você subiu capacidade porque já estava sob pressão.
-</p>
+      <div class="lx-callout-text"><p>A intuição diz &quot;adicionei 1 de 4 nós, então uns 25% se movem&quot;. A conta real é o oposto: com módulo, o esperado é que cerca de (N-1)/N das chaves mudem de destino. Indo de 3 para 4 nós, aproximadamente 75% do cache é invalidado de uma vez — no exato momento em que você subiu capacidade porque já estava sob pressão.</p></div>
     </div>
   </div>
   <div class="lx-card lx-ask lx-recall"
@@ -387,8 +386,7 @@ carga, a fatia dobrada passa para o seguinte.</p>
   <path d="M12 17h.01" /></svg></span>
     <div>
       <p class="lx-callout-title">Falha em cascata é o problema que os nós virtuais resolvem</p>
-      <p class="lx-callout-text">Distribuição desigual é irritante; herança concentrada derruba o sistema. Com nós virtuais, a carga de um nó que cai se espalha por todos os sobreviventes em fatias pequenas, em vez de dobrar a carga de um único vizinho que provavelmente já está no limite.
-</p>
+      <div class="lx-callout-text"><p>Distribuição desigual é irritante; herança concentrada derruba o sistema. Com nós virtuais, a carga de um nó que cai se espalha por todos os sobreviventes em fatias pequenas, em vez de dobrar a carga de um único vizinho que provavelmente já está no limite.</p></div>
     </div>
   </div>
   <div class="lx-card lx-ask lx-recall"
@@ -474,7 +472,7 @@ carga, a fatia dobrada passa para o seguinte.</p>
     <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
   <path d="M22 10v6" />
   <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg> Ensina de volta</span>
-    <p class="lx-ask-q">Um colega vai subir o quarto nó de cache amanhã e planeja só trocar `% 3` por `% 4`. Explique para ele o que vai acontecer, por que a fração afetada é bem maior do que ele imagina, o que o anel muda, e por que só o anel ainda não é suficiente.
+    <p class="lx-ask-q">Um colega vai subir o quarto nó de cache amanhã e planeja só trocar <code class="lx-code">% 3</code> por <code class="lx-code">% 4</code>. Explique para ele o que vai acontecer, por que a fração afetada é bem maior do que ele imagina, o que o anel muda, e por que só o anel ainda não é suficiente.
 </p>
     <p class="lx-teachback-hint">Comece pelo divisor e pela fração (N-1)/N, depois o anel e a regra do sentido horário, e feche com nós virtuais — citando a herança concentrada numa falha, não só a distribuição desigual.
 </p>
@@ -529,7 +527,7 @@ carga, a fatia dobrada passa para o seguinte.</p>
   <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></svg> Revisão rápida</p>
     <div class="lx-flash-grid">
       <details class="lx-card lx-flash">
-        <summary>Por que `% N` remapeia quase tudo quando N muda?</summary>
+        <summary>Por que <code class="lx-code">% N</code> remapeia quase tudo quando N muda?</summary>
         <p class="lx-flash-back">Porque o hash da chave é estável, mas o divisor não. Muda o divisor, muda o resto de quase toda chave — cerca de (N-1)/N delas.</p>
       </details>
       <details class="lx-card lx-flash">

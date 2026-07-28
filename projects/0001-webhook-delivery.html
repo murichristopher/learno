@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Entrega de webhooks</title>
+<link rel="stylesheet" href="../assets/learno.css" />
+<link rel="stylesheet" href="../assets/components.css" />
+<script>(function(){try{var d=document.documentElement,t=localStorage.getItem('lx-theme'),a=localStorage.getItem('lx-accent');if(t&&t!=='auto')d.setAttribute('data-theme',t);if(a&&a!=='azul')d.setAttribute('data-accent',a)}catch(e){}})()</script>
+</head>
+<body class="lx-shell" data-lesson="0001-webhook-delivery">
+
+<div class="lx-overlay"></div>
+
+<!-- Shared arrowhead. Authored diagrams reference #lx-arrow and never carry
+     their own marker definition. -->
+<svg class="lx-defs" aria-hidden="true">
+  <defs>
+    <marker id="lx-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="lx-arrowhead" d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+  </defs>
+</svg>
+
+  <nav class="lx-topbar">
+    <a class="lx-topbar-home" href="../" title="Ir para o painel">
+      <svg class="lx-icon-svg lx-topbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+  <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+      <span>learno</span>
+    </a>
+    <details class="lx-settings">
+      <summary class="lx-settings-btn" title="Configurações" aria-label="Configurações" role="button">
+        <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+  <circle cx="12" cy="12" r="3" /></svg>
+      </summary>
+      <div class="lx-settings-panel">
+        <div class="lx-settings-group">
+          <p class="lx-settings-label">Tema</p>
+          <div class="lx-settings-row">
+            <button type="button" class="lx-settings-opt" data-theme-set="light" title="Claro"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" /></svg></button>
+            <button type="button" class="lx-settings-opt" data-theme-set="auto" title="Seguir o sistema"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2" />
+  <line x1="8" x2="16" y1="21" y2="21" />
+  <line x1="12" x2="12" y1="17" y2="21" /></svg></button>
+            <button type="button" class="lx-settings-opt" data-theme-set="dark" title="Escuro"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></svg></button>
+          </div>
+        </div>
+        <div class="lx-settings-group">
+          <p class="lx-settings-label">Cor principal</p>
+          <div class="lx-settings-row">
+            <button type="button" class="lx-settings-opt" data-accent-set="azul" title="Azul"><span class="lx-settings-dot lx-settings-dot--azul"></span>Azul</button>
+            <button type="button" class="lx-settings-opt" data-accent-set="roxo" title="Roxo"><span class="lx-settings-dot lx-settings-dot--roxo"></span>Roxo</button>
+            <button type="button" class="lx-settings-opt" data-accent-set="rosa" title="Rosa"><span class="lx-settings-dot lx-settings-dot--rosa"></span>Rosa</button>
+          </div>
+        </div>
+      </div>
+    </details>
+  </nav>
+
+<div class="lx-content lx-wrap">
+  <header class="lx-lesson-head">
+    <span class="lx-badge">Projeto 1 · System Design</span>
+    <h1 class="lx-title"><span class="lx-title-icon"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 12-9.373 9.373a1 1 0 0 1-3.001-3L12 9" />
+  <path d="m18 15 4-4" />
+  <path d="m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172v-.344a2 2 0 0 0-.586-1.414l-1.657-1.657A6 6 0 0 0 12.516 3H9l1.243 1.243A6 6 0 0 1 12 8.485V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5" /></svg></span><span>Entrega de webhooks</span></h1>
+    <p class="lx-subtitle">Você já sabe repetir uma tarefa com segurança. Agora o retry acontece contra um servidor que não é seu.</p>
+  </header>
+
+  <div class="lx-offline-banner" id="lx-banner" hidden>
+    Servidor fora do ar. As seções continuam abrindo por múltipla escolha, mas a
+    validação por IA e o registro do progresso ficam indisponíveis.
+  </div>
+
+
+
+  <div class="lx-blocks">
+  <div class="lx-prose">
+    <p>Sua API precisa avisar os clientes quando um pagamento muda de estado. Cada
+cliente cadastra uma URL e você faz um <code class="lx-code">POST</code> nela a cada evento.</p>
+    <p>Nas primeiras semanas funciona. Depois chega o primeiro ticket: um cliente
+diz que recebeu a confirmação do mesmo pagamento <strong>quatro vezes</strong> e emitiu
+quatro notas fiscais. Outro ficou seis horas fora do ar e quer os eventos
+daquele período. Um terceiro responde em 30 segundos e está segurando seus
+workers.</p>
+    <p>Tudo isso você já viu nas lições — retry com backoff, dead-letter, chave de
+idempotência. O que muda aqui é de quem é o outro lado: <strong>o receptor não é
+seu</strong>. Você não controla o código dele, não pode consultar a tabela dele, e
+não tem como saber se ele processou ou só respondeu 200 e caiu em seguida.</p>
+  </div>
+  <div class="lx-card lx-deliverable">
+    <span class="lx-deliverable-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" />
+  <path d="M12 22V12" />
+  <polyline points="3.29 7 12 12 20.71 7" />
+  <path d="m7.5 4.27 9 5.15" /></svg>O que entregar</span>
+    <p class="lx-deliverable-artifact">Um serviço de entrega de webhooks que roda</p>
+    <div class="lx-deliverable-detail"><p>Código, não um documento descrevendo o mecanismo — descrever é o que a lição
+já cobrou de você. Qualquer linguagem, sem framework obrigatório, e um
+receptor de mentira serve como cliente.</p></div>
+    <div class="lx-deliverable-must">
+      <span class="lx-deliverable-must-label">Precisa aguentar</span>
+      <p class="lx-deliverable-case"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" />
+  <path d="m9 12 2 2 4-4" /></svg><span>O mesmo evento entregue duas vezes, e o receptor conseguindo perceber que é repetição</span></p>
+      <p class="lx-deliverable-case"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" />
+  <path d="m9 12 2 2 4-4" /></svg><span>Um cliente fora do ar por horas, e os eventos daquele período chegando quando ele volta</span></p>
+      <p class="lx-deliverable-case"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" />
+  <path d="m9 12 2 2 4-4" /></svg><span>Um evento que esgota as tentativas e não pode simplesmente sumir</span></p>
+    </div>
+    <p class="lx-deliverable-handoff"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" /></svg><span>Escreva no <strong>seu</strong> ambiente — seu repositório, sua máquina. O learno não guarda
+entrega e não tem upload. Quando estiver rodando, aponte no chat: o caminho da
+pasta, ou o código colado.
+</span></p>
+  </div>
+  <div class="lx-card lx-callout lx-callout--warn">
+    <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" /></svg></span>
+    <div>
+      <p class="lx-callout-title">As restrições que fazem disto um problema novo</p>
+      <div class="lx-callout-text"><p><strong>Você não pode deduplicar pelo cliente.</strong> Ele pode ter processado e caído
+antes de responder. Qualquer resposta que não chegue é indistinguível de um
+evento que não foi processado.</p>
+    <p><strong>A ordem não é garantida.</strong> Duas tentativas do mesmo evento podem chegar
+fora de ordem, e dois eventos diferentes do mesmo pagamento também.</p>
+    <p><strong>O cliente pode ficar horas fora.</strong> A solução não pode ocupar um worker
+esperando, nem descartar o evento na primeira falha.</p>
+    <p><strong>Você não pode pedir para o cliente mudar de protocolo.</strong> É <code class="lx-code">POST</code> HTTP com
+JSON, e é isso.</p></div>
+    </div>
+  </div>
+  <figure class="lx-figure">
+    <div class="lx-rubric">
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">Roda</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>Existe um comando que sobe o serviço e outro que dispara um evento, e você já executou os três casos do ticket.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>Pseudocódigo, ou código que nunca foi executado — &quot;deveria funcionar&quot; não é uma entrega.</span>
+        </p>
+      </div>
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">Identidade do evento</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>Cada evento carrega um id estável que não muda entre tentativas, e o receptor consegue rejeitar a segunda entrega usando esse id.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>Um id gerado por tentativa, ou nenhum — o receptor não tem como saber que é repetição.</span>
+        </p>
+      </div>
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">Política de repetição</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>Backoff exponencial com jitter, teto declarado, número máximo de tentativas declarado — e dá para ver os intervalos crescendo quando você roda.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>Intervalo fixo, ou &quot;tenta de novo até dar certo&quot; sem limite.</span>
+        </p>
+      </div>
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">O que nunca entra</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>O que esgotou as tentativas vai para algum lugar que você consegue abrir e reprocessar.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>O evento some, ou fica preso na fila para sempre.</span>
+        </p>
+      </div>
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">Isolamento do cliente lento</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>Timeout por requisição, e um cliente lento ou fora do ar não atrasa a entrega dos outros — demonstrável com dois receptores, um deles travado.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>Uma fila única onde o cliente mais lento define a latência de todo mundo.</span>
+        </p>
+      </div>
+      <div class="lx-card lx-rubric-item">
+        <p class="lx-rubric-title">O contrato com o receptor</p>
+        <p class="lx-rubric-line lx-rubric-line--ok">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Suficiente"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span>Você escreve o que o cliente precisa garantir do lado dele, nomeia a garantia que oferece (at-least-once) e o que ela implica.</span>
+        </p>
+        <p class="lx-rubric-line lx-rubric-line--bad">
+          <span class="lx-rubric-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Insuficiente"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></svg></span>
+          <span>A idempotência é tratada como problema exclusivamente seu, ou &quot;exactly-once&quot; aparece sem qualificação.</span>
+        </p>
+      </div>
+    </div>
+    <figcaption class="lx-caption">A rubrica está aqui antes de você começar, de propósito: é o que &quot;bom&quot; significa neste projeto.</figcaption>
+  </figure>
+  <div class="lx-prose">
+    <p><strong>Como isto é avaliado.</strong> Você aponta para o código no chat e eu avalio
+critério por critério: leio, rodo o que der para rodar, e digo onde está
+suficiente e onde não. Não há nota nesta página nem botão de enviar. O ciclo
+esperado é entregar, receber crítica e revisar — a revisão é o ponto.</p>
+    <p>Passar aqui empurra a revisão espaçada dos conceitos envolvidos mais longe do
+que uma lição empurraria: aplicar sob restrição nova é evidência mais forte
+do que explicar. Uma entrega fraca me diz para voltar a um conceito
+específico — não derruba todos os que o projeto tocou, porque o documento não
+diz qual deles quebrou.</p>
+  </div>
+  <div class="lx-card lx-source">
+    <p class="lx-source-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" />
+  <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg> Fonte primária</p>
+    <p class="lx-source-title"><a class="lx-link" href="https://docs.stripe.com/webhooks" rel="noopener noreferrer" target="_blank">Stripe Docs — Webhooks: best practices</a></p>
+    <p class="lx-source-note">As seções de duplicatas, ordem de entrega e resposta rápida descrevem exatamente as restrições deste projeto, do lado de quem envia.</p>
+  </div>
+  </div>
+
+  <footer class="lx-lesson-foot">
+    <a class="lx-btn lx-btn--outline" href="../reference/my-learning.html">Painel</a>
+    <a class="lx-btn lx-btn--outline" href="../reference/glossary.html">Glossário</a>
+  </footer>
+</div>
+
+<script src="../assets/learno.js" defer></script>
+</body>
+</html>
