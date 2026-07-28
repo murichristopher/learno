@@ -1,6 +1,6 @@
 const { icon } = require('../../build/icons');
 
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const { esc, inline } = require('../../build/text');
 
 // Only http(s). An authored link is content, and content should never be able to
 // smuggle javascript: into an href.
@@ -36,7 +36,7 @@ module.exports = {
     return `  <div class="lx-card lx-source">
     <p class="lx-source-label">${icon('book-open')} Fonte primária</p>
     <p class="lx-source-title">${href ? `<a class="lx-link" href="${esc(href)}" rel="noopener noreferrer" target="_blank">${name}</a>` : name}</p>
-    ${note ? `<p class="lx-source-note">${esc(note)}</p>` : ''}
+    ${note ? `<p class="lx-source-note">${inline(note)}</p>` : ''}
   </div>`;
   }
 };

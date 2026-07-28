@@ -1,6 +1,6 @@
 const { icon } = require('../../build/icons');
 
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const { esc, inline } = require('../../build/text');
 
 module.exports = {
   meta: {
@@ -38,8 +38,8 @@ module.exports = {
   render({ label, text, bridge }) {
     return `  <div class="lx-card lx-analogy">
     <span class="lx-analogy-label">${icon('lightbulb')} ${esc(label)}</span>
-    <p class="lx-analogy-text">${esc(text)}</p>
-    <p class="lx-analogy-bridge">${esc(bridge)}</p>
+    <p class="lx-analogy-text">${inline(text)}</p>
+    <p class="lx-analogy-bridge">${inline(bridge)}</p>
   </div>`;
   }
 };

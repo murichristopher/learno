@@ -264,9 +264,13 @@ say so in the brief.
 **You are the validator.** Read it, run what can be run, and judge it against
 the rubric criterion by criterion. Nothing on the page scores anything.
 
-**Components:** briefing is `prose`, constraints a `callout`, the criteria a
-`rubric`, the grounding a `source`. If you reach for something else, ask whether
-the project is really a lesson.
+**Components:** briefing is `prose`, the delivery a `deliverable`, constraints a
+`callout`, the criteria a `rubric`, the grounding a `source`. If you reach for
+something else, ask whether the project is really a lesson.
+
+`deliverable` exists because the artifact cannot be a sentence buried in a
+paragraph: it takes the artifact in one line, the cases it has to survive as a
+list, and how to hand it in. Fill all of them.
 
 The shape follows from what a project is for:
 

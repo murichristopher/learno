@@ -14,8 +14,9 @@
   "blocks": [
     { "component": "prose", "props": { "text": "@brief.body" } },
 
-    { "component": "callout",
-      "props": { "variant": "note", "title": "@deliverable.title", "text": "@deliverable.body" } },
+    { "component": "deliverable",
+      "props": { "artifact": "@deliverable.artifact", "detail": "@deliverable.detail",
+                 "must": "@deliverable.must", "handoff": "@deliverable.handoff" } },
 
     { "component": "callout",
       "props": { "variant": "warn", "title": "@constraints.title", "text": "@constraints.body" } },

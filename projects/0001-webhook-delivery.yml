@@ -19,23 +19,19 @@ brief:
     não tem como saber se ele processou ou só respondeu 200 e caiu em seguida.
 
 deliverable:
-  title: "O que entregar"
-  body: |
-    **Código que roda.** Não um documento descrevendo o mecanismo — descrever é o
-    que a lição já cobrou de você. Aqui o entregável é um serviço de entrega que
-    executa: qualquer linguagem, sem framework obrigatório, e um receptor de
-    mentira serve como cliente.
-
-    Ele precisa ser exercitável nos três casos que aparecem no ticket:
-
-    - o mesmo evento entregue duas vezes, e o receptor conseguindo perceber;
-    - um cliente fora do ar por um tempo longo, e os eventos daquele período;
-    - um evento que esgota as tentativas e não pode sumir.
-
-    Escreva no **seu** ambiente — seu repositório, sua máquina. O learno não
-    guarda entrega e não tem upload. Quando estiver rodando, aponte para ele no
-    chat: o caminho da pasta, ou o código colado. Eu leio, rodo o que der para
-    rodar, e avalio contra a rubrica abaixo.
+  artifact: "Um serviço de entrega de webhooks que roda"
+  detail: |
+    Código, não um documento descrevendo o mecanismo — descrever é o que a lição
+    já cobrou de você. Qualquer linguagem, sem framework obrigatório, e um
+    receptor de mentira serve como cliente.
+  must:
+    - "O mesmo evento entregue duas vezes, e o receptor conseguindo perceber que é repetição"
+    - "Um cliente fora do ar por horas, e os eventos daquele período chegando quando ele volta"
+    - "Um evento que esgota as tentativas e não pode simplesmente sumir"
+  handoff: |
+    Escreva no **seu** ambiente — seu repositório, sua máquina. O learno não guarda
+    entrega e não tem upload. Quando estiver rodando, aponte no chat: o caminho da
+    pasta, ou o código colado.
 
 constraints:
   title: "As restrições que fazem disto um problema novo"

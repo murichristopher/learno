@@ -1,4 +1,4 @@
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const { inline } = require('../../build/text');
 
 module.exports = {
   meta: {
@@ -28,7 +28,7 @@ module.exports = {
   render({ svg, caption }) {
     return `  <figure class="lx-figure">
     <div class="lx-card lx-scroll">${svg}</div>
-    ${caption ? `<figcaption class="lx-caption">${esc(caption)}</figcaption>` : ''}
+    ${caption ? `<figcaption class="lx-caption">${inline(caption)}</figcaption>` : ''}
   </figure>`;
   }
 };

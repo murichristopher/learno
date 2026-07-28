@@ -95,29 +95,28 @@ idempotência. O que muda aqui é de quem é o outro lado: <strong>o receptor n�
 seu</strong>. Você não controla o código dele, não pode consultar a tabela dele, e
 não tem como saber se ele processou ou só respondeu 200 e caiu em seguida.</p>
   </div>
-  <div class="lx-card lx-callout lx-callout--note">
-    <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" />
-  <path d="M12 16v-4" />
-  <path d="M12 8h.01" /></svg></span>
-    <div>
-      <p class="lx-callout-title">O que entregar</p>
-      <p class="lx-callout-text">**Código que roda.** Não um documento descrevendo o mecanismo — descrever é o
-que a lição já cobrou de você. Aqui o entregável é um serviço de entrega que
-executa: qualquer linguagem, sem framework obrigatório, e um receptor de
-mentira serve como cliente.
-
-Ele precisa ser exercitável nos três casos que aparecem no ticket:
-
-- o mesmo evento entregue duas vezes, e o receptor conseguindo perceber;
-- um cliente fora do ar por um tempo longo, e os eventos daquele período;
-- um evento que esgota as tentativas e não pode sumir.
-
-Escreva no **seu** ambiente — seu repositório, sua máquina. O learno não
-guarda entrega e não tem upload. Quando estiver rodando, aponte para ele no
-chat: o caminho da pasta, ou o código colado. Eu leio, rodo o que der para
-rodar, e avalio contra a rubrica abaixo.
-</p>
+  <div class="lx-card lx-deliverable">
+    <span class="lx-deliverable-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" />
+  <path d="M12 22V12" />
+  <polyline points="3.29 7 12 12 20.71 7" />
+  <path d="m7.5 4.27 9 5.15" /></svg>O que entregar</span>
+    <p class="lx-deliverable-artifact">Um serviço de entrega de webhooks que roda</p>
+    <div class="lx-deliverable-detail"><p>Código, não um documento descrevendo o mecanismo — descrever é o que a lição
+já cobrou de você. Qualquer linguagem, sem framework obrigatório, e um
+receptor de mentira serve como cliente.</p></div>
+    <div class="lx-deliverable-must">
+      <span class="lx-deliverable-must-label">Precisa aguentar</span>
+      <p class="lx-deliverable-case"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" />
+  <path d="m9 12 2 2 4-4" /></svg><span>O mesmo evento entregue duas vezes, e o receptor conseguindo perceber que é repetição</span></p>
+      <p class="lx-deliverable-case"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" />
+  <path d="m9 12 2 2 4-4" /></svg><span>Um cliente fora do ar por horas, e os eventos daquele período chegando quando ele volta</span></p>
+      <p class="lx-deliverable-case"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" />
+  <path d="m9 12 2 2 4-4" /></svg><span>Um evento que esgota as tentativas e não pode simplesmente sumir</span></p>
     </div>
+    <p class="lx-deliverable-handoff"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" /></svg><span>Escreva no <strong>seu</strong> ambiente — seu repositório, sua máquina. O learno não guarda
+entrega e não tem upload. Quando estiver rodando, aponte no chat: o caminho da
+pasta, ou o código colado.
+</span></p>
   </div>
   <div class="lx-card lx-callout lx-callout--warn">
     <span class="lx-callout-mark"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
@@ -125,19 +124,15 @@ rodar, e avalio contra a rubrica abaixo.
   <path d="M12 17h.01" /></svg></span>
     <div>
       <p class="lx-callout-title">As restrições que fazem disto um problema novo</p>
-      <p class="lx-callout-text">**Você não pode deduplicar pelo cliente.** Ele pode ter processado e caído
+      <div class="lx-callout-text"><p><strong>Você não pode deduplicar pelo cliente.</strong> Ele pode ter processado e caído
 antes de responder. Qualquer resposta que não chegue é indistinguível de um
-evento que não foi processado.
-
-**A ordem não é garantida.** Duas tentativas do mesmo evento podem chegar
-fora de ordem, e dois eventos diferentes do mesmo pagamento também.
-
-**O cliente pode ficar horas fora.** A solução não pode ocupar um worker
-esperando, nem descartar o evento na primeira falha.
-
-**Você não pode pedir para o cliente mudar de protocolo.** É `POST` HTTP com
-JSON, e é isso.
-</p>
+evento que não foi processado.</p>
+    <p><strong>A ordem não é garantida.</strong> Duas tentativas do mesmo evento podem chegar
+fora de ordem, e dois eventos diferentes do mesmo pagamento também.</p>
+    <p><strong>O cliente pode ficar horas fora.</strong> A solução não pode ocupar um worker
+esperando, nem descartar o evento na primeira falha.</p>
+    <p><strong>Você não pode pedir para o cliente mudar de protocolo.</strong> É <code class="lx-code">POST</code> HTTP com
+JSON, e é isso.</p></div>
     </div>
   </div>
   <figure class="lx-figure">

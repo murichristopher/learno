@@ -4,7 +4,7 @@
 const { icon } = require('../../build/icons');
 const { gate } = require('../../build/gate');
 
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const { esc, inline } = require('../../build/text');
 
 module.exports = {
   meta: {
@@ -48,8 +48,8 @@ module.exports = {
   render({ question, conceptIds, hint }) {
     const card = `  <div class="lx-card lx-ask lx-teachback" data-concepts="${esc(conceptIds.join(','))}">
     <span class="lx-ask-label">${icon('graduation-cap')} Ensina de volta</span>
-    <p class="lx-ask-q">${esc(question)}</p>
-    ${hint ? `<p class="lx-teachback-hint">${esc(hint)}</p>` : ''}
+    <p class="lx-ask-q">${inline(question)}</p>
+    ${hint ? `<p class="lx-teachback-hint">${inline(hint)}</p>` : ''}
 
     <p class="lx-teachback-offline">
       Esta parte precisa do servidor. Sem ele não dá para registrar a lição —

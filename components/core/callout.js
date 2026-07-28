@@ -3,7 +3,7 @@
 
 const { icon } = require('../../build/icons');
 
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const { esc, inline, rich } = require('../../build/text');
 
 const VARIANTS = {
   note:   { icon: 'info',           label: 'Nota' },
@@ -45,6 +45,7 @@ module.exports = {
 }
 .lx-callout-title { color: var(--lx-text); font-weight: 600; margin-bottom: .25rem; }
 .lx-callout-text  { color: var(--lx-text-2); }
+.lx-callout-text > p + p { margin-top: .5rem; }
 `,
 
   render({ variant, text, title }) {
@@ -53,7 +54,7 @@ module.exports = {
     <span class="lx-callout-mark">${icon(v.icon)}</span>
     <div>
       <p class="lx-callout-title">${esc(title || v.label)}</p>
-      <p class="lx-callout-text">${esc(text)}</p>
+      <div class="lx-callout-text">${rich(text)}</div>
     </div>
   </div>`;
   }

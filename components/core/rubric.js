@@ -5,7 +5,7 @@
 
 const { icon } = require('../../build/icons');
 
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const { inline } = require('../../build/text');
 
 module.exports = {
   meta: {
@@ -57,21 +57,21 @@ module.exports = {
   render({ criteria, caption }) {
     const items = (criteria || []).map(c => `
       <div class="lx-card lx-rubric-item">
-        <p class="lx-rubric-title">${esc(c && c.title)}</p>
+        <p class="lx-rubric-title">${inline(c && c.title)}</p>
         <p class="lx-rubric-line lx-rubric-line--ok">
           <span class="lx-rubric-mark">${icon('check', { label: 'Suficiente' })}</span>
-          <span>${esc(c && c.ok)}</span>
+          <span>${inline(c && c.ok)}</span>
         </p>
         <p class="lx-rubric-line lx-rubric-line--bad">
           <span class="lx-rubric-mark">${icon('x', { label: 'Insuficiente' })}</span>
-          <span>${esc(c && c.bad)}</span>
+          <span>${inline(c && c.bad)}</span>
         </p>
       </div>`).join('');
 
     return `  <figure class="lx-figure">
     <div class="lx-rubric">${items}
     </div>
-    ${caption ? `<figcaption class="lx-caption">${esc(caption)}</figcaption>` : ''}
+    ${caption ? `<figcaption class="lx-caption">${inline(caption)}</figcaption>` : ''}
   </figure>`;
   }
 };
