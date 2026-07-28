@@ -6,6 +6,7 @@
 
   /* Accent */
   --lx-accent:        #2563eb;
+  --lx-accent-solid:  #2563eb;
   --lx-accent-strong: #1d4ed8;
   --lx-accent-soft:   rgb(219 234 254 / .7);
   --lx-accent-ring:   rgb(59 130 246 / .3);
@@ -14,7 +15,7 @@
   --lx-text:        #111827;
   --lx-text-2:      #374151;
   --lx-text-muted:  #6b7280;
-  --lx-text-subtle: #9ca3af;
+  --lx-text-subtle: #7c828e;
 
   /* Opaque surface for floating UI — menus, popovers */
   --lx-surface: #ffffff;
@@ -37,7 +38,7 @@
   /* Inputs */
   --lx-input:        rgb(239 246 255 / .6);
   --lx-input-border: rgb(191 219 254 / .4);
-  --lx-placeholder:  #9ca3af;
+  --lx-placeholder:  #6b7280;
 
   /* Shell gradient — the accent washed over white */
   --lx-shell-from: rgb(37 99 235 / .09);
@@ -91,13 +92,18 @@
 
     --lx-input:        rgb(255 255 255 / .05);
     --lx-input-border: rgb(147 197 253 / .14);
-    --lx-placeholder:  rgb(255 255 255 / .4);
+    --lx-placeholder:  rgb(255 255 255 / .58);
 
     --lx-good: #34d399;
     --lx-warn: #fbbf24;
     --lx-bad:  #f87171;
     --lx-accent:        #60a5fa;
     --lx-accent-strong: #93c5fd;
+  --lx-accent-solid:  #2563eb;
+    --lx-input:         rgb(147 197 253 / .07);
+    --lx-input-border:  rgb(147 197 253 / .14);
+    --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
     --lx-accent-soft:   rgb(59 130 246 / .16);
     --lx-card-border:   rgb(147 197 253 / .16);
     --lx-panel-border:  rgb(147 197 253 / .10);
@@ -132,13 +138,18 @@
 
   --lx-input:        rgb(255 255 255 / .05);
   --lx-input-border: rgb(147 197 253 / .14);
-  --lx-placeholder:  rgb(255 255 255 / .4);
+  --lx-placeholder:  rgb(255 255 255 / .58);
 
   --lx-good: #34d399;
   --lx-warn: #fbbf24;
   --lx-bad:  #f87171;
   --lx-accent:        #60a5fa;
   --lx-accent-strong: #93c5fd;
+  --lx-accent-solid:  #2563eb;
+  --lx-input:         rgb(147 197 253 / .07);
+  --lx-input-border:  rgb(147 197 253 / .14);
+  --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
   --lx-accent-soft: rgb(59 130 246 / .16);
   --lx-shell-from:  rgb(10 45 110 / .95);
   --lx-shell-via:   #111827;
@@ -158,6 +169,7 @@
 :root[data-accent="roxo"] {
   --lx-surface:       #ffffff;
   --lx-accent:        #9333ea;
+  --lx-accent-solid:  #9333ea;
   --lx-accent-strong: #7e22ce;
   --lx-accent-soft:   rgb(243 232 255 / .6);
   --lx-accent-ring:   rgb(168 85 247 / .3);
@@ -177,6 +189,7 @@
 :root[data-accent="rosa"] {
   --lx-surface:       #ffffff;
   --lx-accent:        #be185d;
+  --lx-accent-solid:  #be185d;
   --lx-accent-strong: #9d174d;
   --lx-accent-soft:   rgb(252 231 243 / .7);
   --lx-accent-ring:   rgb(219 39 119 / .3);
@@ -198,6 +211,11 @@
     --lx-surface:       #1c1430;
     --lx-accent:        #c084fc;
     --lx-accent-strong: #d8b4fe;
+  --lx-accent-solid:  #9333ea;
+    --lx-input:         rgb(216 180 254 / .07);
+    --lx-input-border:  rgb(216 180 254 / .14);
+    --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
     --lx-accent-soft:   rgb(168 85 247 / .16);
     --lx-card-border:   rgb(216 180 254 / .16);
     --lx-panel-border:  rgb(216 180 254 / .10);
@@ -212,6 +230,11 @@
     --lx-surface:       #26101c;
     --lx-accent:        #f472b6;
     --lx-accent-strong: #f9a8d4;
+  --lx-accent-solid:  #be185d;
+    --lx-input:         rgb(249 168 212 / .07);
+    --lx-input-border:  rgb(249 168 212 / .14);
+    --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
     --lx-accent-soft:   rgb(219 39 119 / .18);
     --lx-card-border:   rgb(249 168 212 / .16);
     --lx-panel-border:  rgb(249 168 212 / .10);
@@ -228,6 +251,11 @@
   --lx-surface:       #1c1430;
   --lx-accent:        #c084fc;
   --lx-accent-strong: #d8b4fe;
+  --lx-accent-solid:  #9333ea;
+  --lx-input:         rgb(216 180 254 / .07);
+  --lx-input-border:  rgb(216 180 254 / .14);
+  --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
   --lx-card-border:   rgb(216 180 254 / .16);
   --lx-panel-border:  rgb(216 180 254 / .10);
   --lx-bar-border:    rgb(216 180 254 / .12);
@@ -242,6 +270,11 @@
   --lx-surface:       #26101c;
   --lx-accent:        #f472b6;
   --lx-accent-strong: #f9a8d4;
+  --lx-accent-solid:  #be185d;
+  --lx-input:         rgb(249 168 212 / .07);
+  --lx-input-border:  rgb(249 168 212 / .14);
+  --lx-card-shadow:   0 4px 24px -4px rgb(0 0 0 / .4);
+
   --lx-card-border:   rgb(249 168 212 / .16);
   --lx-panel-border:  rgb(249 168 212 / .10);
   --lx-bar-border:    rgb(249 168 212 / .12);
@@ -379,7 +412,7 @@ html {
   cursor: pointer;
   transition: background-color .15s, border-color .15s, color .15s;
 }
-.lx-btn--primary   { background: var(--lx-accent); color: #fff; border: 1px solid var(--lx-accent); }
+.lx-btn--primary   { background: var(--lx-accent-solid); color: #fff; border: 1px solid var(--lx-accent-solid); }
 .lx-btn--primary:hover  { background: var(--lx-accent-strong); border-color: var(--lx-accent-strong); }
 .lx-btn--secondary { background: var(--lx-input); color: var(--lx-text-2); border: 1px solid var(--lx-border); }
 .lx-btn--secondary:hover { color: var(--lx-text); }
@@ -397,7 +430,8 @@ html {
   backdrop-filter: blur(var(--lx-blur-sm));
   -webkit-backdrop-filter: blur(var(--lx-blur-sm));
 }
-.lx-input::placeholder { color: var(--lx-placeholder); }
+.lx-input::placeholder,
+.lx-answer::placeholder { color: var(--lx-placeholder); }
 .lx-input:focus {
   outline: none;
   border-color: var(--lx-accent);

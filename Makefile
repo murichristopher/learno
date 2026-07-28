@@ -20,7 +20,7 @@ SANDBOX   := $(CURDIR)/sandbox
 SERVER    := $(CURDIR)/server
 SBX_RUN    = LEARNO_MODE=sandbox LEARNO_WORKSPACE=$(SANDBOX) PORT=$(SBX_PORT)
 
-.PHONY: help start local sandbox sandbox-local stop check deps build lesson catalog check-errors compare
+.PHONY: help start local sandbox sandbox-local stop check deps build lesson catalog check-errors compare audit
 
 deps:
 	@test -d $(SERVER)/node_modules || (cd $(SERVER) && npm install --silent)
@@ -44,6 +44,7 @@ help:
 	@echo "    make sandbox-local    same, localhost only"
 	@echo "    make check            syntax-check the server, the build and the seed"
 	@echo "    make check-errors     show the build refusing broken lessons"
+	@echo "    make audit URL=...    measure contrast in a real browser, every accent and theme"
 	@echo
 	@echo "    make stop             kill whatever holds :$(PORT) and :$(SBX_PORT)"
 
@@ -79,6 +80,18 @@ catalog: deps
 lesson: deps
 	@test -n "$(SRC)" || { echo "usage: make lesson SRC=lessons/0011-name"; exit 1; }
 	@node build/render.js $(SRC)
+
+# Renders in Chromium and measures the contrast the reader actually gets, across
+# every accent and theme. Reasoning about the cascade produced wrong answers
+# repeatedly — a token set in an accent block and never overridden in the theme
+# block is invisible in the source and obvious here.
+audit: deps
+	@test -n "$(URL)" || { echo "usage: make audit URL=http://localhost:9990/lessons/0011-async-jobs.html"; exit 1; }
+	@for a in azul roxo rosa; do \
+	  for t in light dark; do \
+	    node build/audit-theme.js "$(URL)" $$a $$t | grep -E '·|✗|REPROVAM|todos passam'; \
+	  done; \
+	done
 
 # What the pipeline actually bought. HAND is a glob of hand-written lessons to
 # measure against — they live in a study workspace, not here.
