@@ -23,6 +23,7 @@ app.get('/api/health', (_req, res) =>
 app.use('/api/validate', require('./routes/validate'));
 app.use('/api/progress', require('./routes/progress'));
 app.use('/api/catalog', require('./routes/catalog'));   // lists all lesson/review files on disk
+app.use('/api/next', require('./routes/next'));         // NEXT.md — the one thing only the model knows
 app.use('/debug', require('./routes/debug'));   // /debug/mic — mic & Web Speech diagnostics
 
 // `/` → the dashboard (or an index of the workspace, if it isn't seeded yet).
