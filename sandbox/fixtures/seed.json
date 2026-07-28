@@ -19,7 +19,7 @@
   "concepts": [
     {
       "concept_id": "sandbox_widget_sharding",
-      "lesson_id": "sandbox-kitchen-sink",
+      "lesson_id": "0001-kitchen-sink",
       "first_seen": {
         "$daysFromNow": -30
       },
@@ -52,7 +52,7 @@
     },
     {
       "concept_id": "sandbox_widget_replication",
-      "lesson_id": "sandbox-kitchen-sink",
+      "lesson_id": "0001-kitchen-sink",
       "first_seen": {
         "$daysFromNow": -21
       },
@@ -85,7 +85,7 @@
     },
     {
       "concept_id": "sandbox_widget_backpressure",
-      "lesson_id": "sandbox-kitchen-sink",
+      "lesson_id": "0001-kitchen-sink",
       "first_seen": {
         "$daysFromNow": -14
       },
@@ -111,7 +111,7 @@
     },
     {
       "concept_id": "sandbox_idempotency",
-      "lesson_id": "sandbox-kitchen-sink",
+      "lesson_id": "0001-kitchen-sink",
       "first_seen": {
         "$daysFromNow": -5
       },
@@ -164,7 +164,7 @@
   ],
   "lessons": [
     {
-      "lesson_id": "sandbox-kitchen-sink",
+      "lesson_id": "0001-kitchen-sink",
       "completed_at": {
         "$daysFromNow": -8
       },
@@ -172,7 +172,7 @@
       "sections": []
     },
     {
-      "lesson_id": "sandbox-second-lesson",
+      "lesson_id": "0002-renderer-smoke",
       "completed_at": {
         "$daysFromNow": -21
       },
@@ -182,7 +182,7 @@
   ],
   "section_results": [
     {
-      "lesson_id": "sandbox-kitchen-sink",
+      "lesson_id": "0001-kitchen-sink",
       "concept_id": "sandbox_widget_sharding",
       "is_teachback": false,
       "score": 91,
@@ -196,7 +196,7 @@
       }
     },
     {
-      "lesson_id": "sandbox-kitchen-sink",
+      "lesson_id": "0001-kitchen-sink",
       "concept_id": "sandbox_idempotency",
       "is_teachback": false,
       "score": 38,
@@ -211,7 +211,7 @@
       }
     },
     {
-      "lesson_id": "sandbox-kitchen-sink",
+      "lesson_id": "0001-kitchen-sink",
       "concept_id": "sandbox_widget_replication",
       "is_teachback": true,
       "score": 84,
@@ -225,7 +225,7 @@
       }
     },
     {
-      "lesson_id": "sandbox-kitchen-sink",
+      "lesson_id": "0001-kitchen-sink",
       "concept_id": "sandbox_idempotency",
       "is_teachback": false,
       "score": 52,
@@ -241,7 +241,7 @@
       }
     },
     {
-      "lesson_id": "sandbox-second-lesson",
+      "lesson_id": "0002-renderer-smoke",
       "concept_id": "sandbox_eventual_consistency",
       "is_teachback": false,
       "score": 61,

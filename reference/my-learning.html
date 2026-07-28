@@ -66,17 +66,43 @@
   .dash-concept { flex: 1; color: var(--lx-text); font-weight: 550; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
   .dash-meta { color: var(--lx-text-subtle); font-size: .75rem; text-align: right; }
 
-  /* what is already done, folded away */
-  .dash-fold { margin-top: 1rem; }
+  /* what is already done, folded away. It still has to look like something you
+     can open: an 18px row of small caps reads as a label, and the content
+     behind it may as well not exist. */
+  .dash-fold { margin-top: .6rem; }
   .dash-fold > summary {
     cursor: pointer; list-style: none;
-    display: flex; align-items: center; gap: .45rem;
-    font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
-    color: var(--lx-text-subtle);
+    display: flex; align-items: center; gap: .5rem;
+    min-height: 2.75rem; padding: .5rem .85rem;
+    border: 1px solid var(--lx-border); border-radius: var(--lx-radius-sm);
+    background: var(--lx-input);
+    font-size: .78rem; font-weight: 650; letter-spacing: .01em;
+    color: var(--lx-text-2);
   }
+  .dash-fold > summary:hover { color: var(--lx-text); border-color: var(--lx-accent); }
   .dash-fold > summary::-webkit-details-marker { display: none; }
-  .dash-fold > summary .lx-icon-svg { width: .95rem; height: .95rem; color: var(--lx-good); }
+  .dash-fold > summary .lx-icon-svg { width: 1rem; height: 1rem; color: var(--lx-good); }
+  .dash-fold-chev { margin-left: auto; color: var(--lx-text-subtle) !important; transition: transform .15s; }
+  .dash-fold[open] > summary .dash-fold-chev { transform: rotate(180deg); }
   .dash-fold[open] > summary { margin-bottom: .8rem; }
+
+  /* the way out of the dashboard and into everything else */
+  .dash-library {
+    display: flex; align-items: center; gap: .85rem;
+    margin-top: 1.25rem; padding: .9rem 1rem;
+    color: var(--lx-text); text-decoration: none;
+  }
+  .dash-library:hover { border-color: var(--lx-accent); }
+  .dash-library-icon {
+    flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+    width: 2.1rem; height: 2.1rem; border-radius: 50%;
+    background: var(--lx-accent-soft); color: var(--lx-accent);
+  }
+  .dash-library-icon .lx-icon-svg { width: 1.05rem; height: 1.05rem; }
+  .dash-library-body { flex: 1; display: flex; flex-direction: column; }
+  .dash-library-title { font-weight: 650; }
+  .dash-library-sub { color: var(--lx-text-subtle); font-size: .78rem; }
+  .dash-library > .lx-icon-svg { width: 1rem; height: 1rem; color: var(--lx-text-subtle); }
   .dash-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
   .dash-chip {
     display: inline-flex; align-items: baseline; gap: .4rem;
@@ -91,17 +117,6 @@
   .dash-bar { height: 100%; border-radius: 99px; }
   .dash-score { display: flex; align-items: center; gap: .5rem; }
 
-  /* catalogue */
-  .dash-cat-group + .dash-cat-group { margin-top: 1rem; }
-  .dash-cat-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--lx-text-subtle); margin-bottom: .35rem; }
-  .dash-cat-item {
-    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-    padding: .5rem .6rem; border-radius: var(--lx-radius-sm);
-    color: var(--lx-text); text-decoration: none;
-  }
-  .dash-cat-item:hover { background: var(--lx-input); color: var(--lx-accent); }
-  .dash-cat-file { color: var(--lx-text-subtle); font-size: .7rem; white-space: nowrap; }
-
   /* score colours, applied by class rather than an inline hex */
   .s-good { color: var(--lx-good); }
   .s-mid  { color: var(--lx-warn); }
@@ -111,8 +126,11 @@
   .b-bad  { background: var(--lx-bad); }
 
   @media (max-width: 560px) {
+    /* The date drops to its own line rather than squeezing the concept name.
+       Indented to line up under the title instead of under the pill, which is
+       what made the rows read as ragged. */
     .dash-review { flex-wrap: wrap; }
-    .dash-meta { text-align: left; width: 100%; }
+    .dash-meta { text-align: left; width: 100%; padding-left: calc(3.4rem + .7rem); }
   }
 </style>
 </head>
@@ -125,7 +143,12 @@
     <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
     <span>learno</span>
   </a>
-  <details class="lx-settings">
+  <div class="lx-topbar-right">
+    <a class="lx-topbar-link" href="library.html" title="Biblioteca">
+      <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></svg>
+      <span>Biblioteca</span>
+    </a>
+    <details class="lx-settings">
     <summary class="lx-settings-btn" title="Configurações" aria-label="Configurações" role="button">
       <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
   <circle cx="12" cy="12" r="3" /></svg>
@@ -158,7 +181,8 @@
         </div>
       </div>
     </div>
-  </details>
+    </details>
+  </div>
 </nav>
 
 <div class="lx-content lx-wrap">
@@ -207,18 +231,11 @@
     <div class="lx-card" id="reviews-content"><span class="dash-empty">carregando…</span></div>
   </section>
 
-  <section class="dash-section">
-    <h2 class="dash-section-title">
-      <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></svg>
-      Tudo no disco
-    </h2>
-    <div class="lx-card" id="catalog-content"><span class="dash-empty">carregando…</span></div>
-  </section>
-
   <details class="dash-fold" id="mastered-fold">
     <summary>
       <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
       <span id="mastered-summary">Já dominado</span>
+      <svg class="lx-icon-svg dash-fold-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
     </summary>
     <div id="mastered-content"></div>
   </details>
@@ -227,9 +244,21 @@
     <summary>
       <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" /><path d="M22 10v6" /><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg>
       <span id="lessons-summary">Histórico</span>
+      <svg class="lx-icon-svg dash-fold-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
     </summary>
     <div class="lx-card" id="lessons-content"></div>
   </details>
+
+  <a class="lx-card dash-library" href="library.html">
+    <span class="dash-library-icon">
+      <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></svg>
+    </span>
+    <span class="dash-library-body">
+      <span class="dash-library-title">Biblioteca</span>
+      <span class="dash-library-sub" id="library-sub">tudo que existe, com a nota de cada um</span>
+    </span>
+    <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+  </a>
 
   <footer class="lx-lesson-foot">
     <a class="lx-btn lx-btn--outline" href="glossary.html">Glossário</a>
@@ -494,26 +523,19 @@
     }
   }
 
-  // ── catálogo: tudo no disco, independente do progresso ─────────────
+  // The file browser moved to library.html. What is left here is the count, so
+  // the link says how much is behind it instead of being a bare word.
   async function loadCatalog() {
-    const group = (items, label) => items.length ? `
-      <div class="dash-cat-group">
-        <div class="dash-cat-label">${label} (${items.length})</div>
-        ${items.map(it => `<a class="dash-cat-item" href="${SERVER}${esc(it.path)}">
-          <span>${esc(it.title)}</span><span class="dash-cat-file">${esc(it.file)}</span></a>`).join('')}
-      </div>` : '';
     try {
       const res  = await fetch(`${SERVER}/api/catalog`, { signal: AbortSignal.timeout(3000) });
-      const data = await res.json();
-      const html = group(data.lessons || [], 'Lições')
-                 + group(data.reviews  || [], 'Revisões')
-                 + group(data.projects || [], 'Projetos');
-      document.getElementById('catalog-content').innerHTML =
-        html || '<span class="dash-empty">Nenhuma lição no disco ainda. Peça uma ao Claude para começar.</span>';
-    } catch {
-      document.getElementById('catalog-content').innerHTML =
-        '<span class="dash-empty">Catálogo indisponível — servidor offline.</span>';
-    }
+      const d    = await res.json();
+      const n    = ['lessons', 'reviews', 'projects'].map(k => (d[k] || []).length);
+      const bits = [[n[0], 'lição', 'lições'], [n[1], 'revisão', 'revisões'], [n[2], 'projeto', 'projetos']]
+        .filter(([c]) => c > 0)
+        .map(([c, one, many]) => `${c} ${c === 1 ? one : many}`);
+      document.getElementById('library-sub').textContent =
+        bits.length ? `${bits.join(' · ')} — com a nota de cada um` : 'nada no disco ainda';
+    } catch { /* o texto padrão do link já serve */ }
   }
 
   load();

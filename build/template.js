@@ -38,7 +38,13 @@ function topBar(a) {
       ${icon('house', { className: 'lx-topbar-icon' })}
       <span>learno</span>
     </a>
-    ${settings()}
+    <div class="lx-topbar-right">
+      <a class="lx-topbar-link" href="${a}reference/library.html" title="Biblioteca">
+        ${icon('library')}
+        <span>Biblioteca</span>
+      </a>
+      ${settings()}
+    </div>
   </nav>`;
 }
 

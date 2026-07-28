@@ -639,6 +639,21 @@ html {
 .lx-topbar-home:hover { background: var(--lx-input); color: var(--lx-accent); }
 .lx-topbar-home .lx-icon-svg { width: 1.1rem; height: 1.1rem; color: var(--lx-accent); }
 
+/* Library and settings share the right-hand side. The label collapses on a
+   phone rather than the link disappearing: getting to everything you have has
+   to be one tap from every page, which is the whole point of it being here. */
+.lx-topbar-right { display: flex; align-items: center; gap: .35rem; }
+.lx-topbar-link {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .4rem .7rem; min-height: 2.25rem;
+  border-radius: var(--lx-radius-sm);
+  color: var(--lx-text-2); text-decoration: none;
+  font-size: .85rem; font-weight: 550;
+}
+.lx-topbar-link:hover { background: var(--lx-input); color: var(--lx-accent); }
+.lx-topbar-link .lx-icon-svg { width: 1rem; height: 1rem; }
+.lx-topbar-link[aria-current="page"] { color: var(--lx-accent); background: var(--lx-accent-soft); }
+
 .lx-topbar-actions { display: flex; gap: .15rem; padding: .15rem; border-radius: 99px; background: var(--lx-input); }
 .lx-theme-btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -662,6 +677,8 @@ html {
   .lx-title-icon { width: 2rem; height: 2rem; }
   .lx-title-icon .lx-icon-svg { width: 1.1rem; height: 1.1rem; }
   .lx-topbar-home span { font-size: .9rem; }
+  .lx-topbar-link span { display: none; }
+  .lx-topbar-link { padding: .4rem .55rem; }
 }
 
 /* ── Gated blocks ────────────────────────────────────────────────────────────
