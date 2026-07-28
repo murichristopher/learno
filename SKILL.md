@@ -114,10 +114,10 @@ design a critique. There is no template, and there should not be.
   good looks like while they can still act on it.
 - **Evaluate in conversation**, not through the server. The loop is deliver →
   feedback → revise, and the revision is the point.
-- **Record the result** as conversational mastery (see **Mastery**). A project is
-  stronger evidence than a teach-back, so it can push intervals further. A weak
+- **Record the result** with `kind: "project"` (see **Projects**). A project is
+  stronger evidence than a teach-back, so it pushes intervals further. A weak
   project is a signal to revisit — never a reason to reset every concept it
-  touched.
+  touched, and the server will not do so unless you name the concept.
 
 ---
 
@@ -132,6 +132,8 @@ subdirectory.
 - `learning-records/*.md` — what the user has already demonstrated. Use to calculate zone of proximal development.
 - `reference/glossary.html` — canonical concept vocabulary. All concept IDs used in lessons and sent to the AI validation server must match IDs defined here.
 - `lessons/*.html` — completed lessons.
+- `review/*.html` — spaced reviews.
+- `projects/*.html` — the brief for each project. See **Projects**.
 - `reference/my-learning.html` — dynamic mastery dashboard (requires server).
 
 Supporting specs (read before generating any artifact):
@@ -169,7 +171,10 @@ When the user demonstrates understanding in conversation — correct unprompted 
 **Source B — AI-validated:**
 When the user scores ≥ 75 in the teach-back section of a lesson. The Gemini validation server records it with `source: "ai_validation"`.
 
-Both sources appear in the dashboard with their provenance. Never reduce mastery to score alone. A user who explains a concept perfectly in conversation has learned it — regardless of whether they've completed a lesson.
+**Source C — Project:**
+When the user applies the concept under a constraint it was never taught under, and you judge the delivery against the rubric. You post it with `kind: "project"`; the server records `source: "project"` and schedules it differently. See **Projects**.
+
+All three appear in the dashboard with their provenance. Never reduce mastery to score alone. A user who explains a concept perfectly in conversation has learned it — regardless of whether they've completed a lesson.
 
 ---
 
@@ -220,6 +225,72 @@ and the gallery automatically.
 The server serves the workspace statically, so lessons load from a secure `localhost`
 context — required for the 🎤 voice dictation (Web Speech API) and for the mic permission
 to be remembered. Opening via `file://` makes the mic prompt repeat and fail to transcribe.
+
+---
+
+## Projects
+
+A lesson tests whether the user can **explain**. Nothing else tests whether they
+can **do** it when the situation is one they have not seen. That distance has a
+name — transfer — and a concept can sit at `mastered: true` in the schedule and
+still collapse the first time it has to be used.
+
+A project closes a pattern. Same pipeline as a lesson: `projects/NNNN-name.json`
++ `.yml`, built with `make lesson SRC=projects/NNNN-name`.
+
+**What you decide, per subject.** There is no project template and there should
+not be. Philosophy wants an argument to defend, mathematics a proof or a
+counterexample, programming a working thing, design a critique. A generic
+"deliverable" shell would force every subject into the shape of whichever one
+was designed first.
+
+**The brief needs no component the vocabulary lacks** — briefing is `prose`,
+constraints a `callout`, the rubric a `table`, the grounding a `source`. If you
+reach for something else, ask whether the project is really a lesson.
+
+The shape follows from what a project is for:
+
+- **No `phase`, no `recall`, no `teachback`.** Nothing on the page is scored, so
+  the page carries no JS and no progress bar. The work happens off the page.
+- **State the constraint that makes it new.** If the deliverable can be produced
+  by repeating what the lesson said, it is a quiz with extra steps. Name what the
+  user does not control this time.
+- **The rubric goes in the brief, before the attempt, and they can read it.**
+  Four to six criteria, each with what is sufficient and what is not, from a
+  Tier 1 source where one exists. Written first so the goalposts cannot move
+  after you have seen the answer — and so the user knows what good looks like
+  while they can still act on it.
+- **Say on the page that evaluation happens in the conversation.** There is no
+  submit button, and a page that looks like a lesson but does nothing when you
+  finish is worse than one that says so.
+
+**Evaluating.** Read the delivery against the rubric, criterion by criterion,
+naming where it is sufficient and where it is not. The loop is deliver →
+feedback → revise, and the revision is the point. Then record it:
+
+```sh
+curl -X POST localhost:9990/api/progress -H 'content-type: application/json' -d '{
+  "lesson_id": "0001-webhook-delivery",
+  "kind": "project",
+  "final_score": 82,
+  "concepts_demonstrated": ["retry_backoff", "job_idempotency", "idempotency_key"],
+  "concepts_missed": []
+}'
+```
+
+**Scoring is asymmetric, and the server enforces it — not you.**
+
+- Passing (≥ 75) pushes the interval **1.5×** further than the same score from a
+  lesson would. Applying under a new constraint is stronger evidence than
+  explaining.
+- Failing (< 75) demotes **only** the concepts you name in `concepts_missed`.
+  The others keep their schedule: a project touches several concepts at once and
+  the delivery does not say which one broke. The score still lands in each
+  concept's history, so the dip is visible without being acted on blindly.
+
+Leaving `concepts_missed` empty on a weak project therefore records the score
+and moves nothing. That is the honest default when you cannot tell which concept
+failed — name one only when the delivery actually shows you.
 
 ---
 
@@ -274,9 +345,9 @@ The local server at `localhost:9990` proxies Gemini 2.5-flash and handles MongoD
 **Server routes used by lessons:**
 - `GET  /api/health` — liveness check (lessons call this on load)
 - `POST /api/validate` — validate a user's free-text answer
-- `POST /api/progress` — save lesson completion + trigger SM-2 scheduling
+- `POST /api/progress` — save lesson completion + trigger SM-2 scheduling. Accepts `kind: "lesson" | "project"` and, for projects, `concepts_missed` — see **Projects**.
 - `GET  /api/progress` — read mastery state (used by dashboard)
-- `GET  /api/catalog` — lists every lesson/review HTML file on disk (powers the dashboard's "all lessons & reviews" section, independent of MongoDB progress)
+- `GET  /api/catalog` — lists every lesson/review/project HTML file on disk (powers the dashboard's catalog section, independent of MongoDB progress)
 - `GET  /debug/mic` — standalone mic / Web Speech diagnostics page
 
 **Validate payload:**

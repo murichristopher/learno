@@ -1,0 +1,31 @@
+{
+  "id": "0001-webhook-delivery",
+  "tag": "Projeto 1 · System Design",
+  "icon": "hammer",
+  "title": "@meta.title",
+  "subtitle": "@meta.subtitle",
+  "concepts": [
+    "retry_backoff",
+    "dead_letter_queue",
+    "job_idempotency",
+    "idempotency_key",
+    "async_job_status"
+  ],
+  "blocks": [
+    { "component": "prose", "props": { "text": "@brief.body" } },
+
+    { "component": "callout",
+      "props": { "variant": "note", "title": "@deliverable.title", "text": "@deliverable.body" } },
+
+    { "component": "callout",
+      "props": { "variant": "warn", "title": "@constraints.title", "text": "@constraints.body" } },
+
+    { "component": "table",
+      "props": { "caption": "@rubric.caption", "headers": "@rubric.headers", "rows": "@rubric.rows" } },
+
+    { "component": "prose", "props": { "text": "@evaluation.body" } },
+
+    { "component": "source",
+      "props": { "title": "@source.title", "url": "@source.url", "note": "@source.note" } }
+  ]
+}

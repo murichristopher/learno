@@ -229,7 +229,7 @@ function buildComponentCss() {
 
 function sources() {
   const found = [];
-  for (const dir of ['lessons', 'review', path.join('sandbox', 'lessons')]) {
+  for (const dir of ['lessons', 'review', 'projects', path.join('sandbox', 'lessons')]) {
     const full = path.join(ROOT, dir);
     if (!fs.existsSync(full)) continue;
     for (const f of fs.readdirSync(full)) {

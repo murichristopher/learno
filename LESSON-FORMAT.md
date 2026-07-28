@@ -187,6 +187,21 @@ nothing leaves the concept due on the same date forever.
 
 ---
 
+## Projects
+
+A project is the same format in `projects/NNNN-name.json` + `.yml`, built the
+same way. It is a brief, not a lesson: briefing in `prose`, constraints in a
+`callout`, the rubric in a `table`, grounding in `source`.
+
+It has no `phase`, no `recall` and no `teachback` — nothing on the page is
+scored, so the page carries no progress bar and no JavaScript. The work is
+delivered and evaluated in the conversation, and the page should say so.
+
+The rubric belongs in the brief, before the attempt. See **Projects** in
+`SKILL.md` for what goes in one and how the result is recorded.
+
+---
+
 ## Diagrams
 
 Hand-written inline SVG in the `.yml`, using **only** these classes:

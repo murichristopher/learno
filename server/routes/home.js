@@ -21,7 +21,7 @@ function renderGroup(title, items, empty) {
     '</ul>';
 }
 
-function renderIndex({ lessons, reviews }) {
+function renderIndex({ lessons, reviews, projects }) {
   return `<!DOCTYPE html>
 <html lang="pt-BR"><head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -56,6 +56,7 @@ function renderIndex({ lessons, reviews }) {
   <p class="sub">Índice do workspace.</p>
   ${renderGroup('Lições', lessons, 'Nenhuma lição ainda.')}
   ${renderGroup('Revisões', reviews, 'Nenhuma revisão ainda.')}
+  ${renderGroup('Projetos', projects, 'Nenhum projeto ainda.')}
   <p class="note">
     O dashboard de domínio ainda não existe neste workspace. Copie
     <code>skill/templates/reference/</code> para <code>reference/</code> para

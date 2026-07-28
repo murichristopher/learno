@@ -1,0 +1,87 @@
+meta:
+  title: "Entrega de webhooks"
+  subtitle: "Você já sabe repetir uma tarefa com segurança. Agora o retry acontece contra um servidor que não é seu."
+
+brief:
+  body: |
+    Sua API precisa avisar os clientes quando um pagamento muda de estado. Cada
+    cliente cadastra uma URL e você faz um `POST` nela a cada evento.
+
+    Nas primeiras semanas funciona. Depois chega o primeiro ticket: um cliente
+    diz que recebeu a confirmação do mesmo pagamento **quatro vezes** e emitiu
+    quatro notas fiscais. Outro ficou seis horas fora do ar e quer os eventos
+    daquele período. Um terceiro responde em 30 segundos e está segurando seus
+    workers.
+
+    Tudo isso você já viu nas lições — retry com backoff, dead-letter, chave de
+    idempotência. O que muda aqui é de quem é o outro lado: **o receptor não é
+    seu**. Você não controla o código dele, não pode consultar a tabela dele, e
+    não tem como saber se ele processou ou só respondeu 200 e caiu em seguida.
+
+deliverable:
+  title: "O que entregar"
+  body: |
+    Um documento curto — uma a duas páginas, ou um diagrama com legendas — que
+    descreva o mecanismo de entrega: o que acontece entre o evento nascer no seu
+    sistema e o cliente processar. Inclua o formato do que você envia, a política
+    de repetição, o que acontece com o que nunca entra, e o que o cliente precisa
+    fazer do lado dele.
+
+    Traga no chat. Não existe página para submeter — a conversa é a avaliação.
+
+constraints:
+  title: "As restrições que fazem disto um problema novo"
+  body: |
+    **Você não pode deduplicar pelo cliente.** Ele pode ter processado e caído
+    antes de responder. Qualquer resposta que não chegue é indistinguível de um
+    evento que não foi processado.
+
+    **A ordem não é garantida.** Duas tentativas do mesmo evento podem chegar
+    fora de ordem, e dois eventos diferentes do mesmo pagamento também.
+
+    **O cliente pode ficar horas fora.** A solução não pode ocupar um worker
+    esperando, nem descartar o evento na primeira falha.
+
+    **Você não pode pedir para o cliente mudar de protocolo.** É `POST` HTTP com
+    JSON, e é isso.
+
+rubric:
+  caption: "A rubrica está aqui antes de você começar, de propósito: é o que \"bom\" significa neste projeto."
+  headers: ["Critério", "Suficiente", "Insuficiente"]
+  rows:
+    - - "Identidade do evento"
+      - "Cada evento carrega um id estável que não muda entre tentativas, e você diz explicitamente que o cliente deve usá-lo para deduplicar."
+      - "Um id gerado por tentativa, ou nenhum — o cliente não tem como saber que é repetição."
+    - - "Política de repetição"
+      - "Backoff exponencial com jitter, teto declarado, número máximo de tentativas declarado."
+      - "Intervalo fixo, ou \"tenta de novo até dar certo\" sem limite."
+    - - "O que nunca entra"
+      - "Existe um destino para o que esgotou as tentativas, e alguém consegue ver e reprocessar."
+      - "O evento some, ou fica preso na fila para sempre."
+    - - "Isolamento do cliente lento"
+      - "Timeout por requisição, e um cliente lento ou fora do ar não atrasa a entrega dos outros."
+      - "Uma fila única onde o cliente mais lento define a latência de todo mundo."
+    - - "O contrato com o receptor"
+      - "Você escreve o que o cliente precisa garantir do lado dele, e por quê."
+      - "A idempotência é tratada como problema exclusivamente seu."
+    - - "Honestidade sobre a garantia"
+      - "Você nomeia a garantia que oferece (at-least-once) e o que ela implica."
+      - "A palavra \"exactly-once\" aparece sem qualificação."
+
+evaluation:
+  body: |
+    **Como isto é avaliado.** Você traz a entrega no chat e eu leio contra a
+    rubrica acima, critério por critério, dizendo onde está suficiente e onde
+    não. Não há nota na página, e o ciclo esperado é entregar, receber crítica e
+    revisar — a revisão é o ponto.
+
+    Passar aqui empurra a revisão espaçada dos conceitos envolvidos mais longe do
+    que uma lição empurraria: aplicar sob restrição nova é evidência mais forte
+    do que explicar. Uma entrega fraca me diz para voltar a um conceito
+    específico — não derruba todos os que o projeto tocou, porque o documento não
+    diz qual deles quebrou.
+
+source:
+  title: "Stripe Docs — Webhooks: best practices"
+  url: "https://docs.stripe.com/webhooks"
+  note: "As seções de duplicatas, ordem de entrega e resposta rápida descrevem exatamente as restrições deste projeto, do lado de quem envia."
