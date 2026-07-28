@@ -16,6 +16,9 @@
   --lx-text-muted:  #6b7280;
   --lx-text-subtle: #9ca3af;
 
+  /* Opaque surface for floating UI — menus, popovers */
+  --lx-surface: #ffffff;
+
   /* Glass card */
   --lx-card:        rgb(255 255 255 / .6);
   --lx-card-border: rgb(191 219 254 / .4);
@@ -73,6 +76,7 @@
     --lx-text-muted:  rgb(255 255 255 / .6);
     --lx-text-subtle: rgb(255 255 255 / .4);
 
+    --lx-surface:     #131a2b;
     --lx-card:        rgb(0 0 0 / .4);
     --lx-card-border: rgb(147 197 253 / .16);
     --lx-card-shadow: 0 4px 24px -4px rgb(0 0 0 / .4);
@@ -113,6 +117,7 @@
   --lx-text-muted:  rgb(255 255 255 / .6);
   --lx-text-subtle: rgb(255 255 255 / .4);
 
+  --lx-surface:     #131a2b;
   --lx-card:        rgb(0 0 0 / .4);
   --lx-card-border: rgb(147 197 253 / .16);
   --lx-card-shadow: 0 4px 24px -4px rgb(0 0 0 / .4);
@@ -151,6 +156,7 @@
    is hand-picked and contrast-checked. */
 
 :root[data-accent="roxo"] {
+  --lx-surface:       #ffffff;
   --lx-accent:        #9333ea;
   --lx-accent-strong: #7e22ce;
   --lx-accent-soft:   rgb(243 232 255 / .6);
@@ -169,6 +175,7 @@
 }
 
 :root[data-accent="rosa"] {
+  --lx-surface:       #ffffff;
   --lx-accent:        #be185d;
   --lx-accent-strong: #9d174d;
   --lx-accent-soft:   rgb(252 231 243 / .7);
@@ -188,6 +195,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"])[data-accent="roxo"] {
+    --lx-surface:       #1c1430;
     --lx-accent:        #c084fc;
     --lx-accent-strong: #d8b4fe;
     --lx-accent-soft:   rgb(168 85 247 / .16);
@@ -201,6 +209,7 @@
     --lx-wash-to:       rgb(59 130 246 / .05);
   }
   :root:not([data-theme="light"])[data-accent="rosa"] {
+    --lx-surface:       #26101c;
     --lx-accent:        #f472b6;
     --lx-accent-strong: #f9a8d4;
     --lx-accent-soft:   rgb(219 39 119 / .18);
@@ -216,6 +225,7 @@
 }
 
 :root[data-theme="dark"][data-accent="roxo"] {
+  --lx-surface:       #1c1430;
   --lx-accent:        #c084fc;
   --lx-accent-strong: #d8b4fe;
   --lx-card-border:   rgb(216 180 254 / .16);
@@ -229,6 +239,7 @@
   --lx-wash-to:     rgb(59 130 246 / .05);
 }
 :root[data-theme="dark"][data-accent="rosa"] {
+  --lx-surface:       #26101c;
   --lx-accent:        #f472b6;
   --lx-accent-strong: #f9a8d4;
   --lx-card-border:   rgb(249 168 212 / .16);
@@ -682,12 +693,15 @@ html {
 
 .lx-settings { position: relative; }
 .lx-settings-btn {
+  list-style: none;
   display: inline-flex; align-items: center; justify-content: center;
   width: 2rem; height: 2rem;
   border: 0; border-radius: 99px;
   background: transparent; color: var(--lx-text-muted);
   cursor: pointer; transition: background-color .15s, color .15s;
 }
+.lx-settings-btn::-webkit-details-marker { display: none; }
+.lx-settings-btn::marker { content: ""; }
 .lx-settings-btn:hover { color: var(--lx-text); background: var(--lx-input); }
 .lx-settings-btn .lx-icon-svg { width: 1rem; height: 1rem; }
 .lx-settings-btn:focus-visible { outline: 2px solid var(--lx-accent); outline-offset: 2px; }
@@ -699,10 +713,8 @@ html {
   padding: .9rem;
   border-radius: var(--lx-radius);
   border: 1px solid var(--lx-card-border);
-  background: var(--lx-card);
-  box-shadow: var(--lx-card-shadow);
-  backdrop-filter: blur(var(--lx-blur-lg));
-  -webkit-backdrop-filter: blur(var(--lx-blur-lg));
+  background: var(--lx-surface);
+  box-shadow: 0 16px 48px -12px rgb(0 0 0 / .45);
 }
 .lx-settings:not([open]) .lx-settings-panel { display: none; }
 
@@ -734,9 +746,7 @@ html {
 .lx-settings-dot--roxo { background: #9333ea; }
 .lx-settings-dot--rosa { background: #be185d; }
 
-@media (prefers-reduced-transparency: reduce) {
-  .lx-settings-panel { backdrop-filter: none; background: Canvas; }
-}
+
 @media (max-width: 480px) {
   .lx-settings-panel { position: fixed; top: auto; right: .75rem; left: .75rem; min-width: 0; }
 }
