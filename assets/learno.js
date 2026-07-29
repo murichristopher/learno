@@ -187,13 +187,21 @@
 
   // ── multiple choice, used by quiz and by recall's offline fallback ───────
 
+  // A wrong choice used to disable every radio while only a correct one
+  // unlocked the next phase, so one mis-click ended the lesson: nothing left to
+  // click, and the rest of the page blurred for good. Free-text recall has
+  // always been retryable — you rewrite and validate again — and this is the
+  // same practice block, so it behaves the same way.
+  //
+  // The correct option stays unmarked until it is chosen. Revealing it on the
+  // first miss would turn the retry into a formality.
   function answerChoice(scope, input, phaseId, okText, badText) {
     var correct = input.dataset.correct === '1';
     $$('input[type="radio"]', scope).forEach(function (i) {
       var label = i.closest('.lx-choice');
-      label.classList.toggle('is-correct', i.dataset.correct === '1');
-      label.classList.toggle('is-wrong', i.checked && i.dataset.correct !== '1');
-      i.disabled = true;
+      label.classList.toggle('is-correct', correct && i.dataset.correct === '1');
+      label.classList.toggle('is-wrong', !correct && i === input);
+      i.disabled = correct;
     });
     var fb = $('.lx-inline-fb', scope);
     if (fb) {

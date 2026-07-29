@@ -421,7 +421,9 @@ The local server at `localhost:9990` proxies Gemini 2.5-flash and handles MongoD
 
 **Offline fallback:** lessons self-detect server availability on load. When offline, all `ai-validate-block` elements are hidden and `offline-fallback` multiple-choice elements are shown. A yellow banner appears. Offline answers do not persist to MongoDB. The lesson still works — it degrades gracefully.
 
-**Unlock threshold:** a section unlocks the next when score ≥ 50 (online) or correct answer (offline). The threshold is low intentionally — the goal is engagement and progression, not gatekeeping.
+**Unlock threshold:** a section unlocks the next when score ≥ 50 (online) or correct answer (multiple choice). The threshold is low intentionally — the goal is engagement and progression, not gatekeeping.
+
+**A wrong answer is never terminal.** Free-text recall can be rewritten and validated again, and a multiple choice can be answered again — the miss is marked, the feedback shows, and the correct option is *not* revealed until it is chosen. Write the `bad` text to point at the reasoning, not to hand over the answer: the reader is about to choose again.
 
 ---
 
