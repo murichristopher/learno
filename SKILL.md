@@ -98,7 +98,24 @@ mongosh "$MONGODB_URI" --eval "
 4. **Write the learning record**, including what was *not* demonstrated.
 5. **Update `NOTES.md`** if the feedback revealed something durable about how they
    learn — not a one-off reaction.
-6. **Say where the next session starts.**
+6. **Say where the next session starts — and write it to `NEXT.md`.** Saying it
+   in the chat is not enough: the chat is gone by tomorrow, and the dashboard
+   opens with "what do I do now?" that nothing else can answer. Everything else
+   on that page is derivable from the database; this is not.
+
+```markdown
+# Fechar idempotência antes de abrir consistência eventual
+
+[Abrir a revisão R1](review/0012-idempotency-keys-r1.html)
+
+Você trocou idempotência por retry em três correções diferentes. Não é
+distração: é a mesma peça faltando.
+```
+
+   First `#` heading is the decision, first link is the button, the rest is the
+   why. All three are optional and the page degrades rather than breaking — but
+   a decision with no reason is the report this page exists to stop being.
+   Overwrite it every close-out; it is the current answer, not a log.
 
 ### 4. When a pattern closes — the project
 
@@ -128,6 +145,7 @@ subdirectory.
 
 - `MISSION.md` — why they are learning this, and the curriculum as patterns.
 - `NOTES.md` — user preferences, stack, teaching style, things to remember.
+- `NEXT.md` — what to do now, written by you at every close-out. The dashboard opens with it.
 - `RESOURCES.md` — trusted sources. Never teach from memory alone — cite from here.
 - `learning-records/*.md` — what the user has already demonstrated. Use to calculate zone of proximal development.
 - `reference/glossary.html` — canonical concept vocabulary. All concept IDs used in lessons and sent to the AI validation server must match IDs defined here.
@@ -373,7 +391,8 @@ The local server at `localhost:9990` proxies Gemini 2.5-flash and handles MongoD
 - `GET  /api/health` — liveness check (lessons call this on load)
 - `POST /api/validate` — validate a user's free-text answer
 - `POST /api/progress` — save lesson completion + trigger SM-2 scheduling. Accepts `kind: "lesson" | "project"` and, for projects, `concepts_missed` — see **Projects**.
-- `GET  /api/progress` — read mastery state (used by dashboard)
+- `GET  /api/progress` — read mastery state, including `misconceptions` grouped across every section result (used by dashboard)
+- `GET  /api/next` — parses `NEXT.md` into `{ title, action, body }`, or `{ exists: false }`
 - `GET  /api/catalog` — lists every lesson/review/project HTML file on disk (powers the dashboard's catalog section, independent of MongoDB progress)
 - `GET  /debug/mic` — standalone mic / Web Speech diagnostics page
 
@@ -473,7 +492,7 @@ R3 should ask the concept to be used somewhere it has not been seen.
 Reference documents in `./reference/` are the compressed essence of lessons — designed for quick lookup, not for learning.
 
 - **Glossary** (`glossary.html`) — canonical terms, filterable by framework step. Grows with every lesson.
-- **My Learning** (`my-learning.html`) — dynamic mastery dashboard. Requires server. Shows mastered concepts (with source), upcoming reviews, lesson scores, and 30-day activity heatmap. Rebuild after every lesson completion.
+- **My Learning** (`my-learning.html`) — the starting point, not a report. Requires server. Opens with the decision from `NEXT.md`, then what needs attention *and why* — a misconception seen twice, an overdue review, a score below the cut — with what is already mastered folded away at the bottom. Keep `NEXT.md` current and the page stays useful; leave it stale and the page falls back to the schedule.
 - Other reference docs (cheat sheets, diagram collections) — add as needed, link from lesson footers.
 
 ---

@@ -10,12 +10,26 @@
 <style>
   /* Page-local only. Everything visual comes from the design system; what is
      here is the handful of shapes that exist on this page and nowhere else. */
-  .dash-pills { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+
+  /* the decision — the only thing above the fold */
+  .dash-now { border-left: 3px solid var(--lx-accent); }
+  .dash-now-label {
+    display: flex; align-items: center; gap: .4rem;
+    color: var(--lx-accent);
+    font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+  }
+  .dash-now-title { color: var(--lx-text); font-size: 1.15rem; font-weight: 650; line-height: 1.3; margin: .5rem 0 0; }
+  .dash-now-why { color: var(--lx-text-2); font-size: .9rem; margin-top: .5rem; }
+  .dash-now-why > p + p { margin-top: .5rem; }
+  .dash-now-act { margin-top: .9rem; display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+  .dash-now-stamp { color: var(--lx-text-subtle); font-size: .72rem; }
+
+  .dash-pills { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); margin-top: 1rem; }
   .dash-pill { display: flex; flex-direction: column; gap: .15rem; }
   .dash-pill-num { font-size: 1.9rem; font-weight: 700; line-height: 1; color: var(--lx-text); }
   .dash-pill-label { font-size: .75rem; color: var(--lx-text-muted); }
   .dash-pill--due  .dash-pill-num { color: var(--lx-bad); }
-  .dash-pill--mastered .dash-pill-num { color: var(--lx-good); }
+  .dash-pill--attention .dash-pill-num { color: var(--lx-warn); }
 
   .dash-section { margin-top: 2.25rem; }
   .dash-section-title {
@@ -26,6 +40,18 @@
   .dash-section-title .lx-icon-svg { width: .95rem; height: .95rem; color: var(--lx-accent); }
 
   .dash-empty { color: var(--lx-text-muted); font-size: .875rem; font-style: italic; }
+
+  /* attention — a row is a problem plus the reason it is one */
+  .dash-issue { display: flex; align-items: flex-start; gap: .7rem; padding: .7rem .25rem; }
+  .dash-issue + .dash-issue { border-top: 1px solid var(--lx-border); }
+  .dash-issue-mark { flex: 0 0 auto; margin-top: .1rem; }
+  .dash-issue-mark .lx-icon-svg { width: 1rem; height: 1rem; }
+  .dash-issue--bad  .dash-issue-mark { color: var(--lx-bad); }
+  .dash-issue--warn .dash-issue-mark { color: var(--lx-warn); }
+  .dash-issue-body { flex: 1; min-width: 0; }
+  .dash-issue-what { color: var(--lx-text); font-weight: 550; }
+  .dash-issue-why  { color: var(--lx-text-2); font-size: .82rem; margin-top: .15rem; }
+  .dash-issue-tags { color: var(--lx-text-subtle); font-size: .72rem; margin-top: .2rem; }
 
   /* reviews */
   .dash-review { display: flex; align-items: center; gap: .7rem; padding: .6rem .25rem; }
@@ -40,28 +66,56 @@
   .dash-concept { flex: 1; color: var(--lx-text); font-weight: 550; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
   .dash-meta { color: var(--lx-text-subtle); font-size: .75rem; text-align: right; }
 
-  /* concepts */
-  .dash-grid { display: grid; gap: .85rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
-  .dash-spark { margin: .5rem 0 .35rem; }
-  .dash-spark svg { display: block; width: 100%; height: 28px; }
-  .dash-ease-wrap { height: .25rem; border-radius: 99px; background: var(--lx-border); margin-top: .35rem; overflow: hidden; }
-  .dash-ease { height: 100%; border-radius: 99px; background: var(--lx-accent); }
+  /* what is already done, folded away. It still has to look like something you
+     can open: an 18px row of small caps reads as a label, and the content
+     behind it may as well not exist. */
+  .dash-fold { margin-top: .6rem; }
+  .dash-fold > summary {
+    cursor: pointer; list-style: none;
+    display: flex; align-items: center; gap: .5rem;
+    min-height: 2.75rem; padding: .5rem .85rem;
+    border: 1px solid var(--lx-border); border-radius: var(--lx-radius-sm);
+    background: var(--lx-input);
+    font-size: .78rem; font-weight: 650; letter-spacing: .01em;
+    color: var(--lx-text-2);
+  }
+  .dash-fold > summary:hover { color: var(--lx-text); border-color: var(--lx-accent); }
+  .dash-fold > summary::-webkit-details-marker { display: none; }
+  .dash-fold > summary .lx-icon-svg { width: 1rem; height: 1rem; color: var(--lx-good); }
+  .dash-fold-chev { margin-left: auto; color: var(--lx-text-subtle) !important; transition: transform .15s; }
+  .dash-fold[open] > summary .dash-fold-chev { transform: rotate(180deg); }
+  .dash-fold[open] > summary { margin-bottom: .8rem; }
+
+  /* the way out of the dashboard and into everything else */
+  .dash-library {
+    display: flex; align-items: center; gap: .85rem;
+    margin-top: 1.25rem; padding: .9rem 1rem;
+    color: var(--lx-text); text-decoration: none;
+  }
+  .dash-library:hover { border-color: var(--lx-accent); }
+  .dash-library-icon {
+    flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+    width: 2.1rem; height: 2.1rem; border-radius: 50%;
+    background: var(--lx-accent-soft); color: var(--lx-accent);
+  }
+  .dash-library-icon .lx-icon-svg { width: 1.05rem; height: 1.05rem; }
+  .dash-library-body { flex: 1; display: flex; flex-direction: column; }
+  .dash-library-title { font-weight: 650; }
+  .dash-library-sub { color: var(--lx-text-subtle); font-size: .78rem; }
+  .dash-library > .lx-icon-svg { width: 1rem; height: 1rem; color: var(--lx-text-subtle); }
+  .dash-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .dash-chip {
+    display: inline-flex; align-items: baseline; gap: .4rem;
+    padding: .3rem .6rem; border-radius: 99px;
+    border: 1px solid var(--lx-border); background: var(--lx-input);
+    color: var(--lx-text); font-size: .8rem;
+  }
+  .dash-chip span { color: var(--lx-text-subtle); font-size: .72rem; }
 
   /* lessons */
   .dash-bar-wrap { flex: 1; height: .4rem; border-radius: 99px; background: var(--lx-border); overflow: hidden; min-width: 3rem; }
   .dash-bar { height: 100%; border-radius: 99px; }
   .dash-score { display: flex; align-items: center; gap: .5rem; }
-
-  /* catalogue */
-  .dash-cat-group + .dash-cat-group { margin-top: 1rem; }
-  .dash-cat-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--lx-text-subtle); margin-bottom: .35rem; }
-  .dash-cat-item {
-    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-    padding: .5rem .6rem; border-radius: var(--lx-radius-sm);
-    color: var(--lx-text); text-decoration: none;
-  }
-  .dash-cat-item:hover { background: var(--lx-input); color: var(--lx-accent); }
-  .dash-cat-file { color: var(--lx-text-subtle); font-size: .7rem; white-space: nowrap; }
 
   /* score colours, applied by class rather than an inline hex */
   .s-good { color: var(--lx-good); }
@@ -72,8 +126,11 @@
   .b-bad  { background: var(--lx-bad); }
 
   @media (max-width: 560px) {
+    /* The date drops to its own line rather than squeezing the concept name.
+       Indented to line up under the title instead of under the pill, which is
+       what made the rows read as ragged. */
     .dash-review { flex-wrap: wrap; }
-    .dash-meta { text-align: left; width: 100%; }
+    .dash-meta { text-align: left; width: 100%; padding-left: calc(3.4rem + .7rem); }
   }
 </style>
 </head>
@@ -86,7 +143,12 @@
     <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
     <span>learno</span>
   </a>
-  <details class="lx-settings">
+  <div class="lx-topbar-right">
+    <a class="lx-topbar-link" href="library.html" title="Biblioteca">
+      <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></svg>
+      <span>Biblioteca</span>
+    </a>
+    <details class="lx-settings">
     <summary class="lx-settings-btn" title="Configurações" aria-label="Configurações" role="button">
       <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
   <circle cx="12" cy="12" r="3" /></svg>
@@ -119,7 +181,8 @@
         </div>
       </div>
     </div>
-  </details>
+    </details>
+  </div>
 </nav>
 
 <div class="lx-content lx-wrap">
@@ -132,50 +195,70 @@
       </span>
       <span>Meu aprendizado</span>
     </h1>
-    <p class="lx-subtitle">Domínio, revisões agendadas e tudo que existe no disco.</p>
+    <p class="lx-subtitle">O que fazer agora, o que está pedindo atenção, e o que já está de pé.</p>
   </header>
 
   <div class="lx-offline-banner" id="offline-banner" hidden>
     Servidor fora do ar. As lições continuam abrindo, mas o progresso não pode ser lido.
   </div>
 
+  <div class="lx-card dash-now" id="now-card">
+    <span class="dash-now-label">
+      <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>
+      Agora
+    </span>
+    <p class="dash-now-title">carregando…</p>
+  </div>
+
   <div class="dash-pills" id="summary-row">
-    <div class="lx-card dash-pill"><span class="dash-pill-num">—</span><span class="dash-pill-label">Dominados</span></div>
     <div class="lx-card dash-pill"><span class="dash-pill-num">—</span><span class="dash-pill-label">Para revisar hoje</span></div>
-    <div class="lx-card dash-pill"><span class="dash-pill-num">—</span><span class="dash-pill-label">Lições</span></div>
+    <div class="lx-card dash-pill"><span class="dash-pill-num">—</span><span class="dash-pill-label">Pedindo atenção</span></div>
   </div>
 
   <section class="dash-section">
     <h2 class="dash-section-title">
+      <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
+      Precisa de atenção
+    </h2>
+    <div class="lx-card" id="attention-content"><span class="dash-empty">carregando…</span></div>
+  </section>
+
+  <section class="dash-section">
+    <h2 class="dash-section-title">
       <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 14v2.2l1.6 1" /><path d="M16 2v4" /><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5" /><path d="M3 10h5" /><path d="M8 2v4" /><circle cx="16" cy="16" r="6" /></svg>
-      Próximas revisões
+      Agenda
     </h2>
     <div class="lx-card" id="reviews-content"><span class="dash-empty">carregando…</span></div>
   </section>
 
-  <section class="dash-section">
-    <h2 class="dash-section-title">
+  <details class="dash-fold" id="mastered-fold">
+    <summary>
       <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
-      Conceitos dominados
-    </h2>
-    <div id="concepts-content"><span class="dash-empty">carregando…</span></div>
-  </section>
+      <span id="mastered-summary">Já dominado</span>
+      <svg class="lx-icon-svg dash-fold-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+    </summary>
+    <div id="mastered-content"></div>
+  </details>
 
-  <section class="dash-section">
-    <h2 class="dash-section-title">
+  <details class="dash-fold" id="lessons-fold">
+    <summary>
       <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" /><path d="M22 10v6" /><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg>
-      Lições completadas
-    </h2>
-    <div class="lx-card" id="lessons-content"><span class="dash-empty">carregando…</span></div>
-  </section>
+      <span id="lessons-summary">Histórico</span>
+      <svg class="lx-icon-svg dash-fold-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+    </summary>
+    <div class="lx-card" id="lessons-content"></div>
+  </details>
 
-  <section class="dash-section">
-    <h2 class="dash-section-title">
+  <a class="lx-card dash-library" href="library.html">
+    <span class="dash-library-icon">
       <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></svg>
-      Todas as lições e revisões
-    </h2>
-    <div class="lx-card" id="catalog-content"><span class="dash-empty">carregando…</span></div>
-  </section>
+    </span>
+    <span class="dash-library-body">
+      <span class="dash-library-title">Biblioteca</span>
+      <span class="dash-library-sub" id="library-sub">tudo que existe, com a nota de cada um</span>
+    </span>
+    <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+  </a>
 
   <footer class="lx-lesson-foot">
     <a class="lx-btn lx-btn--outline" href="glossary.html">Glossário</a>
@@ -187,6 +270,12 @@
   const SERVER = location.protocol.startsWith('http') ? location.origin : 'http://localhost:9990';
 
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  const ICON = {
+    alert: '<svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>',
+    clock: '<svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" /></svg>',
+    down:  '<svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 17h6v-6" /><path d="m22 17-8.5-8.5-5 5L2 7" /></svg>'
+  };
 
   // ── helpers ────────────────────────────────────────────────────────
   function pretty(conceptId) {
@@ -208,57 +297,126 @@
   }
 
   // A class, not a hex. The three verdict colours live in the design system so
-  // a sparkline, a score bar and a callout cannot disagree about what "good"
-  // looks like — and so all three follow the theme.
+  // a score bar and a callout cannot disagree about what "good" looks like.
   function scoreClass(s) { return s >= 80 ? 'good' : s >= 50 ? 'mid' : 'bad'; }
 
-  // ── sparkline SVG ─────────────────────────────────────────────────
-  function sparkline(history) {
-    if (!history || history.length === 0) return '';
-    const W = 120, H = 28, pad = 3;
-    const scores = history.map(h => h.score);
-    const step = scores.length < 2 ? W : (W - pad * 2) / (scores.length - 1);
-    const points = scores.map((s, i) =>
-      `${pad + i * step},${H - pad - ((s / 100) * (H - pad * 2))}`
-    ).join(' ');
-    const last = scores[scores.length - 1];
-    const [lx, ly] = points.split(' ').pop().split(',');
-    const cls = 's-' + scoreClass(last);
-    return `
-      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
-        <polyline class="${cls}" points="${points}" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linejoin="round" stroke-linecap="round" opacity=".75"/>
-        <circle class="${cls}" cx="${lx}" cy="${ly}" r="2.5" fill="currentColor"/>
-      </svg>`;
+  const lastScore = c => (c.history?.length ? c.history[c.history.length - 1].score : null);
+
+  // Paths in NEXT.md are written from the workspace root ("review/0012-r1.html"),
+  // but this page lives in reference/ — left relative, the browser would resolve
+  // them to reference/review/… and 404.
+  function workspaceHref(h) {
+    return /^https?:\/\//i.test(h) ? h : `${SERVER}/${String(h).replace(/^\/+/, '')}`;
   }
 
-  // ── render summary ────────────────────────────────────────────────
-  function renderSummary(data) {
-    const mastered = data.concepts.filter(c => c.mastered).length;
-    const dueToday = data.concepts.filter(c => daysFromNow(c.next_review) <= 0).length;
-    const lessons  = data.lessons.length;
+  // ── agora ─────────────────────────────────────────────────────────
+  // NEXT.md when the model has written one, and a derived fallback when it has
+  // not — an empty decision card is the exact failure this page is fixing.
+  function renderNow(next, data) {
+    const el = document.getElementById('now-card');
+    const label = el.querySelector('.dash-now-label').outerHTML;
 
-    document.getElementById('summary-row').innerHTML = `
-      <div class="lx-card dash-pill dash-pill--mastered">
-        <span class="dash-pill-num">${mastered}</span>
-        <span class="dash-pill-label">Dominados</span>
-      </div>
-      <div class="lx-card dash-pill dash-pill--due">
-        <span class="dash-pill-num">${dueToday}</span>
-        <span class="dash-pill-label">Para revisar hoje</span>
-      </div>
-      <div class="lx-card dash-pill">
-        <span class="dash-pill-num">${lessons}</span>
-        <span class="dash-pill-label">Lições</span>
-      </div>`;
+    if (next && next.exists && next.title) {
+      const why = next.body
+        ? `<div class="dash-now-why">${next.body.split(/\n\s*\n/).filter(Boolean)
+            .map(p => `<p>${esc(p.trim())}</p>`).join('')}</div>`
+        : '';
+      const act = next.action
+        ? `<a class="lx-btn lx-btn--primary" href="${esc(workspaceHref(next.action.href))}">${esc(next.action.label)}</a>`
+        : '';
+      el.innerHTML = `${label}
+        <p class="dash-now-title">${esc(next.title)}</p>
+        ${why}
+        <div class="dash-now-act">${act}
+          <span class="dash-now-stamp">de NEXT.md · ${formatDate(next.updated_at)}</span>
+        </div>`;
+      return;
+    }
+
+    const due = (data?.concepts || []).filter(c => c.next_review && daysFromNow(c.next_review) <= 0);
+    if (due.length) {
+      const names = due.slice(0, 3).map(c => pretty(c.concept_id)).join(', ');
+      el.innerHTML = `${label}
+        <p class="dash-now-title">Revisar ${due.length} conceito${due.length > 1 ? 's' : ''} vencido${due.length > 1 ? 's' : ''}</p>
+        <div class="dash-now-why"><p>${esc(names)}${due.length > 3 ? ` e mais ${due.length - 3}` : ''}. Revisão vencida vem antes de conteúdo novo.</p></div>
+        <div class="dash-now-act">
+          <a class="lx-btn lx-btn--primary" href="#attention-content">Ver o que está vencido</a>
+          <span class="dash-now-stamp">calculado — nenhum NEXT.md no workspace</span>
+        </div>`;
+      return;
+    }
+
+    el.innerHTML = `${label}
+      <p class="dash-now-title">Nada vencido. Peça a próxima lição.</p>
+      <div class="dash-now-why"><p>Esta decisão sai de <code class="lx-code">NEXT.md</code>, que o Claude escreve ao fechar uma sessão — lendo o <code class="lx-code">MISSION.md</code> e o que você acabou de demonstrar. Enquanto o arquivo não existir, esta caixa só sabe olhar a agenda.</p></div>`;
   }
 
-  // ── render reviews ────────────────────────────────────────────────
+  // ── precisa de atenção ────────────────────────────────────────────
+  // Every row carries the reason it is there. A list of concepts without a why
+  // is the same trophy shelf in a different colour.
+  function buildIssues(data) {
+    const issues = [];
+
+    for (const m of data.misconceptions || []) {
+      if (m.count < 2) continue;   // uma vez é ruído; duas é padrão
+      issues.push({
+        rank: 0, level: 'bad', icon: ICON.alert,
+        what: m.text,
+        why:  `Apareceu ${m.count} vezes na correção — é o mesmo erro voltando, não azar.`,
+        tags: (m.concepts || []).map(pretty).join(' · ')
+      });
+    }
+
+    for (const c of data.concepts || []) {
+      const late = c.next_review ? -daysFromNow(c.next_review) : null;
+      if (late !== null && late > 0) {
+        issues.push({
+          rank: 1, level: late > 7 ? 'bad' : 'warn', icon: ICON.clock,
+          what: pretty(c.concept_id),
+          why:  `Revisão venceu há ${late} dia${late > 1 ? 's' : ''}. Cada dia parado é retenção que o SM-2 já contava como perdida.`,
+          tags: `intervalo ${c.interval_days}d`
+        });
+        continue;
+      }
+      const s = lastScore(c);
+      if (s !== null && s < 75) {
+        issues.push({
+          rank: 2, level: s < 50 ? 'bad' : 'warn', icon: ICON.down,
+          what: pretty(c.concept_id),
+          why:  `Último score ${s}. Abaixo de 75 o conceito não conta como demonstrado.`,
+          tags: c.lesson_id ? `visto em ${c.lesson_id}` : ''
+        });
+      }
+    }
+
+    return issues.sort((a, b) => a.rank - b.rank);
+  }
+
+  function renderAttention(issues) {
+    const el = document.getElementById('attention-content');
+    if (!issues.length) {
+      el.innerHTML = '<span class="dash-empty">Nada pedindo atenção — nenhuma revisão vencida, nenhum erro repetido.</span>';
+      return;
+    }
+    el.innerHTML = issues.map(i => `
+      <div class="dash-issue dash-issue--${i.level}">
+        <span class="dash-issue-mark">${i.icon}</span>
+        <div class="dash-issue-body">
+          <div class="dash-issue-what">${esc(i.what)}</div>
+          <div class="dash-issue-why">${esc(i.why)}</div>
+          ${i.tags ? `<div class="dash-issue-tags">${esc(i.tags)}</div>` : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  // ── agenda ────────────────────────────────────────────────────────
   const SOURCE_TAG = { conversation: 'conversa', project: 'projeto', ai_validation: 'IA' };
   const sourceTag = c => SOURCE_TAG[c.mastery_source] || 'IA';
 
   function renderReviews(concepts) {
-    const sorted = [...concepts].sort((a, b) => new Date(a.next_review) - new Date(b.next_review));
+    const sorted = [...concepts]
+      .filter(c => c.next_review)
+      .sort((a, b) => new Date(a.next_review) - new Date(b.next_review));
 
     if (sorted.length === 0) {
       document.getElementById('reviews-content').innerHTML =
@@ -269,56 +427,37 @@
     document.getElementById('reviews-content').innerHTML = sorted.map(c => {
       const days  = daysFromNow(c.next_review);
       const cls   = days <= 0 ? 'today' : days <= 3 ? 'soon' : '';
-      const label = days <= 0 ? 'Hoje' : days === 1 ? 'Amanhã' : `+${days}d`;
-      const tag   = sourceTag(c);
+      const label = days <  0 ? `${-days}d atrás` : days === 0 ? 'Hoje' : days === 1 ? 'Amanhã' : `+${days}d`;
       return `
         <div class="dash-review">
           <span class="dash-days ${cls}">${label}</span>
-          <span class="dash-concept">${esc(pretty(c.concept_id))}<span class="lx-badge">${tag}</span></span>
-          <span class="dash-meta">${formatDate(c.next_review)} · intervalo ${c.interval_days}d</span>
+          <span class="dash-concept">${esc(pretty(c.concept_id))}<span class="lx-badge">${sourceTag(c)}</span></span>
+          <span class="dash-meta">${formatDate(c.next_review)}</span>
         </div>`;
     }).join('');
   }
 
-  // ── render concepts ───────────────────────────────────────────────
-  function renderConcepts(concepts) {
-    if (concepts.length === 0) {
-      document.getElementById('concepts-content').innerHTML =
-        '<div class="lx-card"><span class="dash-empty">Nenhum conceito dominado ainda — complete uma lição.</span></div>';
-      return;
-    }
-
-    const cards = concepts.map(c => {
-      const tag  = `via ${sourceTag(c)}`;
-      const last = c.history?.length ? c.history[c.history.length - 1].score : '—';
-      const ease = Math.min(((c.ease_factor - 1.3) / (4.0 - 1.3)) * 100, 100).toFixed(0);
-      return `
-        <div class="lx-card">
-          <div class="lx-text" style="font-weight:600">${esc(pretty(c.concept_id))}</div>
-          <span class="lx-badge" style="margin-top:.35rem">${tag}</span>
-          <div class="dash-spark" title="Histórico de scores">${sparkline(c.history)}</div>
-          <div class="lx-muted">
-            Último score <strong class="s-${typeof last === 'number' ? scoreClass(last) : 'mid'}">${last}/100</strong>
-            · intervalo <strong>${c.interval_days}d</strong>
-          </div>
-          <div class="lx-subtle" style="margin-top:.4rem">ease factor ${c.ease_factor.toFixed(2)}</div>
-          <div class="dash-ease-wrap"><div class="dash-ease" style="width:${ease}%"></div></div>
-        </div>`;
-    }).join('');
-
-    document.getElementById('concepts-content').innerHTML = `<div class="dash-grid">${cards}</div>`;
+  // ── já dominado ───────────────────────────────────────────────────
+  // Folded, and without the ease factor: it is SM-2 bookkeeping, and showing it
+  // tells the reader about the algorithm rather than about themselves.
+  function renderMastered(concepts) {
+    document.getElementById('mastered-summary').textContent = `Já dominado (${concepts.length})`;
+    document.getElementById('mastered-content').innerHTML = concepts.length
+      ? `<div class="dash-chips">${concepts.map(c => {
+          const s = lastScore(c);
+          return `<span class="dash-chip">${esc(pretty(c.concept_id))}<span>${s === null ? sourceTag(c) : s}</span></span>`;
+        }).join('')}</div>`
+      : '<span class="dash-empty">Nenhum conceito dominado ainda.</span>';
   }
 
-  // ── render lessons ────────────────────────────────────────────────
   function renderLessons(lessons) {
-    if (lessons.length === 0) {
+    document.getElementById('lessons-summary').textContent = `Histórico (${lessons.length})`;
+    if (!lessons.length) {
       document.getElementById('lessons-content').innerHTML =
         '<span class="dash-empty">Nenhuma lição completada ainda.</span>';
       return;
     }
-
     const sorted = [...lessons].sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at));
-
     document.getElementById('lessons-content').innerHTML = sorted.map(l => {
       const cls = scoreClass(l.final_score);
       return `
@@ -333,8 +472,27 @@
     }).join('');
   }
 
+  function renderSummary(data, issues) {
+    const due = data.concepts.filter(c => c.next_review && daysFromNow(c.next_review) <= 0).length;
+    document.getElementById('summary-row').innerHTML = `
+      <div class="lx-card dash-pill dash-pill--due">
+        <span class="dash-pill-num">${due}</span>
+        <span class="dash-pill-label">Para revisar hoje</span>
+      </div>
+      <div class="lx-card dash-pill dash-pill--attention">
+        <span class="dash-pill-num">${issues.length}</span>
+        <span class="dash-pill-label">Pedindo atenção</span>
+      </div>`;
+  }
+
   // ── main load ─────────────────────────────────────────────────────
   async function load() {
+    let next = null;
+    try {
+      const r = await fetch(`${SERVER}/api/next`, { signal: AbortSignal.timeout(3000) });
+      if (r.ok) next = await r.json();
+    } catch { /* a decisão cai para o fallback derivado */ }
+
     try {
       const res = await fetch(`${SERVER}/api/progress`, { signal: AbortSignal.timeout(3000) });
       if (!res.ok) throw new Error('progresso indisponível');
@@ -344,43 +502,40 @@
       document.getElementById('last-updated').textContent =
         'Atualizado às ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-      renderSummary(data);
+      const issues = buildIssues(data);
+      renderNow(next, data);
+      renderSummary(data, issues);
+      renderAttention(issues);
       renderReviews(data.concepts);
-      renderConcepts(data.concepts.filter(c => c.mastered));
+      renderMastered(data.concepts.filter(c => c.mastered));
       renderLessons(data.lessons);
 
     } catch {
       document.getElementById('offline-banner').hidden = false;
       document.getElementById('last-updated').textContent = 'offline';
+      renderNow(next, null);
       document.getElementById('summary-row').innerHTML =
         '<div class="lx-card"><span class="dash-empty">Servidor indisponível</span></div>';
-      ['reviews-content', 'concepts-content', 'lessons-content'].forEach(id => {
+      ['attention-content', 'reviews-content', 'lessons-content', 'mastered-content'].forEach(id => {
         document.getElementById(id).innerHTML =
           '<span class="dash-empty">Sem dados — servidor offline</span>';
       });
     }
   }
 
-  // ── catálogo: tudo no disco, independente do progresso ─────────────
+  // The file browser moved to library.html. What is left here is the count, so
+  // the link says how much is behind it instead of being a bare word.
   async function loadCatalog() {
-    const group = (items, label) => items.length ? `
-      <div class="dash-cat-group">
-        <div class="dash-cat-label">${label} (${items.length})</div>
-        ${items.map(it => `<a class="dash-cat-item" href="${SERVER}${esc(it.path)}">
-          <span>${esc(it.title)}</span><span class="dash-cat-file">${esc(it.file)}</span></a>`).join('')}
-      </div>` : '';
     try {
       const res  = await fetch(`${SERVER}/api/catalog`, { signal: AbortSignal.timeout(3000) });
-      const data = await res.json();
-      const html = group(data.lessons || [], 'Lições')
-                 + group(data.reviews  || [], 'Revisões')
-                 + group(data.projects || [], 'Projetos');
-      document.getElementById('catalog-content').innerHTML =
-        html || '<span class="dash-empty">Nenhuma lição no disco ainda. Peça uma ao Claude para começar.</span>';
-    } catch {
-      document.getElementById('catalog-content').innerHTML =
-        '<span class="dash-empty">Catálogo indisponível — servidor offline.</span>';
-    }
+      const d    = await res.json();
+      const n    = ['lessons', 'reviews', 'projects'].map(k => (d[k] || []).length);
+      const bits = [[n[0], 'lição', 'lições'], [n[1], 'revisão', 'revisões'], [n[2], 'projeto', 'projetos']]
+        .filter(([c]) => c > 0)
+        .map(([c, one, many]) => `${c} ${c === 1 ? one : many}`);
+      document.getElementById('library-sub').textContent =
+        bits.length ? `${bits.join(' · ')} — com a nota de cada um` : 'nada no disco ainda';
+    } catch { /* o texto padrão do link já serve */ }
   }
 
   load();

@@ -150,6 +150,51 @@ router.post('/', async (req, res) => {
   }
 });
 
+// ── misconceptions ───────────────────────────────────────────
+// /api/validate has been writing what the user got wrong, per section, since
+// the beginning, and nothing ever read it back. It is the most valuable data
+// here — a concept missed twice for the same reason is worth more than any
+// score — so the grouping happens on the way out.
+//
+// Grouped in JS rather than with an aggregation pipeline: the sandbox store has
+// find/updateOne/insertOne and nothing else, and a dashboard that only works
+// against real Mongo is a dashboard that cannot be developed against fixtures.
+
+// The text comes from a model, so "janela deslizante" and "Janela Deslizante."
+// are the same mistake spelled two ways and have to collapse into one row.
+const normalise = s => String(s)
+  .toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  .replace(/[^a-z0-9\s]/g, '')
+  .replace(/\s+/g, ' ')
+  .trim();
+
+function groupMisconceptions(sections) {
+  const byKey = new Map();
+
+  for (const s of sections) {
+    for (const text of s.misconceptions || []) {
+      const key = normalise(text);
+      if (!key) continue;
+
+      const at  = s.recorded_at ? new Date(s.recorded_at) : null;
+      const hit = byKey.get(key) || { key, text, count: 0, concepts: [], lessons: [], last_seen: null };
+
+      hit.count += 1;
+      // The most recent phrasing wins the label: it is the one the user last
+      // read in their feedback.
+      if (!hit.last_seen || (at && at > hit.last_seen)) { hit.last_seen = at; hit.text = text; }
+      if (s.concept_id && !hit.concepts.includes(s.concept_id)) hit.concepts.push(s.concept_id);
+      if (s.lesson_id  && !hit.lessons.includes(s.lesson_id))   hit.lessons.push(s.lesson_id);
+
+      byKey.set(key, hit);
+    }
+  }
+
+  return [...byKey.values()].sort((a, b) =>
+    b.count - a.count || new Date(b.last_seen ?? 0) - new Date(a.last_seen ?? 0));
+}
+
 // ── GET /api/progress ────────────────────────────────────────
 // Read full mastery state — used by the dashboard (my-learning.html)
 router.get('/', async (req, res) => {
@@ -157,10 +202,11 @@ router.get('/', async (req, res) => {
     const db = await getDb();
     const today = new Date();
 
-    const [concepts, lessons, conversations] = await Promise.all([
+    const [concepts, lessons, conversations, sections] = await Promise.all([
       db.collection('concepts').find({}).toArray(),
       db.collection('lessons').find({}).sort({ completed_at: -1 }).limit(20).toArray(),
-      db.collection('conversations').find({}).sort({ recorded_at: -1 }).toArray()
+      db.collection('conversations').find({}).sort({ recorded_at: -1 }).toArray(),
+      db.collection('section_results').find({}).toArray()
     ]);
 
     // Attach section_results to each lesson
@@ -177,7 +223,13 @@ router.get('/', async (req, res) => {
       c => c.next_review && new Date(c.next_review) <= today
     );
 
-    res.json({ concepts, lessons, conversations, pending_reviews });
+    res.json({
+      concepts,
+      lessons,
+      conversations,
+      pending_reviews,
+      misconceptions: groupMisconceptions(sections)
+    });
 
   } catch (err) {
     console.error('progress GET error:', err);

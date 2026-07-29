@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Biblioteca — learno</title>
+<link rel="stylesheet" href="../assets/learno.css" />
+<link rel="stylesheet" href="../assets/components.css" />
+<script>(function(){try{var d=document.documentElement,t=localStorage.getItem('lx-theme'),a=localStorage.getItem('lx-accent');if(t&&t!=='auto')d.setAttribute('data-theme',t);if(a&&a!=='azul')d.setAttribute('data-accent',a)}catch(e){}})()</script>
+<style>
+  .lib-controls { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.25rem; }
+  .lib-search { flex: 1 1 14rem; min-width: 0; }
+  .lib-filters { display: flex; gap: .35rem; flex-wrap: wrap; }
+  .lib-filter {
+    font: inherit; font-size: .8rem; cursor: pointer;
+    padding: .4rem .75rem; min-height: 2.25rem;
+    border-radius: 99px; border: 1px solid var(--lx-border);
+    background: var(--lx-input); color: var(--lx-text-2);
+  }
+  .lib-filter[aria-pressed="true"] {
+    border-color: var(--lx-accent); color: var(--lx-accent);
+    background: var(--lx-accent-soft);
+  }
+
+  .lib-group + .lib-group { margin-top: 2rem; }
+  .lib-group-title {
+    display: flex; align-items: center; gap: .45rem;
+    font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--lx-text-subtle); margin-bottom: .7rem;
+  }
+  .lib-group-title .lx-icon-svg { width: .95rem; height: .95rem; color: var(--lx-accent); }
+
+  /* A row is a link, and it stacks rather than squeezing two columns together:
+     a lesson title and its state fight for the same 390px otherwise. */
+  .lib-item {
+    display: flex; align-items: center; gap: .9rem;
+    padding: .75rem .85rem; border-radius: var(--lx-radius-sm);
+    color: var(--lx-text); text-decoration: none;
+  }
+  .lib-item + .lib-item { border-top: 1px solid var(--lx-border); }
+  .lib-item:hover { background: var(--lx-input); }
+  /* Both are spans inside a link, so they need to be told to stack — inline by
+     default they run together and the filename reads as part of the title. */
+  .lib-item-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .lib-item-title { font-weight: 550; }
+  .lib-item-file { color: var(--lx-text-subtle); font-size: .72rem; margin-top: .15rem; }
+  .lib-item-state { flex: 0 0 auto; display: flex; align-items: center; gap: .5rem; }
+  .lib-score { font-size: .95rem; font-weight: 700; }
+  .lib-when  { color: var(--lx-text-subtle); font-size: .72rem; }
+  .lib-todo  {
+    font-size: .7rem; font-weight: 700; padding: .2rem .5rem; border-radius: 99px;
+    border: 1px solid var(--lx-border); color: var(--lx-text-muted);
+  }
+
+  .lib-empty { color: var(--lx-text-muted); font-size: .875rem; font-style: italic; }
+
+  .s-good { color: var(--lx-good); }
+  .s-mid  { color: var(--lx-warn); }
+  .s-bad  { color: var(--lx-bad); }
+
+  @media (max-width: 560px) {
+    .lib-item { flex-direction: column; align-items: flex-start; gap: .4rem; }
+    .lib-item-state { width: 100%; }
+  }
+</style>
+</head>
+<body class="lx-shell">
+
+<div class="lx-overlay"></div>
+
+<nav class="lx-topbar">
+  <a class="lx-topbar-home" href="../" title="Início">
+    <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+    <span>learno</span>
+  </a>
+  <div class="lx-topbar-right">
+    <a class="lx-topbar-link" href="library.html" aria-current="page">
+      <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></svg>
+      <span>Biblioteca</span>
+    </a>
+    <details class="lx-settings">
+      <summary class="lx-settings-btn" title="Configurações" aria-label="Configurações" role="button">
+        <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+  <circle cx="12" cy="12" r="3" /></svg>
+      </summary>
+      <div class="lx-settings-panel">
+        <div class="lx-settings-group">
+          <p class="lx-settings-label">Tema</p>
+          <div class="lx-settings-row">
+            <button type="button" class="lx-settings-opt" data-theme-set="light" title="Claro"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" /></svg></button>
+            <button type="button" class="lx-settings-opt" data-theme-set="auto" title="Seguir o sistema"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2" />
+  <line x1="8" x2="16" y1="21" y2="21" />
+  <line x1="12" x2="12" y1="17" y2="21" /></svg></button>
+            <button type="button" class="lx-settings-opt" data-theme-set="dark" title="Escuro"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></svg></button>
+          </div>
+        </div>
+        <div class="lx-settings-group">
+          <p class="lx-settings-label">Cor principal</p>
+          <div class="lx-settings-row">
+            <button type="button" class="lx-settings-opt" data-accent-set="azul" title="Azul"><span class="lx-settings-dot lx-settings-dot--azul"></span>Azul</button>
+            <button type="button" class="lx-settings-opt" data-accent-set="roxo" title="Roxo"><span class="lx-settings-dot lx-settings-dot--roxo"></span>Roxo</button>
+            <button type="button" class="lx-settings-opt" data-accent-set="rosa" title="Rosa"><span class="lx-settings-dot lx-settings-dot--rosa"></span>Rosa</button>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+</nav>
+
+<div class="lx-content lx-wrap">
+
+  <header class="lx-lesson-head">
+    <span class="lx-badge" id="lib-count">carregando…</span>
+    <h1 class="lx-title">
+      <span class="lx-title-icon">
+        <svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></svg>
+      </span>
+      <span>Biblioteca</span>
+    </h1>
+    <p class="lx-subtitle">Tudo que existe: lições, revisões e projetos, com o que você já fez em cada um.</p>
+  </header>
+
+  <div class="lx-offline-banner" id="offline-banner" hidden>
+    Servidor fora do ar. A lista sai do disco, mas as notas não podem ser lidas.
+  </div>
+
+  <div class="lib-controls">
+    <input class="lx-input lib-search" id="lib-search" type="search" placeholder="Filtrar por título ou arquivo…" aria-label="Filtrar" />
+    <div class="lib-filters" id="lib-filters">
+      <button type="button" class="lib-filter" data-filter="all"       aria-pressed="true">Tudo</button>
+      <button type="button" class="lib-filter" data-filter="lessons"   aria-pressed="false">Lições</button>
+      <button type="button" class="lib-filter" data-filter="reviews"   aria-pressed="false">Revisões</button>
+      <button type="button" class="lib-filter" data-filter="projects"  aria-pressed="false">Projetos</button>
+      <button type="button" class="lib-filter" data-filter="todo"      aria-pressed="false">Não começadas</button>
+    </div>
+  </div>
+
+  <div id="lib-content"><span class="lib-empty">carregando…</span></div>
+
+  <footer class="lx-lesson-foot">
+    <a class="lx-btn lx-btn--outline" href="my-learning.html">Painel</a>
+    <a class="lx-btn lx-btn--outline" href="glossary.html">Glossário</a>
+  </footer>
+</div>
+
+<script src="../assets/learno.js" defer></script>
+<script>
+  const SERVER = location.protocol.startsWith('http') ? location.origin : 'http://localhost:9990';
+
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  const GROUPS = [
+    { key: 'lessons',  label: 'Lições',
+      icon: '<svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" /><path d="M22 10v6" /><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg>' },
+    { key: 'reviews',  label: 'Revisões',
+      icon: '<svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>' },
+    { key: 'projects', label: 'Projetos',
+      icon: '<svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 12l-8.5 8.5a2.12 2.12 0 1 1-3-3L12 9" /><path d="M17.64 15 22 10.64" /><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91" /></svg>' }
+  ];
+
+  let CATALOG = { lessons: [], reviews: [], projects: [] };
+  let DONE = new Map();     // lesson_id → { final_score, completed_at, kind }
+  let filter = 'all';
+  let query  = '';
+
+  function formatDate(d) {
+    return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  function scoreClass(s) { return s >= 80 ? 'good' : s >= 50 ? 'mid' : 'bad'; }
+
+  // The catalogue knows files; progress knows lesson ids. They meet at the
+  // basename, which is the envelope id the build already forces them to share.
+  const idOf = file => String(file).replace(/\.html$/, '');
+
+  function matches(item) {
+    if (!query) return true;
+    const q = query.toLowerCase();
+    return item.title.toLowerCase().includes(q) || item.file.toLowerCase().includes(q);
+  }
+
+  function renderItem(item) {
+    const done = DONE.get(idOf(item.file));
+    const state = done
+      ? `<span class="lib-when">${formatDate(done.completed_at)}</span>
+         <strong class="lib-score s-${scoreClass(done.final_score)}">${done.final_score}</strong>`
+      : '<span class="lib-todo">não começada</span>';
+
+    return `<a class="lib-item" href="${SERVER}${esc(item.path)}">
+      <span class="lib-item-main">
+        <span class="lib-item-title">${esc(item.title)}</span>
+        <span class="lib-item-file">${esc(item.file)}</span>
+      </span>
+      <span class="lib-item-state">${state}</span>
+    </a>`;
+  }
+
+  function render() {
+    const el = document.getElementById('lib-content');
+
+    const groups = GROUPS
+      .filter(g => filter === 'all' || filter === 'todo' || filter === g.key)
+      .map(g => {
+        let items = (CATALOG[g.key] || []).filter(matches);
+        if (filter === 'todo') items = items.filter(i => !DONE.has(idOf(i.file)));
+        if (!items.length) return '';
+        return `<section class="lib-group">
+          <h2 class="lib-group-title">${g.icon}${g.label} <span>(${items.length})</span></h2>
+          <div class="lx-card" style="padding:.25rem">${items.map(renderItem).join('')}</div>
+        </section>`;
+      })
+      .join('');
+
+    el.innerHTML = groups || '<span class="lib-empty">Nada encontrado com esse filtro.</span>';
+
+    // Counts what is on this page, not what is in the database: a lesson record
+    // whose file was deleted must not inflate "com nota".
+    const all   = GROUPS.flatMap(g => CATALOG[g.key] || []);
+    const withScore = all.filter(i => DONE.has(idOf(i.file))).length;
+    document.getElementById('lib-count').textContent =
+      all.length ? `${all.length} no disco · ${withScore} com nota` : 'nada no disco ainda';
+  }
+
+  async function load() {
+    try {
+      const res = await fetch(`${SERVER}/api/catalog`, { signal: AbortSignal.timeout(3000) });
+      CATALOG = await res.json();
+    } catch {
+      document.getElementById('lib-content').innerHTML =
+        '<span class="lib-empty">Catálogo indisponível — servidor offline.</span>';
+      document.getElementById('offline-banner').hidden = false;
+      return;
+    }
+
+    // Scores are a bonus, not a requirement: the library still lists everything
+    // if the database is unreachable.
+    try {
+      const res  = await fetch(`${SERVER}/api/progress`, { signal: AbortSignal.timeout(3000) });
+      const data = await res.json();
+      for (const l of data.lessons || []) DONE.set(l.lesson_id, l);
+    } catch {
+      document.getElementById('offline-banner').hidden = false;
+    }
+
+    render();
+  }
+
+  document.getElementById('lib-search').addEventListener('input', e => {
+    query = e.target.value.trim();
+    render();
+  });
+
+  document.getElementById('lib-filters').addEventListener('click', e => {
+    const btn = e.target.closest('.lib-filter');
+    if (!btn) return;
+    filter = btn.dataset.filter;
+    for (const b of document.querySelectorAll('.lib-filter')) {
+      b.setAttribute('aria-pressed', String(b === btn));
+    }
+    render();
+  });
+
+  load();
+</script>
+</body>
+</html>
