@@ -1,7 +1,12 @@
 # PLAN — Skill `learn` (evolução do `teach`)
 
-> Documento de design iterativo. Vamos trabalhar aqui até chegar na versão final.
-> Referência original em `skill/original/SKILL.md`.
+> **Status: histórico.** O plano que levou do `teach` ao `learno`, preservado como
+> registro de decisão. O comportamento atual está no [`SKILL.md`](../../SKILL.md) —
+> onde os dois divergirem, o SKILL.md vence. Também é o único documento do repo em
+> português: reescrevê-lo em inglês apagaria o registro de como foi decidido.
+>
+> A referência a `skill/original/SKILL.md` é anterior à mudança de layout; hoje é
+> [`original/SKILL.md`](../../original/SKILL.md).
 
 ---
 

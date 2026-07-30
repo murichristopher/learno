@@ -1,7 +1,10 @@
 # Lesson pipeline — spec for review
 
-> **Status: proposal.** Nothing here is built. This document exists to be
-> rejected or corrected before code is written.
+> **Status: shipped.** Kept as the design record — the numbers that motivated the
+> pipeline are here and nowhere else. The live contract is
+> [`LESSON-FORMAT.md`](../../LESSON-FORMAT.md); the vocabulary is
+> [`COMPONENTS.md`](../../COMPONENTS.md), which is generated. Where this document
+> and those disagree, they win.
 
 ## The problem, measured
 
