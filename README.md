@@ -1,44 +1,29 @@
-# `learno` — a stateful, multi-session tutoring engine
+# learno
 
-A Claude Code skill that teaches **any** subject across many sessions, with AI-validated
-answers, spaced repetition, inline SVG diagrams that follow your theme, projects that make
-you apply what you learned, and a dashboard that opens with what to do *now*.
+Teaching yourself something usually fails the same way. Three good chapters one week, nothing
+for two, and by the time you come back you have lost the thread and the momentum together.
+Nothing was checking whether you actually understood any of it — you were, and you are a
+generous marker.
 
-You do not write lessons. You do not write HTML. Claude authors a `.json` (structure) and a
-`.yml` (content) and the engine renders the page — the design system, the progress bar, the
-gating, the offline fallback and the voice dictation all come from here.
+**learno is a tutor that keeps the thread for you.** You say what you want to learn; it asks
+why, and what changes in your life when you have it, until the goal is concrete enough to
+teach against. It finds the field's canonical books rather than a blog post. Then it teaches
+in sessions you can finish in one sitting, and every session opens by telling you where you
+stand — what is due today, what you keep getting wrong, what comes next — because it read
+your record before you arrived.
 
-**Fork this repo. The fork is your study workspace.**
+You answer in your own words, not by highlighting. Each section asks you to explain the idea
+and a model scores what you wrote, so *"yeah, I get it"* has to survive contact with a
+sentence. Weeks later that concept comes back for review on roughly the day you were about
+to lose it. When a whole topic closes you get a project: build the real thing under a
+constraint nobody taught you, against a rubric you can read before you start.
 
----
+And it notices what you cannot. The mistake you made in lesson 3 and again in lesson 7 is
+the same mistake, and it says so — a misconception that repeats is worth more than any score.
 
-## Start everything, in one command
-
-Paste your credentials, then hand the rest to Claude. It forks the repo, writes `.env`,
-starts the server, installs the progress analyst and opens the first session.
-
-```bash
-export GEMINI_API_KEY="AIza…"                                    # aistudio.google.com/apikey
-export MONGODB_URI="mongodb+srv://user:pass@cluster.mongodb.net" # Atlas free tier is enough
-export MONGODB_DB="chess_learn"                                  # one database per subject
-export PORT=9990
-
-claude "fork murichristopher/learno into ~/projects/chess, write .env from my exported
-GEMINI_API_KEY / MONGODB_URI / MONGODB_DB / PORT, run make local, symlink the
-learno-analyst agent into ~/.claude/agents/, then start teaching me chess openings"
-```
-
-Already have a workspace? From its root, any of these is enough:
-
-```bash
-claude "start learno and tell me what is due today"
-claude "/learno"                       # the skill, by name
-claude "teach me the next thing"
-```
-
-The first session interviews you — why you are learning this, by when, how you learn — and
-writes `MISSION.md`, `NOTES.md` and a tiered `RESOURCES.md` with the field's canonical
-sources. You do not have to know the books; finding them is the skill's job.
+What you keep is yours: every lesson, every answer, every score, on your own disk and in
+your own git history. Bring any subject — chess openings, Kubernetes, Kant, options pricing,
+the Portuguese subjunctive.
 
 ---
 
@@ -89,10 +74,44 @@ sources. You do not have to know the books; finding them is the skill's job.
 
 ---
 
+## Start everything, in one command
+
+Paste your credentials, then hand the rest to Claude. It forks the repo, writes `.env`,
+starts the server, installs the progress analyst and opens the first session.
+
+```bash
+export GEMINI_API_KEY="AIza…"                                    # aistudio.google.com/apikey
+export MONGODB_URI="mongodb+srv://user:pass@cluster.mongodb.net" # Atlas free tier is enough
+export MONGODB_DB="chess_learn"                                  # one database per subject
+export PORT=9990
+
+claude "fork murichristopher/learno into ~/projects/chess, write .env from my exported
+GEMINI_API_KEY / MONGODB_URI / MONGODB_DB / PORT, run make local, symlink the
+learno-analyst agent into ~/.claude/agents/, then start teaching me chess openings"
+```
+
+Already have a workspace? From its root, any of these is enough:
+
+```bash
+claude "start learno and tell me what is due today"
+claude "/learno"                       # the skill, by name
+claude "teach me the next thing"
+```
+
+The first session interviews you — why you are learning this, by when, how you learn — and
+writes `MISSION.md`, `NOTES.md` and a tiered `RESOURCES.md` with the field's canonical
+sources. You do not have to know the books; finding them is the skill's job.
+
+---
+
 ## How a study is laid out
 
-Your content and the engine share the root. There is no `skill/` subdirectory, nothing is
-vendored, and no submodule to initialise.
+**Fork this repo. The fork is your study workspace** — your content and the engine share the
+root, nothing is vendored, and there is no submodule to initialise.
+
+You never write a lesson by hand, and you never write HTML: Claude authors the structure and
+the words, and the engine supplies the design system, the progress bar, the section gating,
+the offline fallback and the voice dictation.
 
 ```
 learno/                       ← your fork
