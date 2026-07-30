@@ -421,7 +421,13 @@ The local server at `localhost:9990` proxies Gemini 2.5-flash and handles MongoD
 
 **Offline fallback:** lessons self-detect server availability on load. When offline, all `ai-validate-block` elements are hidden and `offline-fallback` multiple-choice elements are shown. A yellow banner appears. Offline answers do not persist to MongoDB. The lesson still works — it degrades gracefully.
 
-**Unlock threshold:** a section unlocks the next when score ≥ 50 (online) or correct answer (offline). The threshold is low intentionally — the goal is engagement and progression, not gatekeeping.
+**There is no unlock threshold. Answering opens the next section — any answer, any score.** A weak answer opens it quietly, without scrolling, so the reader stays on the feedback.
+
+This is deliberate and it is your job that it works: **the page does not close knowledge gaps, you do.** A score of 30 is a signal for the next lesson or review to be aimed at exactly that gap — it is not a reason to lock someone out of material they have not read yet. A learner stuck behind a section they cannot pass learns nothing, and you never find out, because they close the tab.
+
+So read the per-section results at every close-out (see **the close-out**) and treat anything under 50 as content to re-teach, not as a section they failed.
+
+**A wrong answer is also never terminal.** Free-text recall can be rewritten and validated again, and a multiple choice can be answered again — the miss is marked, the feedback shows, and the correct option is *not* revealed until it is chosen. Write the `bad` text to point at the reasoning, not to hand over the answer: the reader may well choose again.
 
 ---
 
