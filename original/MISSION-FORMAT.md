@@ -49,4 +49,10 @@ shipped.}
   and therefore none of them chosen.
 - **Revise when reality shifts**, and say so when the verdict is met or its date passes. A
   workspace with a finished mission and no new one is generating lessons for nobody.
+- **No placeholder sections.** A heading followed by "to be filled in" is a question the
+  interview skipped. Ask it, or drop the heading — a mission with a hole in it reads as
+  complete to everyone who opens it later.
+- **Verify formal requirements before writing them.** Exams, licences and certifications
+  change their rules. Cite the current regulation rather than recalling it; the whole
+  curriculum hangs off what the gate actually demands.
 - **Keep it short.** Past a screen it has stopped being a compass and started being a plan.

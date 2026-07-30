@@ -540,9 +540,15 @@ Interview until you have one. Useful pushes, in order:
 2. *"Is there a date, an exam, an interview, a review, a launch?"*
 3. *"Suppose I say you are ready. How would you check that I am right?"*
 4. *"What would count as failing?"* — a goal nobody can fail is not a goal.
+5. **"Why this, why now?"** — ask it even when the verdict is already obvious. A verdict
+   tells you what to teach; the reason tells you what to cut when the deadline gets close,
+   and it is the first thing to check when motivation dies in week three.
 
 If they truly have no external event, manufacture one they accept: a problem set they will
 attempt cold, a document they will hand to a named colleague, a thing they will ship.
+
+**Never write a section of `MISSION.md` as a placeholder.** A heading followed by *"to be
+filled in"* is a question you decided not to ask. Ask it, or leave the heading out.
 
 ### Gate 2 — is it reachable through **this**?
 
@@ -565,6 +571,12 @@ what fraction is reps I cannot give?*
   one that says "not this part, and here is why".
 
 Never hide this to be agreeable. The user finds out in month three.
+
+**Check the rules before you state them.** Goals with a formal gate — an exam, a licence, a
+certification — come with requirements that change, and stating one from memory in the first
+message is how a mission gets built on a rule that was repealed last year. Search, cite what
+you find, and say which part is the current regulation rather than your recollection. Getting
+this wrong shapes the whole curriculum, and the user has no way to catch it.
 
 ### What a mission looks like once it passes
 
