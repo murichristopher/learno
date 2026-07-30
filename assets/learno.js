@@ -67,7 +67,10 @@
     return el;
   }
 
-  function unlockNext(fromId) {
+  // Answering opens the next section, whatever the answer was worth. A weak one
+  // only changes whether the page scrolls: it opens quietly and leaves the reader
+  // looking at the feedback instead of being thrown down the page.
+  function unlockNext(fromId, scroll) {
     markPhaseDone(fromId);
     var i = PHASES.indexOf(String(fromId));
     if (i < 0) return;
@@ -75,13 +78,13 @@
     // Only the teach-back. The flash cards carry the answers and stay shut until
     // it is submitted.
     if (i + 1 >= PHASES.length) {
-      openGate('teachback', true);
+      openGate('teachback', scroll !== false);
       return;
     }
 
     var next = $('.lx-phase[data-phase="' + PHASES[i + 1] + '"]');
     if (next) next.classList.remove('lx-phase--locked');
-    openGate('phase-' + PHASES[i + 1], true);
+    openGate('phase-' + PHASES[i + 1], scroll !== false);
   }
 
   // ── verdict rendering ───────────────────────────────────────────────────
@@ -175,7 +178,11 @@
       .then(readVerdict)
       .then(function (data) {
         showVerdict(block, data);
-        if (data.score >= PASS && block.dataset.phase) unlockNext(block.dataset.phase);
+        // Never gated on the score. A gap is for the tutor to act on — it reads
+        // the score and closes the gap with the next lesson or review; a page
+        // that locks someone out of their own material cannot teach them the
+        // thing they just got wrong.
+        if (block.dataset.phase) unlockNext(block.dataset.phase, data.score >= PASS);
       })
       .catch(function (err) {
         // Never render an error as a score: 0 would say they were wrong when
@@ -187,14 +194,11 @@
 
   // ── multiple choice, used by quiz and by recall's offline fallback ───────
 
-  // A wrong choice used to disable every radio while only a correct one
-  // unlocked the next phase, so one mis-click ended the lesson: nothing left to
-  // click, and the rest of the page blurred for good. Free-text recall has
-  // always been retryable — you rewrite and validate again — and this is the
-  // same practice block, so it behaves the same way.
-  //
-  // The correct option stays unmarked until it is chosen. Revealing it on the
-  // first miss would turn the retry into a formality.
+  // Answering opens the next section, right or wrong — the same rule recall
+  // follows. What a miss changes is the invitation to try again: the choices stay
+  // live and the correct one stays unmarked until it is chosen, so a retry is
+  // still worth something. Revealing it on the first miss would make the retry a
+  // formality.
   function answerChoice(scope, input, phaseId, okText, badText) {
     var correct = input.dataset.correct === '1';
     $$('input[type="radio"]', scope).forEach(function (i) {
@@ -208,7 +212,7 @@
       fb.textContent = correct ? okText : badText;
       fb.className = 'lx-inline-fb is-shown ' + (correct ? 'is-ok' : 'is-bad');
     }
-    if (correct && phaseId) unlockNext(phaseId);
+    if (phaseId) unlockNext(phaseId, correct);
   }
 
   // ── teach-back ──────────────────────────────────────────────────────────
