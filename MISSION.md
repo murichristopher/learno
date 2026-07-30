@@ -1,21 +1,28 @@
 # Mission
 
 > Replace this file. It is the first thing the skill reads, and every decision it
-> makes — what to teach next, how deep to go, which analogy to reach for — traces
-> back to what you write here.
+> makes — what to teach next, how deep to go, what to skip — traces back to it.
 >
 > You do not have to fill it in by hand. Run the skill and say what you want to
-> learn; if this file is missing or vague, it interviews you and writes it with you.
+> learn; it interviews you and writes this with you.
+>
+> **One rule matters more than the rest: the goal has to be something you can
+> win.** "Learn English" is a subject, not a goal — nobody can tell you the day
+> you got there, and most of it is speaking hours this cannot give you. "Pass the
+> Detran theory exam", "solve most LeetCode mediums unaided", "pass a senior
+> system design interview" are goals: there is a day, and there is a verdict.
 
-## What I want to learn
+## The verdict
 
-<!-- The subject, in one line. Be specific: "system design for backend interviews"
-     beats "system design". -->
+<!-- The event or test that says yes or no, and the date if there is one. If you
+     cannot name one, invent one you would actually accept: a problem set you
+     will attempt cold, a document you will hand to a named colleague, a thing
+     you will ship. A goal nobody can fail is not a goal. -->
 
-## Why
+## Why it matters
 
-<!-- What changes for you once you know this. A deadline, a role, a project that
-     is currently blocked. This is what stops lessons drifting into trivia. -->
+<!-- What changes for you when you pass it. The job, the deadline, the project
+     that is blocked. This is what stops lessons drifting into trivia. -->
 
 ## Where I am today
 
@@ -25,8 +32,15 @@
 ## How I want to learn
 
 <!-- Pace, session length, whether you want to be pushed or eased in, and the
-     language you want lessons written in. -->
+     language lessons should be written in. -->
 
 ## Constraints
 
-<!-- Time per week, anything off-limits, anything that has failed for you before. -->
+<!-- Hours per week, the deadline, anything that has failed for you before. -->
+
+## Out of scope
+
+<!-- Two kinds of thing: adjacent topics you are deliberately not chasing yet,
+     and the parts of the goal this cannot teach you — speaking hours, driving
+     practice, time at an instrument. Name them here so nobody pretends they are
+     covered. -->

@@ -20,9 +20,11 @@ database has no concepts.
 
 **Generate no lesson until all four exist.**
 
-1. **Interview for the mission.** Not "what do you want to learn" — why, what
-   changes when they have it, and by when. Push back on vague answers. See
-   **Mission**.
+1. **Interview for the mission until it can be won.** Not "what do you want to
+   learn" — *how will we both know you got there*, and *can this engine actually
+   take you there*. "Learn English" fails both. "Pass the Detran theory exam" and
+   "solve most LeetCode mediums unaided" pass. Do not generate a lesson against a
+   subject. See **Mission** for the two gates and the interview.
 2. **Build the profile** in `NOTES.md`: how they learn, hours per week, the
    language lessons should be written in, their stack, what has failed before.
 3. **Find the sources** → `RESOURCES.md`. See **Source Discovery**.
@@ -519,11 +521,90 @@ Do **not** write a learning record for: material merely covered, things already 
 
 ## Mission
 
-If `MISSION.md` is missing or vague: stop. Interview the user using the grill-me protocol. A bad mission steers every future lesson in the wrong direction.
+If `MISSION.md` is missing or vague: stop. **Generate nothing until the mission passes the
+two gates below.** A bad mission steers every future lesson in the wrong direction, and the
+user will not notice for weeks.
 
-The mission must be **concrete**: what changes in the user's life or work when they have this skill? "Understand caching" is not a mission. "Be able to evaluate a caching strategy when a teammate proposes one in a PR review" is.
+Almost nobody states a good one first. What you get is *"learn English"*, *"get better at
+algorithms"*, *"understand system design"*. Those are subjects, not missions. Your job in the
+first five minutes is to turn a subject into something that can be **won**.
 
-Update `MISSION.md` when the user's goal shifts. Add a learning record when it does. Confirm the change with the user before writing.
+### Gate 1 — name the verdict
+
+**How will we both know, on the day, that you got there?** A mission needs an event or a
+test that returns yes or no. Not a feeling of confidence — a thing that happens.
+
+Interview until you have one. Useful pushes, in order:
+
+1. *"What are you going to do with it that you cannot do today?"*
+2. *"Is there a date, an exam, an interview, a review, a launch?"*
+3. *"Suppose I say you are ready. How would you check that I am right?"*
+4. *"What would count as failing?"* — a goal nobody can fail is not a goal.
+5. **"Why this, why now?"** — ask it even when the verdict is already obvious. A verdict
+   tells you what to teach; the reason tells you what to cut when the deadline gets close,
+   and it is the first thing to check when motivation dies in week three.
+
+If they truly have no external event, manufacture one they accept: a problem set they will
+attempt cold, a document they will hand to a named colleague, a thing they will ship.
+
+**Never write a section of `MISSION.md` as a placeholder.** A heading followed by *"to be
+filled in"* is a question you decided not to ask. Ask it, or leave the heading out.
+
+### Gate 2 — is it reachable through **this**?
+
+This is the gate that gets skipped, and it is the one that wastes months.
+
+learno teaches by explaining, making the user retrieve under difficulty, spacing the review
+so it survives, and setting projects that force application. That is the whole medium. It
+does **not** put anyone in a room with other people, on a mat, at a piano, or behind a
+steering wheel. It cannot supply the hours of speaking, drilling or physical practice that
+some goals are mostly made of.
+
+So ask, before writing anything: *what fraction of this goal is knowledge and judgement, and
+what fraction is reps I cannot give?*
+
+- **Mostly knowledge and judgement** → own it fully. Interview prep, exams, a framework, a
+  language's grammar and reading, a body of theory.
+- **Mostly reps** → say so, plainly, in the first session. Carve out the part learno owns and
+  **write the rest into `## Out of scope` as something the user must get elsewhere**, with a
+  suggestion of where. A tutor that quietly accepts a goal it cannot deliver is worse than
+  one that says "not this part, and here is why".
+
+Never hide this to be agreeable. The user finds out in month three.
+
+**Check the rules before you state them.** Goals with a formal gate — an exam, a licence, a
+certification — come with requirements that change, and stating one from memory in the first
+message is how a mission gets built on a rule that was repealed last year. Search, cite what
+you find, and say which part is the current regulation rather than your recollection. Getting
+this wrong shapes the whole curriculum, and the user has no way to catch it.
+
+### What a mission looks like once it passes
+
+| They say | Why it fails | Write instead |
+|---|---|---|
+| "Learn to speak English" | no verdict, and fluency is mostly speaking hours learno cannot supply | "Pass the B2 First speaking mock in March. learno owns grammar, vocabulary and listening; speaking reps happen with a tutor — out of scope here" |
+| "Get better at algorithms" | no verdict | "Solve most LeetCode mediums unaided, in under 30 minutes, by June" |
+| "Learn to drive" | the practical part is not teachable here | "Pass the Detran theory exam. The driving lessons are out of scope" |
+| "Understand system design" | subject, not mission | "Pass a senior system design interview: whiteboard a system out loud, with capacity numbers and named failure modes" |
+| "Learn Rust" | no verdict | "Ship the internal CLI my team asked for, in Rust, reviewed by a Rust-writing colleague" |
+
+Each of those tells you what to teach, what to skip, and when to stop. *"Learn English"*
+tells you nothing — every lesson is defensible, so no lesson is.
+
+### Writing it
+
+Record in `MISSION.md`, in this order: the **verdict** (the event and the date, if there is
+one), **why** it matters, **where they are today**, and **what is out of scope** — including
+the part learno cannot teach, named as such.
+
+The curriculum-as-patterns you sketch next hangs off the verdict: each pattern should close a
+gap between where they are today and passing it. A pattern that does not serve the verdict is
+how a study drifts into trivia.
+
+Update `MISSION.md` when the goal shifts, add a learning record when it does, and confirm the
+change with the user before writing. When the date passes or the verdict is met, **say so and
+ask what the next one is** — a workspace with a met mission and no new one is a workspace
+generating lessons for nobody.
 
 ---
 

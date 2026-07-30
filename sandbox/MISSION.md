@@ -4,6 +4,13 @@
 > motor tenha um `MISSION.md` válido para ler enquanto se desenvolve o próprio
 > motor. O assunto é deliberadamente falso.
 
+## O veredito
+
+**Renderizar a lição kitchen-sink com os 15 componentes, sem erro nem warning no
+`make build`, nos dois temas e nos três accents.** Fictício de propósito: existe
+para que o formato de missão tenha um exemplo com veredito, que é o que o
+`SKILL.md` exige de uma missão real.
+
 ## O que quero aprender
 
 **Widgets Distribuídos** — um domínio inventado, usado só para exercitar o
