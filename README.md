@@ -5,12 +5,17 @@ for two, and by the time you come back you have lost the thread and the momentum
 Nothing was checking whether you actually understood any of it — you were, and you are a
 generous marker.
 
-**learno is a tutor that keeps the thread for you.** You say what you want to learn; it asks
-why, and what changes in your life when you have it, until the goal is concrete enough to
-teach against. It finds the field's canonical books rather than a blog post. Then it teaches
-in sessions you can finish in one sitting, and every session opens by telling you where you
-stand — what is due today, what you keep getting wrong, what comes next — because it read
-your record before you arrived.
+**learno is a tutor that keeps the thread for you.** You say what you want to learn, and it
+refuses to start until the goal is one you can *win* — not "learn English" but "pass the
+Detran theory exam", "solve most LeetCode mediums unaided", "pass a senior system design
+interview". Something with a day and a verdict. It will also tell you, up front, which part
+of your goal it cannot teach you: it explains, tests and schedules, and it is honest that
+speaking hours and time behind a wheel come from somewhere else.
+
+With the goal fixed, it finds the field's canonical books rather than a blog post and teaches
+in sessions you can finish in one sitting. Every session opens by telling you where you stand
+— what is due today, what you keep getting wrong, what comes next — because it read your
+record before you arrived.
 
 You answer in your own words, not by highlighting. Each section asks you to explain the idea
 and a model scores what you wrote, so *"yeah, I get it"* has to survive contact with a
