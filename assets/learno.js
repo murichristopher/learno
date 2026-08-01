@@ -44,6 +44,43 @@
       .catch(function () { setOffline(true); });
   }
 
+  // ── remembering ─────────────────────────────────────────────────────────
+  // A lesson is read across days, on a phone, with tabs that get closed. Losing
+  // every answer to a reload made the page feel disposable and cost the reader
+  // the one thing they had actually produced. Kept locally rather than on the
+  // server: it is draft work, and it should survive being offline.
+
+  var KEY = 'lx-state:' + LESSON;
+  var restoring = false;
+
+  function readState() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; }
+  }
+
+  function remember(kind, key, value) {
+    if (restoring) return;
+    try {
+      var s = readState();
+      (s[kind] = s[kind] || {})[key] = value;
+      localStorage.setItem(KEY, JSON.stringify(s));
+    } catch (e) { /* private mode, or quota — the lesson still works */ }
+  }
+
+  // Stable across reloads without adding an attribute to the markup: a recall is
+  // named by its concept, a quiz by its position among quizzes, and there is only
+  // ever one teach-back.
+  function blockKey(el) {
+    if (el.classList.contains('lx-teachback')) return 'teachback';
+    var recall = el.closest ? el.closest('.lx-recall') : null;
+    if (recall) return (el === recall ? 'recall:' : 'fallback:') + recall.dataset.conceptId;
+    return 'quiz:' + $$('.lx-quiz').indexOf(el.closest('.lx-quiz') || el);
+  }
+
+  function forget() {
+    try { localStorage.removeItem(KEY); } catch (e) { /* nothing to do */ }
+    location.reload();
+  }
+
   // ── progress ────────────────────────────────────────────────────────────
 
   function markPhaseDone(id) {
@@ -178,6 +215,7 @@
       .then(readVerdict)
       .then(function (data) {
         showVerdict(block, data);
+        remember('verdicts', blockKey(block), data);
         // Never gated on the score. A gap is for the tutor to act on — it reads
         // the score and closes the gap with the next lesson or review; a page
         // that locks someone out of their own material cannot teach them the
@@ -212,7 +250,8 @@
       fb.textContent = correct ? okText : badText;
       fb.className = 'lx-inline-fb is-shown ' + (correct ? 'is-ok' : 'is-bad');
     }
-    if (phaseId) unlockNext(phaseId, correct);
+    remember('choices', blockKey(scope), $$('input[type="radio"]', scope).indexOf(input));
+    if (phaseId) unlockNext(phaseId, correct && !restoring);
   }
 
   // ── teach-back ──────────────────────────────────────────────────────────
@@ -239,6 +278,7 @@
       .then(readVerdict)
       .then(function (data) {
         showVerdict(block, data);
+        remember('verdicts', blockKey(block), data);
         return fetch(SERVER + '/api/progress', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -249,7 +289,7 @@
           })
         })
           .then(function (r) { return r.ok ? r.json() : null; })
-          .then(function (saved) { showDone(data, saved); });
+          .then(function (saved) { remember('done', 'done', saved || {}); showDone(data, saved); });
       })
       .catch(function (err) {
         fail(block, 'Não deu para encerrar agora (' + err.message + '). Sua explicação continua aí.');
@@ -361,6 +401,54 @@
     });
   }
 
+  // ── restoring ───────────────────────────────────────────────────────────
+  // Replays what was answered through the same code paths that answered it, so
+  // there is one definition of what a rendered answer looks like. `restoring`
+  // suppresses the two things a replay must not do: write the state back, and
+  // scroll — the reader chose where they were, not this.
+
+  function restore() {
+    var s = readState();
+    if (!s.choices && !s.answers && !s.verdicts) return;
+
+    restoring = true;
+
+    Object.keys(s.answers || {}).forEach(function (key) {
+      $$('.lx-recall, .lx-teachback').forEach(function (block) {
+        var box = $('.lx-answer', block);
+        if (box && blockKey(block) === key) box.value = s.answers[key];
+      });
+    });
+
+    Object.keys(s.verdicts || {}).forEach(function (key) {
+      $$('.lx-recall, .lx-teachback').forEach(function (block) {
+        if (blockKey(block) !== key) return;
+        showVerdict(block, s.verdicts[key]);
+        if (block.dataset.phase) unlockNext(block.dataset.phase, false);
+      });
+    });
+
+    Object.keys(s.choices || {}).forEach(function (key) {
+      $$('.lx-quiz, .lx-fallback').forEach(function (scope) {
+        if (blockKey(scope) !== key) return;
+        var input = $$('input[type="radio"]', scope)[s.choices[key]];
+        if (!input) return;
+        input.checked = true;
+        var owner = scope.closest('.lx-recall') || scope;
+        answerChoice(scope, input, owner.dataset.phase,
+          owner.dataset.ok || 'Correto.', owner.dataset.bad || 'Não é essa.');
+      });
+    });
+
+    if (s.done) {
+      var tb = $('.lx-teachback');
+      var verdict = tb && s.verdicts && s.verdicts.teachback;
+      if (verdict) showDone(verdict, s.done.done);
+    }
+
+    restoring = false;
+  }
+
   // ── wiring ──────────────────────────────────────────────────────────────
 
   function init() {
@@ -392,11 +480,24 @@
       setupMic(block);
     });
 
+    // Every draft is kept, not just submitted ones: the answer half-written when
+    // the tab closed is the one worth not losing.
+    $$('.lx-recall, .lx-teachback').forEach(function (block) {
+      var box = $('.lx-answer', block);
+      if (box) box.addEventListener('input', function () { remember('answers', blockKey(block), box.value); });
+    });
+
+    $$('[data-action="restart"]').forEach(function (btn) {
+      btn.addEventListener('click', forget);
+    });
+
     setupPrefs();
 
     // No phases means nothing to gate behind — otherwise the component gallery
     // would render permanently locked.
     if (!PHASES.length) $$('.lx-gate').forEach(function (g) { openGate(g.dataset.gate); });
+
+    restore();
 
     detectServer();
   }
