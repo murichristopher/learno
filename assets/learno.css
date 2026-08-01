@@ -417,6 +417,8 @@ html {
 .lx-btn--secondary { background: var(--lx-input); color: var(--lx-text-2); border: 1px solid var(--lx-border); }
 .lx-btn--secondary:hover { color: var(--lx-text); }
 .lx-btn--outline   { background: transparent; color: var(--lx-text-muted); border: 1px solid var(--lx-bar-border); }
+.lx-btn--ghost     { background: transparent; color: var(--lx-text-subtle); border: 1px dashed var(--lx-border); }
+.lx-btn--ghost:hover { color: var(--lx-bad); border-color: var(--lx-bad); }
 .lx-btn--outline:hover   { color: var(--lx-text); }
 .lx-btn:disabled   { opacity: .5; cursor: not-allowed; }
 

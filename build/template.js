@@ -146,6 +146,8 @@ ${body}
   <footer class="lx-lesson-foot">
     <a class="lx-btn lx-btn--outline" href="${a}reference/my-learning.html">Painel</a>
     <a class="lx-btn lx-btn--outline" href="${a}reference/glossary.html">Glossário</a>
+    ${needsJs ? `<button type="button" class="lx-btn lx-btn--ghost" data-action="restart"
+      title="Apaga as respostas guardadas neste navegador e recomeça">Recomeçar</button>` : ''}
   </footer>
 </div>
 ${needsJs ? `
