@@ -177,7 +177,15 @@ p2:
   body: >
     Este bloco não precisa de servidor nenhum. É a mesma peça que o recall usa
     como fallback quando o servidor cai.
-  question: "Por que o fallback de múltipla escolha é renderizado sempre, e só escondido por CSS?"
+  question: |
+    Olhando o trecho abaixo, por que o fallback é renderizado sempre e só
+    escondido por CSS?
+
+    ```js
+    function setOffline(isOffline) {
+      document.body.classList.toggle('lx-offline', isOffline);
+    }
+    ```
   ok: "Isso. Trocar de modo vira um toggle de classe, e não um fetch que precisa dar certo para mostrar a alternativa."
   bad: "O contrário: se ele fosse buscado na hora, precisaria do servidor justamente quando o servidor caiu."
   options:

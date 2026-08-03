@@ -1,4 +1,4 @@
-const { esc, inline } = require('../../build/text');
+const { esc, inline, rich } = require('../../build/text');
 
 module.exports = {
   meta: {
@@ -43,7 +43,7 @@ module.exports = {
     return `  <div class="lx-card lx-quiz" data-phase="${esc(phase || '')}"
        data-ok="${esc(ok)}" data-bad="${esc(bad)}">
     <span class="lx-quiz-label">Escolha uma</span>
-    <p class="lx-ask-q">${inline(question)}</p>
+    <div class="lx-ask-q">${rich(question)}</div>
     ${opts}
     <p class="lx-inline-fb"></p>
   </div>`;
