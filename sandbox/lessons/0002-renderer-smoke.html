@@ -310,7 +310,7 @@ qual diagrama tem o problema.</p>
     <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
   <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
   <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
-    <p class="lx-ask-q">Explique, com suas palavras, por que uma lição que dá para rolar até o fim ensina reconhecimento em vez de recuperação.</p>
+    <div class="lx-ask-q"><p>Explique, com suas palavras, por que uma lição que dá para rolar até o fim ensina reconhecimento em vez de recuperação.</p></div>
 
     <div class="lx-ask-online">
       <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
@@ -369,14 +369,18 @@ qual diagrama tem o problema.</p>
   <div class="lx-card lx-quiz" data-phase="2"
        data-ok="Isso. Trocar de modo vira um toggle de classe, e não um fetch que precisa dar certo para mostrar a alternativa." data-bad="O contrário: se ele fosse buscado na hora, precisaria do servidor justamente quando o servidor caiu.">
     <span class="lx-quiz-label">Escolha uma</span>
-    <p class="lx-ask-q">Por que o fallback de múltipla escolha é renderizado sempre, e só escondido por CSS?</p>
+    <div class="lx-ask-q"><p>Olhando o trecho abaixo, por que o fallback é renderizado sempre e só
+escondido por CSS?</p>
+    <div class="lx-card lx-codeblock"><span class="lx-codeblock-lang">js</span><pre><code class="hljs"><span class="hljs-keyword">function</span> <span class="hljs-title function_">setOffline</span>(<span class="hljs-params">isOffline</span>) {
+  <span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-property">classList</span>.<span class="hljs-title function_">toggle</span>(<span class="hljs-string">&#x27;lx-offline&#x27;</span>, isOffline);
+}</code></pre></div></div>
     
       <label class="lx-choice">
-        <input type="radio" name="quiz-1770973117" value="0" data-correct="0" />
+        <input type="radio" name="quiz-1583411007" value="0" data-correct="0" />
         <span>Para economizar bytes na página</span>
       </label>
       <label class="lx-choice">
-        <input type="radio" name="quiz-1770973117" value="1" data-correct="1" />
+        <input type="radio" name="quiz-1583411007" value="1" data-correct="1" />
         <span>Porque buscá-lo na hora exigiria o servidor exatamente quando o servidor está fora</span>
       </label>
     <p class="lx-inline-fb"></p>
@@ -395,8 +399,8 @@ qual diagrama tem o problema.</p>
     <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
   <path d="M22 10v6" />
   <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg> Ensina de volta</span>
-    <p class="lx-ask-q">Explique o pipeline inteiro para alguém que só viu lições em HTML escrito à mão: o que é o JSON, o que é o YAML, e o que o build recusa.</p>
-    <p class="lx-teachback-hint">Comece pelo problema (84% do que a IA escrevia era máquina), depois a divisão, depois as validações.</p>
+    <div class="lx-ask-q"><p>Explique o pipeline inteiro para alguém que só viu lições em HTML escrito à mão: o que é o JSON, o que é o YAML, e o que o build recusa.</p></div>
+    <div class="lx-teachback-hint"><p>Comece pelo problema (84% do que a IA escrevia era máquina), depois a divisão, depois as validações.</p></div>
 
     <p class="lx-teachback-offline">
       Esta parte precisa do servidor. Sem ele não dá para registrar a lição —

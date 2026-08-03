@@ -3,7 +3,7 @@
 
 const { icon } = require('../../build/icons');
 
-const { esc, inline } = require('../../build/text');
+const { esc, inline, rich } = require('../../build/text');
 
 module.exports = {
   meta: {
@@ -44,6 +44,9 @@ module.exports = {
   margin-bottom: .45rem;
 }
 .lx-ask-q { color: var(--lx-text); font-weight: 550; margin-bottom: .8rem; }
+.lx-ask-q > p + p, .lx-ask-q > .lx-codeblock { margin-top: .6rem; }
+.lx-ask-q .lx-codeblock { font-weight: 400; }
+.lx-ask-q .lx-codeblock + p { margin-top: .6rem; }
 
 .lx-answer {
   width: 100%;
@@ -121,7 +124,7 @@ module.exports = {
        data-ok="${esc((fallback && fallback.ok) || 'Correto.')}"
        data-bad="${esc((fallback && fallback.bad) || 'Não é essa.')}">
     <span class="lx-ask-label">${icon('message-square-quote')} Explique com suas palavras</span>
-    <p class="lx-ask-q">${inline(question)}</p>
+    <div class="lx-ask-q">${rich(question)}</div>
 
     <div class="lx-ask-online">
       <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>

@@ -124,6 +124,19 @@ appears in the registry and the gallery automatically.
 
 ---
 
+## Text in any component
+
+Authored text is formatted the same way everywhere: `**bold**`, `*italic*`,
+`` `code` ``, `[link](url)`, blank-line paragraphs and `- ` lists. That applies
+to every component's text props, not only `prose`.
+
+A question can also carry a **fenced block** — ``` with a language — and it is
+highlighted at build time like the `code` component. Use it when the question is
+about the code; use the `code` component when the code is the point and the
+question comes after.
+
+---
+
 ## What a lesson must contain
 
 The structure below is pedagogy, not decoration. Each rule exists because the
@@ -197,10 +210,6 @@ in `source`.
 What it asks for is an artifact in the medium of the subject — code that runs, a
 proof, something spoken, a drawing — never a document describing one. It lives
 in the user's own environment; there is no upload.
-
-Authored text is formatted the same way everywhere: `**bold**`, `*italic*`,
-`` `code` ``, `[link](url)`, blank-line paragraphs and `- ` lists. That applies
-to every component's text props, not only `prose`.
 
 It has no `phase`, no `recall` and no `teachback` — nothing on the page is
 scored, so the page carries no progress bar and no JavaScript. The work is

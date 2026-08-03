@@ -195,8 +195,7 @@ thread, e o primeiro já não tem para quem responder.</p>
     <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
   <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
   <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
-    <p class="lx-ask-q">Um endpoint que leva 90 segundos está atrás de um load balancer com timeout de 60 s. Explique, com suas palavras, o que o usuário vê, o que acontece com o trabalho que já estava rodando, e por que &quot;é só subir o timeout para 120 s&quot; não resolve o problema.
-</p>
+    <div class="lx-ask-q"><p>Um endpoint que leva 90 segundos está atrás de um load balancer com timeout de 60 s. Explique, com suas palavras, o que o usuário vê, o que acontece com o trabalho que já estava rodando, e por que &quot;é só subir o timeout para 120 s&quot; não resolve o problema.</p></div>
 
     <div class="lx-ask-online">
       <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
@@ -348,8 +347,7 @@ inteira de inconsistência que deixa de existir.</p>
 " data-bad="Fila é transporte: entrega e esquece, e não sabe responder &quot;em que pé está o job 8f3a&quot;. E 404 não distingue &quot;ainda processando&quot; de &quot;esse job nunca existiu&quot; — o front não tem como decidir se insiste ou desiste.
 ">
     <span class="lx-quiz-label">Escolha uma</span>
-    <p class="lx-ask-q">Sua API responde 202 com um jobId e o worker leva de 30 s a 4 minutos. O front vai consultar o status. Qual desenho você defende num code review?
-</p>
+    <div class="lx-ask-q"><p>Sua API responde 202 com um jobId e o worker leva de 30 s a 4 minutos. O front vai consultar o status. Qual desenho você defende num code review?</p></div>
     
       <label class="lx-choice">
         <input type="radio" name="quiz-1795010966" value="0" data-correct="0" />
@@ -548,8 +546,7 @@ gateways sérios aceitam a chave direto na API: o <code class="lx-code">Idempote
     <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
   <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
   <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
-    <p class="lx-ask-q">Seu worker cobra o cartão e depois grava done. O processo morre depois de a cobrança passar no gateway e antes de gravar, e a fila reentrega o job. Explique o que acontece sem proteção e descreva a proteção: de onde vem a chave, onde ela é gravada, e como a segunda tentativa decide não cobrar de novo.
-</p>
+    <div class="lx-ask-q"><p>Seu worker cobra o cartão e depois grava done. O processo morre depois de a cobrança passar no gateway e antes de gravar, e a fila reentrega o job. Explique o que acontece sem proteção e descreva a proteção: de onde vem a chave, onde ela é gravada, e como a segunda tentativa decide não cobrar de novo.</p></div>
 
     <div class="lx-ask-online">
       <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
@@ -605,10 +602,8 @@ gateways sérios aceitam a chave direto na API: o <code class="lx-code">Idempote
     <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
   <path d="M22 10v6" />
   <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg> Ensina de volta</span>
-    <p class="lx-ask-q">Um colega quer subir o timeout do load balancer para 5 minutos e chamar o dia de resolvido. Explique para ele o padrão inteiro: por que o trabalho longo sai da requisição, o que a API devolve no lugar do resultado, onde o cliente busca o status, e o que acontece com um job que falha três vezes seguidas cobrando um cartão.
-</p>
-    <p class="lx-teachback-hint">Comece pelo que quebra (timeout de terceiro, thread presa, F5 do usuário), depois o recibo 202 com jobId e onde mora o estado, e feche com backoff mais jitter, dead-letter e a chave de idempotência.
-</p>
+    <div class="lx-ask-q"><p>Um colega quer subir o timeout do load balancer para 5 minutos e chamar o dia de resolvido. Explique para ele o padrão inteiro: por que o trabalho longo sai da requisição, o que a API devolve no lugar do resultado, onde o cliente busca o status, e o que acontece com um job que falha três vezes seguidas cobrando um cartão.</p></div>
+    <div class="lx-teachback-hint"><p>Comece pelo que quebra (timeout de terceiro, thread presa, F5 do usuário), depois o recibo 202 com jobId e onde mora o estado, e feche com backoff mais jitter, dead-letter e a chave de idempotência.</p></div>
 
     <p class="lx-teachback-offline">
       Esta parte precisa do servidor. Sem ele não dá para registrar a lição —

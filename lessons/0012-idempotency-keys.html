@@ -159,10 +159,9 @@ olhos do servidor — você não tem idempotência, tem só um header bonito.</p
     <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14a2 2 0 0 0 2-2V8h-2" />
   <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
   <path d="M8 14a2 2 0 0 0 2-2V8H8" /></svg> Explique com suas palavras</span>
-    <p class="lx-ask-q">Explique com suas palavras por que gerar a chave de idempotência dentro da
+    <div class="lx-ask-q"><p>Explique com suas palavras por que gerar a chave de idempotência dentro da
 rotina de retry destrói a garantia, mesmo que o servidor esteja implementado
-corretamente.
-</p>
+corretamente.</p></div>
 
     <div class="lx-ask-online">
       <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
@@ -271,7 +270,7 @@ deduplicação ela vira efeito e você tenta desfazer.</p>
   <div class="lx-card lx-quiz" data-phase="2"
        data-ok="Exato. TTL expirado é indistinguível de chave nunca vista — e é o modo de falha mais traiçoeiro, porque só aparece no dia do incidente." data-bad="Depois do TTL não sobra registro nenhum para comparar. Para o servidor, é um pedido novo em folha.">
     <span class="lx-quiz-label">Escolha uma</span>
-    <p class="lx-ask-q">Você guarda as chaves com TTL de 60 segundos. O que acontece quando uma fila de retries fica parada 20 minutos e depois é reprocessada?</p>
+    <div class="lx-ask-q"><p>Você guarda as chaves com TTL de 60 segundos. O que acontece quando uma fila de retries fica parada 20 minutos e depois é reprocessada?</p></div>
     
       <label class="lx-choice">
         <input type="radio" name="quiz-1896530153" value="0" data-correct="0" />
@@ -305,12 +304,11 @@ deduplicação ela vira efeito e você tenta desfazer.</p>
     <span class="lx-ask-label"><svg class="lx-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
   <path d="M22 10v6" />
   <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg> Ensina de volta</span>
-    <p class="lx-ask-q">Explique, do começo ao fim, como uma chave de idempotência torna um retry
+    <div class="lx-ask-q"><p>Explique, do começo ao fim, como uma chave de idempotência torna um retry
 seguro: quem gera a chave e quando, o que o servidor grava junto dela, quanto
 tempo esse registro precisa viver, e por que isso é diferente de deduplicar
-os efeitos depois.
-</p>
-    <p class="lx-teachback-hint">Cite o índice único, o hash do corpo e pelo menos um número concreto de TTL.</p>
+os efeitos depois.</p></div>
+    <div class="lx-teachback-hint"><p>Cite o índice único, o hash do corpo e pelo menos um número concreto de TTL.</p></div>
 
     <p class="lx-teachback-offline">
       Esta parte precisa do servidor. Sem ele não dá para registrar a lição —
