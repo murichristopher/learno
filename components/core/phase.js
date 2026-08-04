@@ -2,6 +2,7 @@
 // the reader stuck rather than silently dropping every gate in the lesson.
 
 const { gate } = require('../../build/gate');
+const { t } = require('../../build/strings');
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -58,7 +59,7 @@ module.exports = {
     </div>
     ${gate(ctx.children || '', {
       name: `phase-${id}`,
-      reason: 'Responda a seção anterior para abrir',
+      reason: t('gate.phase'),
       open: unlocked
     })}
   </section>`;

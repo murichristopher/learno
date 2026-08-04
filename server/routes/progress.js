@@ -2,6 +2,7 @@ const router = require('express').Router();
 
 // Real Mongo, or the in-memory sandbox store — see server/db.js.
 const { getDb } = require('../db');
+const { languageLocale } = require('../workspace');
 
 // ── SM-2 algorithm ───────────────────────────────────────────
 // A project is not a longer lesson. It asks the concept to be used under a
@@ -135,7 +136,7 @@ router.post('/', async (req, res) => {
     );
 
     const next_review_label = updates.length
-      ? earliest.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
+      ? earliest.toLocaleDateString(languageLocale(), { weekday: 'long', day: 'numeric', month: 'long' })
       : null;
 
     res.json({

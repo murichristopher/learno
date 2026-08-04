@@ -75,4 +75,22 @@ function hasDashboard() {
   return fs.existsSync(path.join(WORKSPACE, DASHBOARD_PATH));
 }
 
-module.exports = { WORKSPACE, listDir, listWorkspace, DASHBOARD_PATH, hasDashboard };
+// The workspace language, read from learno.json. The build has its own copy of
+// this table; here only two things need it — which language the model must
+// answer in, and how a date is spelled.
+const LANGS = { pt: { name: 'Brazilian Portuguese', locale: 'pt-BR' },
+                en: { name: 'English',              locale: 'en-GB' } };
+
+function language() {
+  try {
+    const cfg = JSON.parse(fs.readFileSync(path.join(WORKSPACE, 'learno.json'), 'utf8'));
+    return LANGS[cfg.lang] ? cfg.lang : 'pt';
+  } catch {
+    return 'pt';
+  }
+}
+
+const languageName   = () => LANGS[language()].name;
+const languageLocale = () => LANGS[language()].locale;
+
+module.exports = { WORKSPACE, listDir, listWorkspace, DASHBOARD_PATH, hasDashboard, language, languageName, languageLocale };

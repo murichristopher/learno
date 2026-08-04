@@ -2,13 +2,14 @@
 // anything. An unknown variant degrades to note rather than rendering unstyled.
 
 const { icon } = require('../../build/icons');
+const { t } = require('../../build/strings');
 
 const { esc, inline, rich } = require('../../build/text');
 
 const VARIANTS = {
-  note:   { icon: 'info',           label: 'Nota' },
-  warn:   { icon: 'triangle-alert', label: 'Atenção' },
-  danger: { icon: 'octagon-alert',  label: 'Cuidado' }
+  note:   { icon: 'info',           label: 'callout.note' },
+  warn:   { icon: 'triangle-alert', label: 'callout.warn' },
+  danger: { icon: 'octagon-alert',  label: 'callout.danger' }
 };
 
 module.exports = {
@@ -53,7 +54,7 @@ module.exports = {
     return `  <div class="lx-card lx-callout lx-callout--${esc(VARIANTS[variant] ? variant : 'note')}">
     <span class="lx-callout-mark">${icon(v.icon)}</span>
     <div>
-      <p class="lx-callout-title">${esc(title || v.label)}</p>
+      <p class="lx-callout-title">${esc(title || t(v.label))}</p>
       <div class="lx-callout-text">${rich(text)}</div>
     </div>
   </div>`;

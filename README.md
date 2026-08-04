@@ -220,6 +220,26 @@ twice is worth more than any score, so the dashboard leads with it.
 
 ---
 
+## Language
+
+One workspace, one language. It lives in `learno.json` at the root:
+
+```json
+{ "lang": "en" }
+```
+
+`pt` (the default) or `en`. It sets every word the engine puts on a page, the
+`<html lang>` the dictation reads, the date format, and — the one that is not
+cosmetic — **the language the model writes its feedback in**. Without it, an
+answer written in English came back scored in Portuguese.
+
+Lesson *content* is separate: it is whatever the author wrote, and `NOTES.md` is
+where you say which language that should be.
+
+Adding a language is one entry in `build/strings.js`.
+
+---
+
 ## Environment variables
 
 Read from `.env` at the repo root. Start from [`.env.example`](.env.example).

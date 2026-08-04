@@ -2,6 +2,7 @@
 // measures nothing, and a fabricated score corrupts the review schedule.
 
 const { icon } = require('../../build/icons');
+const { t } = require('../../build/strings');
 const { gate } = require('../../build/gate');
 
 const { esc, inline } = require('../../build/text');
@@ -47,20 +48,19 @@ module.exports = {
 
   render({ question, conceptIds, hint }) {
     const card = `  <div class="lx-card lx-ask lx-teachback" data-concepts="${esc(conceptIds.join(','))}">
-    <span class="lx-ask-label">${icon('graduation-cap')} Ensina de volta</span>
+    <span class="lx-ask-label">${icon('graduation-cap')} ${t('teachback.label')}</span>
     <p class="lx-ask-q">${inline(question)}</p>
     ${hint ? `<p class="lx-teachback-hint">${inline(hint)}</p>` : ''}
 
     <p class="lx-teachback-offline">
-      Esta parte precisa do servidor. Sem ele não dá para registrar a lição —
-      e um score inventado estragaria o agendamento da revisão.
+      ${t('teachback.offline')}
     </p>
 
     <div class="lx-ask-online">
-      <textarea class="lx-answer lx-answer--large" placeholder="Explique o conceito inteiro, com suas palavras…"></textarea>
+      <textarea class="lx-answer lx-answer--large" placeholder="${t('teachback.placeholder')}"></textarea>
       <div class="lx-ask-tools">
-        <button type="button" class="lx-btn lx-btn--primary" data-action="teachback">Encerrar a lição</button>
-        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <button type="button" class="lx-btn lx-btn--primary" data-action="teachback">${t('teachback.finish')}</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 ${t('mic.dictate')}</button>
         <select class="lx-lang" data-role="lang" hidden>
           <option value="pt-BR">Português</option>
           <option value="en-US">English</option>
@@ -81,7 +81,7 @@ module.exports = {
   </div>`;
     const done = `  <div class="lx-done">
     <div class="lx-card lx-next-review">
-      <span class="lx-next-review-label">Próxima revisão</span>
+      <span class="lx-next-review-label">${t('done.nextReview')}</span>
       <span class="lx-next-review-date">—</span>
       <span class="lx-next-review-note"></span>
     </div>

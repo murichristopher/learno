@@ -2,6 +2,7 @@
 // here rather than authored, so a lesson only ever contains content blocks.
 
 const { icon } = require('./icons');
+const { t, runtimeStrings } = require('./strings');
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -34,14 +35,14 @@ const THEME_BOOT = `<script>(function(){try{var d=document.documentElement,` +
 
 function topBar(a) {
   return `  <nav class="lx-topbar">
-    <a class="lx-topbar-home" href="${a}" title="Ir para o painel">
+    <a class="lx-topbar-home" href="${a}" title="${t('nav.home')}">
       ${icon('house', { className: 'lx-topbar-icon' })}
       <span>learno</span>
     </a>
     <div class="lx-topbar-right">
-      <a class="lx-topbar-link" href="${a}reference/library.html" title="Biblioteca">
+      <a class="lx-topbar-link" href="${a}reference/library.html" title="${t('nav.library')}">
         ${icon('library')}
-        <span>Biblioteca</span>
+        <span>${t('nav.library')}</span>
       </a>
       ${settings()}
     </div>
@@ -52,20 +53,20 @@ function topBar(a) {
 // all handled by the browser, and it still opens if the runtime never loads.
 function settings() {
   return `<details class="lx-settings">
-      <summary class="lx-settings-btn" title="Configurações" aria-label="Configurações" role="button">
+      <summary class="lx-settings-btn" title="${t('settings.title')}" aria-label="${t('settings.title')}" role="button">
         ${icon('settings')}
       </summary>
       <div class="lx-settings-panel">
         <div class="lx-settings-group">
-          <p class="lx-settings-label">Tema</p>
+          <p class="lx-settings-label">${t('settings.theme')}</p>
           <div class="lx-settings-row">
-            <button type="button" class="lx-settings-opt" data-theme-set="light" title="Claro">${icon('sun')}</button>
-            <button type="button" class="lx-settings-opt" data-theme-set="auto" title="Seguir o sistema">${icon('monitor')}</button>
-            <button type="button" class="lx-settings-opt" data-theme-set="dark" title="Escuro">${icon('moon')}</button>
+            <button type="button" class="lx-settings-opt" data-theme-set="light" title="${t('settings.light')}">${icon('sun')}</button>
+            <button type="button" class="lx-settings-opt" data-theme-set="auto" title="${t('settings.auto')}">${icon('monitor')}</button>
+            <button type="button" class="lx-settings-opt" data-theme-set="dark" title="${t('settings.dark')}">${icon('moon')}</button>
           </div>
         </div>
         <div class="lx-settings-group">
-          <p class="lx-settings-label">Cor principal</p>
+          <p class="lx-settings-label">${t('settings.accent')}</p>
           <div class="lx-settings-row">
             <button type="button" class="lx-settings-opt" data-accent-set="azul" title="Azul"><span class="lx-settings-dot lx-settings-dot--azul"></span>Azul</button>
             <button type="button" class="lx-settings-opt" data-accent-set="roxo" title="Roxo"><span class="lx-settings-dot lx-settings-dot--roxo"></span>Roxo</button>
@@ -86,7 +87,7 @@ function page({ id, title, subtitle, tag, icon: lessonIcon, blocks, concepts = [
 
   // Configuration travels as data, not as generated code: a lesson never
   // contains script of its own, so nothing has to be escaped into a JS context.
-  const config = JSON.stringify({ lesson: id, concepts, phases });
+  const config = JSON.stringify({ lesson: id, concepts, phases, strings: runtimeStrings() });
 
   const progress = phases.length
     ? `  <div class="lx-progress" role="presentation">
@@ -99,7 +100,7 @@ ${phases.map(p => `    <span class="lx-progress-seg" data-seg="${esc(p)}"></span
     : '';
 
   return `<!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="${t('html.lang')}">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -133,8 +134,7 @@ ${topBar(a)}
   </header>
 
   <div class="lx-offline-banner" id="lx-banner" hidden>
-    Servidor fora do ar. As seções continuam abrindo por múltipla escolha, mas a
-    validação por IA e o registro do progresso ficam indisponíveis.
+    ${t('offline.banner')}
   </div>
 
 ${progress}
@@ -144,8 +144,8 @@ ${body}
   </div>
 
   <footer class="lx-lesson-foot">
-    <a class="lx-btn lx-btn--outline" href="${a}reference/my-learning.html">Painel</a>
-    <a class="lx-btn lx-btn--outline" href="${a}reference/glossary.html">Glossário</a>
+    <a class="lx-btn lx-btn--outline" href="${a}reference/my-learning.html">${t('nav.dashboard')}</a>
+    <a class="lx-btn lx-btn--outline" href="${a}reference/glossary.html">${t('nav.glossary')}</a>
   </footer>
 </div>
 ${needsJs ? `
