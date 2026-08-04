@@ -2,6 +2,7 @@
 // with no script, and is keyboard- and screen-reader-operable.
 
 const { icon } = require('../../build/icons');
+const { t } = require('../../build/strings');
 const { gate } = require('../../build/gate');
 
 const { esc, inline } = require('../../build/text');
@@ -73,12 +74,12 @@ module.exports = {
       </details>`).join('');
 
     return gate(`  <section class="lx-flashcards">
-    <p class="lx-flash-title">${icon('layers')} ${esc(title || 'Revisão rápida')}</p>
+    <p class="lx-flash-title">${icon('layers')} ${esc(title || t('flashcards.title'))}</p>
     <div class="lx-flash-grid">${items}
     </div>
   </section>`, {
       name: 'flashcards',
-      reason: 'Encerre a lição para abrir a revisão'
+      reason: t('gate.flashcards')
     });
   }
 };

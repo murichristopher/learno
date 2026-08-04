@@ -4,6 +4,7 @@
 // project nobody starts.
 
 const { icon } = require('../../build/icons');
+const { t } = require('../../build/strings');
 const { inline, rich } = require('../../build/text');
 
 module.exports = {
@@ -68,11 +69,11 @@ module.exports = {
       <p class="lx-deliverable-case">${icon('square-check')}<span>${inline(m)}</span></p>`).join('');
 
     return `  <div class="lx-card lx-deliverable">
-    <span class="lx-deliverable-label">${icon('package')}O que entregar</span>
+    <span class="lx-deliverable-label">${icon('package')}${t('deliverable.label')}</span>
     <p class="lx-deliverable-artifact">${inline(artifact)}</p>
     ${detail ? `<div class="lx-deliverable-detail">${rich(detail)}</div>` : ''}
     ${cases ? `<div class="lx-deliverable-must">
-      <span class="lx-deliverable-must-label">Precisa aguentar</span>${cases}
+      <span class="lx-deliverable-must-label">${t('deliverable.must')}</span>${cases}
     </div>` : ''}
     <p class="lx-deliverable-handoff">${icon('message-square')}<span>${inline(handoff)}</span></p>
   </div>`;

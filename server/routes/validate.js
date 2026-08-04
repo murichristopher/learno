@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { languageName } = require('../workspace');
 
 // Real Mongo, or the in-memory sandbox store — see server/db.js.
 const { getDb, SANDBOX } = require('../db');
@@ -25,6 +26,8 @@ router.post('/', async (req, res) => {
     ? valid_concept_ids.join(', ')
     : concept_id;
 
+  const LANGUAGE = languageName();
+
   const prompt = `You are a learning validator for a system design course.
 The student is learning: ${concept_id}.
 
@@ -43,10 +46,12 @@ Score 0–100:
 - 75–89: solid understanding, minor inaccuracies
 - 90–100: clear mastery
 
+Write every human-readable string — feedback and misconceptions — in ${LANGUAGE}, whatever language the student wrote in. This is the language of their workspace, not a guess.
+
 Return JSON only (no markdown wrapper, no explanation outside the JSON):
 {
   "score": <number>,
-  "feedback": "<2-3 sentences in the same language the student used>",
+  "feedback": "<2-3 sentences, written in ${LANGUAGE}>",
   "concepts_demonstrated": ["<IDs from canonical vocabulary only>"],
   "misconceptions": ["<brief description of each misconception found, or empty array>"]
 }`;

@@ -1,4 +1,5 @@
 const { icon } = require('../../build/icons');
+const { t } = require('../../build/strings');
 
 const { esc, inline } = require('../../build/text');
 
@@ -34,7 +35,7 @@ module.exports = {
     const href = url ? safeHref(url) : null;
     const name = esc(title);
     return `  <div class="lx-card lx-source">
-    <p class="lx-source-label">${icon('book-open')} Fonte primária</p>
+    <p class="lx-source-label">${icon('book-open')} ${t('source.label')}</p>
     <p class="lx-source-title">${href ? `<a class="lx-link" href="${esc(href)}" rel="noopener noreferrer" target="_blank">${name}</a>` : name}</p>
     ${note ? `<p class="lx-source-note">${inline(note)}</p>` : ''}
   </div>`;

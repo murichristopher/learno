@@ -2,6 +2,7 @@
 // class toggle, not a fetch that would need the server precisely when it is gone.
 
 const { icon } = require('../../build/icons');
+const { t } = require('../../build/strings');
 
 const { esc, inline } = require('../../build/text');
 
@@ -118,16 +119,16 @@ module.exports = {
        data-concept-id="${esc(conceptId)}"
        data-phase="${esc(phase || '')}"
        data-summary="${esc(summary)}"
-       data-ok="${esc((fallback && fallback.ok) || 'Correto.')}"
-       data-bad="${esc((fallback && fallback.bad) || 'Não é essa.')}">
-    <span class="lx-ask-label">${icon('message-square-quote')} Explique com suas palavras</span>
+       data-ok="${esc((fallback && fallback.ok) || t('recall.ok'))}"
+       data-bad="${esc((fallback && fallback.bad) || t('recall.bad'))}">
+    <span class="lx-ask-label">${icon('message-square-quote')} ${t('recall.label')}</span>
     <p class="lx-ask-q">${inline(question)}</p>
 
     <div class="lx-ask-online">
-      <textarea class="lx-answer" placeholder="Escreva sua explicação…"></textarea>
+      <textarea class="lx-answer" placeholder="${t('recall.placeholder')}"></textarea>
       <div class="lx-ask-tools">
-        <button type="button" class="lx-btn lx-btn--primary" data-action="validate">Validar</button>
-        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 Ditar</button>
+        <button type="button" class="lx-btn lx-btn--primary" data-action="validate">${t('recall.validate')}</button>
+        <button type="button" class="lx-btn lx-btn--secondary lx-mic" data-action="mic" hidden>🎙 ${t('mic.dictate')}</button>
         <select class="lx-lang" data-role="lang" hidden>
           <option value="pt-BR">Português</option>
           <option value="en-US">English</option>
@@ -146,7 +147,7 @@ module.exports = {
     </div>
 
     <div class="lx-fallback">
-      <p class="lx-fallback-note">Servidor fora do ar — respondendo por múltipla escolha.</p>
+      <p class="lx-fallback-note">${t('recall.fallbackNote')}</p>
       ${opts}
       <p class="lx-inline-fb"></p>
     </div>

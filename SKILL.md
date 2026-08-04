@@ -140,6 +140,8 @@ design a critique. There is no template, and there should not be.
 
 ## Workspace
 
+The workspace language is `learno.json` — `{ "lang": "pt" }` or `"en"`. Set it in the first session, from what `NOTES.md` says: it decides every word the engine renders, the `<html lang>` the voice dictation reads, and the language the model writes feedback in. Lesson content follows the same choice, but it is yours to write, not the engine's.
+
 Files the loop refers to. The repo root is the workspace — there is no `skill/`
 subdirectory.
 
